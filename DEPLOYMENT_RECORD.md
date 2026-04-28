@@ -195,7 +195,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ### 5.2 Git 恢复
 ```bash
 cd /Users/wanghongfei/Desktop/律植项目
-git remote set-url origin https://github.com/whongfei67-dev/lvzhi-web.git
+git remote set-url origin https://github.com/whongfei67-dev/lvzhi.git
 git add .
 git commit -m "描述修改"
 git push

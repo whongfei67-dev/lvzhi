@@ -18,7 +18,7 @@ NC='\033[0m' # No Color
 # 变量配置
 APP_NAME="律植"
 APP_DIR="/opt/lvzhi"
-GIT_REPO="https://github.com/whongfei67-dev/lvzhi-web.git"
+GIT_REPO="https://github.com/whongfei67-dev/lvzhi.git"
 
 # 显示欢迎信息
 echo -e "${BLUE}========================================${NC}"

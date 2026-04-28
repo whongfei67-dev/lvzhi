@@ -71,7 +71,7 @@ echo -e "${YELLOW}这可能需要 5-15 分钟，请耐心等待...${NC}"
 docker build \
     --target web-runner \
     --build-arg NEXT_PUBLIC_API_URL="https://www.lvxzhi.com/api" \
-    -t "lvzhi-web:$IMAGE_TAG" \
+    -t "lvzhi:$IMAGE_TAG" \
     -f Dockerfile \
     . 2>&1 | tail -20
 
@@ -82,11 +82,11 @@ echo ""
 echo -e "${YELLOW}[3/6] 推送镜像到阿里云 ACR...${NC}"
 
 # 标签镜像
-docker tag "lvzhi-web:$IMAGE_TAG" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/lvzhi-web:$IMAGE_TAG"
+docker tag "lvzhi:$IMAGE_TAG" "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/lvzhi:$IMAGE_TAG"
 
 # 推送
 echo "推送 Web 镜像..."
-docker push "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/lvzhi-web:$IMAGE_TAG"
+docker push "$ALIYUN_REGISTRY/$ALIYUN_NAMESPACE/lvzhi:$IMAGE_TAG"
 
 echo -e "${GREEN}镜像推送完成${NC}"
 
