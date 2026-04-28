@@ -4,7 +4,7 @@
 # ============================================
 
 # ---- 阶段 1: Builder ----
-FROM node:20-alpine AS builder
+FROM docker.m.daocloud.io/library/node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -49,7 +49,7 @@ RUN rm -rf apps/api/dist && pnpm --filter api build
 
 
 # ---- 阶段 2: Web Runtime ----
-FROM node:20-alpine AS web-runner
+FROM docker.m.daocloud.io/library/node:20-alpine AS web-runner
 
 WORKDIR /app
 
@@ -89,7 +89,7 @@ CMD ["pnpm", "start"]
 
 
 # ---- 阶段 3: API Runtime ----
-FROM node:20-alpine AS api-runner
+FROM docker.m.daocloud.io/library/node:20-alpine AS api-runner
 
 WORKDIR /app
 
@@ -125,7 +125,7 @@ CMD ["node", "dist/index.js"]
 
 
 # ---- 阶段 4: Nginx ----
-FROM nginx:alpine AS nginx
+FROM docker.m.daocloud.io/library/nginx:alpine AS nginx
 
 # docker-compose healthcheck 使用 wget；官方 nginx:alpine 镜像不含 wget
 RUN apk add --no-cache wget
@@ -142,7 +142,7 @@ CMD ["nginx", "-g", "daemon off;"]
 
 
 # ---- 阶段 5: All-in-One (开发/测试用) ----
-FROM node:20-alpine AS all-in-one
+FROM docker.m.daocloud.io/library/node:20-alpine AS all-in-one
 
 WORKDIR /app
 
