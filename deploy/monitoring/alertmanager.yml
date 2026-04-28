@@ -1,0 +1,57 @@
+global:
+  resolve_timeout: 5m
+  smtp_smarthost: 'smtp.example.com:587'
+  smtp_from: 'alertmanager@lvxzhi.com'
+  smtp_auth_username: 'alertmanager@lvxzhi.com'
+  smtp_auth_password: 'your-smtp-password'
+
+route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: 'default'
+  routes:
+    # 紧急告警直接通知
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      continue: true
+    # 支付相关告警单独通知
+    - match:
+        service: lvzhi-payment
+      receiver: 'payment-alerts'
+
+receivers:
+  - name: 'default'
+    email_configs:
+      - to: 'dev@lvxzhi.com'
+        headers:
+          subject: '[Lvzhi] 告警通知 - {{ .GroupLabels.alertname }}'
+
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'oncall@lvxzhi.com'
+        headers:
+          subject: '[紧急] [Lvzhi] {{ .GroupLabels.alertname }}'
+        send_resolved: true
+    webhook_configs:
+      - url: 'http://webhook-server:5000/alerts'
+        send_resolved: true
+
+  - name: 'payment-alerts'
+    email_configs:
+      - to: 'payment-team@lvxzhi.com'
+        headers:
+          subject: '[支付告警] [Lvzhi] {{ .GroupLabels.alertname }}'
+        send_resolved: true
+    webhook_configs:
+      - url: 'http://dingtalk-webhook:8060/dingtalk/webhook'
+
+inhibit_rules:
+  # 当服务完全宕机时，抑制低级别告警
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'service']

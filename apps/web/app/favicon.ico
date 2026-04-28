@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Simplified version for favicon -->
+  <!-- Pot -->
+  <path d="M10 21 L9 27 C8.5 28.5 9.5 30 11 30 L21 30 C22.5 30 23.5 28.5 23 27 L22 21 Z"
+        fill="#E8DCC8"/>
+
+  <!-- Soil -->
+  <ellipse cx="16" cy="21" rx="6" ry="1.5" fill="#8B7355"/>
+
+  <!-- Stem -->
+  <line x1="16" y1="21" x2="16" y2="12" stroke="#4A7C59" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Leaves -->
+  <path d="M16 17 Q12 16 11 17 Q12 18 16 18 Z" fill="#5FB878"/>
+  <path d="M16 17 Q20 16 21 17 Q20 18 16 18 Z" fill="#6FCF97"/>
+  <path d="M16 14 Q12 13 11 14 Q12 15 16 15 Z" fill="#6FCF97"/>
+  <path d="M16 14 Q20 13 21 14 Q20 15 16 15 Z" fill="#5FB878"/>
+
+  <!-- Top leaf -->
+  <ellipse cx="16" cy="10" rx="3" ry="4" fill="#8FE9AA"/>
+
+  <!-- Sparkle -->
+  <circle cx="19" cy="12" r="0.8" fill="#FFE66D"/>
+</svg>

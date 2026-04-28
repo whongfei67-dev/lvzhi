@@ -1,0 +1,23 @@
+#律植 (Lvzhi) robots.txt
+#Generated: 2026-03-31T13:26:27.314Z
+
+User-agent: *
+Allow: /
+
+# Disallow sensitive paths
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /creator/
+Disallow: /profile/
+Disallow: /settings/
+Disallow: /oauth/
+Disallow: /*/callback
+Disallow: /oauth/callback
+
+# Sitemap
+Sitemap: https://www.lvxzhi.com/sitemap.xml
+Sitemap: https://www.lvxzhi.com/sitemap.xml
+
+# Crawl-delay (optional, be nice to servers)
+Crawl-delay: 1

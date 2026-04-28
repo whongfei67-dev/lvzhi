@@ -1,0 +1,60 @@
+groups:
+  - name: api-alerts
+    interval: 30s
+    rules:
+      # API 高延迟告警
+      - alert: APIHighLatency
+        expr: histogram_quantile(0.95, rate(api_request_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          service: lvzhi-api
+        annotations:
+          summary: "API P95 延迟过高"
+          description: "API P95 延迟 {{ $value | printf \"%.2f\" }}s，超过 1s 阈值"
+          runbook_url: "https://docs.lvxzhi.com/runbooks/api-high-latency"
+
+      # API 极高延迟告警
+      - alert: APIVeryHighLatency
+        expr: histogram_quantile(0.99, rate(api_request_duration_seconds_bucket[5m])) > 3
+        for: 2m
+        labels:
+          severity: critical
+          service: lvzhi-api
+        annotations:
+          summary: "API P99 延迟严重过高"
+          description: "API P99 延迟 {{ $value | printf \"%.2f\" }}s，超过 3s 阈值"
+          runbook_url: "https://docs.lvxzhi.com/runbooks/api-very-high-latency"
+
+      # API 高错误率告警
+      - alert: APIHighErrorRate
+        expr: rate(api_errors_total[5m]) / rate(api_requests_total[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          service: lvzhi-api
+        annotations:
+          summary: "API 错误率过高"
+          description: "API 错误率 {{ $value | printf \"%.2f\" }}%，超过 5% 阈值"
+
+      # API 极高错误率告警
+      - alert: APIVeryHighErrorRate
+        expr: rate(api_errors_total[5m]) / rate(api_requests_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          service: lvzhi-api
+        annotations:
+          summary: "API 错误率严重过高"
+          description: "API 错误率 {{ $value | printf \"%.2f\" }}%，超过 10% 阈值"
+
+      # API 服务不可用
+      - alert: APIServiceDown
+        expr: up{job="lvzhi-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: lvzhi-api
+        annotations:
+          summary: "API 服务不可用"
+          description: "API 服务已宕机超过 1 分钟"

@@ -1,0 +1,47 @@
+{
+  "name": "lvzhi",
+  "private": true,
+  "packageManager": "pnpm@10.16.1",
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:admin": "pnpm --filter admin dev",
+    "dev:api": "pnpm --filter api dev",
+    "dev": "pnpm --parallel --filter web --filter admin --filter api dev",
+    "build:web": "pnpm --filter web build",
+    "build:admin": "pnpm --filter admin build",
+    "build:api": "pnpm --filter api build",
+    "typecheck": "pnpm --recursive typecheck",
+    "db:migrate:local": "node ./scripts/run-db-migrations.mjs",
+    "db:run-sql": "tsx scripts/run-sql-file.ts",
+    "db:verify:one-shot": "node ./scripts/verify-one-shot-sql.mjs",
+    "db:verify:repeatable": "node ./scripts/verify-repeatable-sql.mjs",
+    "test:e2e": "tsx scripts/e2e-test.ts",
+    "test:payment": "tsx scripts/test-payment-callback.ts",
+    "test:security": "tsx scripts/security-test.ts",
+    "test:db:regression": "tsx scripts/db-regression-test.ts",
+    "test:db:consistency": "tsx scripts/db-consistency-check.ts",
+    "test:db:benchmark": "tsx scripts/db-benchmark.ts",
+    "test:flows": "tsx scripts/test-flows.ts",
+    "test:admin": "tsx scripts/test-admin.ts",
+    "test:rbac": "tsx scripts/test-rbac-admin.ts",
+    "test:security:verify": "tsx scripts/test-security-verify.ts",
+    "audit:security": "tsx scripts/db-security-audit.ts",
+    "health-check": "tsx scripts/health-check.ts",
+    "deploy:check": "tsx scripts/deploy-checklist.ts",
+    "export:supabase": "tsx scripts/export-supabase-data.ts",
+    "migrate:storage": "tsx scripts/migrate-storage.ts",
+    "beta:audit-links": "node scripts/audit-internal-links.mjs",
+    "beta:smoke": "API_BASE_URL=http://127.0.0.1:4000 tsx scripts/e2e-test.ts -- --test=health",
+    "beta:smoke:auth": "API_BASE_URL=http://127.0.0.1:4000 tsx scripts/e2e-test.ts -- --test=auth",
+    "test:accounts": "tsx scripts/ensure-test-accounts.ts"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.0",
+    "pg": "^8.16.3",
+    "tsx": "^4.21.0",
+    "typescript": "5.8.3"
+  }
+}

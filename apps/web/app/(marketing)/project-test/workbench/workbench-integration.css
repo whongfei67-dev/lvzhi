@@ -1,0 +1,1183 @@
+/* scoped via #workbench-integration-mount */
+
+    #workbench-integration-mount {
+      --sidebar-bg: #5c4033;
+      --sidebar-text: rgba(255, 255, 255, 0.9);
+      --sidebar-muted: rgba(255, 255, 255, 0.5);
+      --accent: #d4a574;
+      --accent-soft: rgba(212, 165, 116, 0.15);
+      --page-bg: #f7f4ef;
+      --card: #ffffff;
+      --text: #2c2416;
+      --muted: #9a8b78;
+      --border: rgba(212, 165, 116, 0.3);
+      --ok: #3c8c5a;
+      --warn: #c77f2b;
+      --danger: #c15a4a;
+      --admin-bar: #2f3a44;
+      --wb-glow: rgba(212, 165, 116, 0.35);
+      --tech-cyan: #7dd3fc;
+      --tech-mint: rgba(94, 234, 212, 0.35);
+      --tech-deep: #0f172a;
+      /* 工作台全域：简体楷体（侧栏 / 顶栏 / 主内容一致） */
+      --wb-font:
+        "Kaiti SC",
+        "KaiTi",
+        "STKaiti",
+        "HanziPen SC",
+        "FZKTJW",
+        "华文楷体",
+        "楷体",
+        "Source Han Serif SC",
+        "Noto Serif SC",
+        serif;
+      /* 兼容旧变量名：与 --wb-font 相同 */
+      --wb-ui-font: var(--wb-font);
+      --wb-body-font: var(--wb-font);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* 仅在有工作台壳时铺底，避免加载态 #workbench-integration-mount 被盖住 Tailwind 深色背景 */
+    #workbench-integration-mount:has(.app) {
+      background-color: var(--page-bg);
+    }
+
+    /**
+     * 全文统一简体楷体：显式覆盖挂载内任意 Tailwind font-sans / font-serif 等工具类
+     *（否则子节点上的 utility 会压过继承字体）。
+     */
+    #workbench-integration-mount,
+    #workbench-integration-mount *,
+    #workbench-integration-mount *::before,
+    #workbench-integration-mount *::after {
+      box-sizing: border-box;
+      font-family: var(--wb-font) !important;
+    }
+
+    @keyframes wb-fade-up {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes wb-topbar-line {
+      0%, 100% { opacity: 0.35; }
+      50% { opacity: 0.95; }
+    }
+
+    #workbench-integration-mount .role-bar {
+      background: var(--admin-bar);
+      color: #fff;
+      padding: 10px 16px 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    #workbench-integration-mount .role-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    #workbench-integration-mount .role-tab {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    #workbench-integration-mount .role-tab:hover { background: rgba(255, 255, 255, 0.12); }
+    #workbench-integration-mount .role-tab.active {
+      background: var(--accent);
+      color: #2c2416;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    #workbench-integration-mount .role-hint {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.72);
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    #workbench-integration-mount .role-panel { display: none; }
+    #workbench-integration-mount .role-panel.active { display: flex; min-height: calc(100vh - 96px); }
+    /* 联调页有 .role-bar 时保留扣减；生产壳仅挂单一工作台，无 role-bar，须满高以免底部露缝 */
+    #workbench-integration-mount:not(:has(.role-bar)) .role-panel.active {
+      min-height: 100vh;
+    }
+
+    #workbench-integration-mount .app { flex: 1; display: flex; min-width: 0; overflow: hidden; }
+
+    /**
+     * 侧栏背景：用「横向」渐变为主，避免主区内容极高时 flex 把侧栏纵向拉很长、
+     * 斜向渐变被拉伸后导航区色带漂移（岗位数据 / 多维评价等长页会显得「整块变深」）。
+     */
+    #workbench-integration-mount .sidebar {
+      width: 268px;
+      flex: 0 0 268px;
+      min-height: 0;
+      background-color: #4a4039;
+      background-image: linear-gradient(90deg, #3a3430 0%, #4d4540 52%, #5c524b 100%);
+      color: var(--sidebar-text);
+      border-right: 1px solid rgba(125, 211, 252, 0.14);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+    }
+    #workbench-integration-mount .sidebar::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      pointer-events: none;
+      background: linear-gradient(180deg, var(--tech-cyan), rgba(212, 165, 116, 0.75), rgba(94, 234, 212, 0.35));
+      opacity: 0.45;
+    }
+    #workbench-integration-mount .logo {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 14px 14px 10px;
+      position: relative;
+      z-index: 1;
+    }
+    /**
+     * 侧栏「律植」：`#mount * { font-family: 楷体 !important }` 会盖住 `Logo` 的书法栈；
+     * 此处用更高优先级恢复与首页顶栏 `size="nav"` 一致的 `--font-marketing-brush`。
+     * 字色：白与淡金（--accent）之间，悬停略偏暖金。
+     */
+    #workbench-integration-mount .logo a.brand-wordmark,
+    #workbench-integration-mount .logo span.brand-wordmark {
+      font-family: var(--font-marketing-brush), "Noto Serif TC", "Noto Serif SC", "Source Han Serif SC",
+        serif !important;
+      font-weight: 400 !important;
+      color: #ebe1d4 !important;
+      color: color-mix(in srgb, #ffffff 58%, var(--accent) 42%) !important;
+      text-decoration: none;
+      text-shadow:
+        0 1px 0 rgba(0, 0, 0, 0.3),
+        0 4px 20px rgba(212, 165, 116, 0.22) !important;
+      display: inline-block;
+      transition: color 0.2s ease, text-shadow 0.2s ease;
+    }
+    #workbench-integration-mount .logo a.brand-wordmark:hover,
+    #workbench-integration-mount .logo span.brand-wordmark:hover {
+      color: #f0e4d0 !important;
+      color: color-mix(in srgb, #ffffff 40%, var(--accent) 60%) !important;
+      text-shadow:
+        0 1px 0 rgba(44, 36, 22, 0.18),
+        0 0 22px rgba(212, 165, 116, 0.42) !important;
+    }
+    #workbench-integration-mount .logo a {
+      display: inline-flex;
+      align-items: center;
+      max-width: min(100%, 220px);
+      width: auto;
+    }
+    #workbench-integration-mount .logo img {
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 10px rgba(125, 211, 252, 0.18));
+    }
+    #workbench-integration-mount .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.25);
+    }
+
+    #workbench-integration-mount .nav {
+      padding: 4px 10px 6px;
+      flex: 1;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      /* 避免出现/消失滚动条时侧栏可用宽度跳变，列表像「变形」 */
+      scrollbar-gutter: stable;
+    }
+    /* 分组标题与导航文字左缘对齐：nav 左右 10px + 条目左内边距 12px + 圆点列 10px + 列间距 10px */
+    #workbench-integration-mount .nav-label {
+      margin: 12px 0 6px;
+      padding: 0 12px 0 32px;
+      color: rgba(186, 230, 253, 0.62);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      font-family: inherit;
+      text-transform: uppercase;
+    }
+    /**
+     * 侧栏菜单字色：全部强制同一纯白（含 :link/:visited、WebKit 填充色），
+     * 不再使用 --sidebar-text 的 0.9 透明度灰阶，避免「有的更灰、像两套色」；
+     * hover / active 仅通过背景与内描边区分。
+     */
+    #workbench-integration-mount .sidebar .nav a.nav-item,
+    #workbench-integration-mount .sidebar .nav a.nav-item:link,
+    #workbench-integration-mount .sidebar .nav a.nav-item:visited,
+    #workbench-integration-mount .sidebar .nav a.nav-item:hover,
+    #workbench-integration-mount .sidebar .nav a.nav-item:focus-visible,
+    #workbench-integration-mount .sidebar .nav a.nav-item.active {
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff;
+    }
+    #workbench-integration-mount .nav-item {
+      height: 38px;
+      border-radius: 10px;
+      padding: 0 12px;
+      display: grid;
+      grid-template-columns: 10px minmax(0, 1fr);
+      align-items: center;
+      column-gap: 10px;
+      font-size: 15px;
+      margin-bottom: 3px;
+      text-decoration: none;
+      color: #ffffff;
+      text-align: left;
+      transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    #workbench-integration-mount .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    #workbench-integration-mount .nav-item.active,
+    #workbench-integration-mount .sidebar .nav a.nav-item.active {
+      background: rgba(212, 165, 116, 0.14);
+      box-shadow: inset 0 0 0 1px rgba(212, 165, 116, 0.28);
+    }
+    #workbench-integration-mount .nav-item:active { transform: scale(0.985); }
+    /* 子级入口：仅缩进层级 */
+    #workbench-integration-mount .nav-item.nav-sub {
+      padding-left: 14px;
+      font-size: 15px;
+    }
+    #workbench-integration-mount .sidebar .nav .nav-text {
+      display: block;
+      min-width: 0;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #ffffff !important;
+      -webkit-text-fill-color: #ffffff;
+    }
+    #workbench-integration-mount .sidebar .nav .nav-item .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      flex-shrink: 0;
+      background: #ffffff !important;
+      opacity: 1 !important;
+    }
+    #workbench-integration-mount .badge {
+      margin-left: auto;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.12);
+    }
+    #workbench-integration-mount .badge.red { background: var(--danger); color: #fff; }
+
+    #workbench-integration-mount .profile {
+      margin: 4px 10px 10px;
+      padding: 11px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #workbench-integration-mount .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      overflow: hidden;
+    }
+    #workbench-integration-mount .avatar .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    #workbench-integration-mount .name { font-size: 14px; font-weight: 600; }
+    #workbench-integration-mount .name-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 100%;
+    }
+    #workbench-integration-mount .lawyer-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 1px 7px;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1.25;
+      white-space: nowrap;
+      color: #fff7eb;
+      background: linear-gradient(135deg, #d4a574, #b8860b);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+    }
+    #workbench-integration-mount .role { font-size: 12px; color: var(--sidebar-muted); }
+
+    #workbench-integration-mount .main {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      background-color: var(--page-bg);
+      background-image:
+        linear-gradient(rgba(212, 165, 116, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 165, 116, 0.045) 1px, transparent 1px);
+      background-size: 24px 24px;
+      background-position: 0 0;
+    }
+    #workbench-integration-mount .main::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(900px 420px at 18% -8%, rgba(212, 165, 116, 0.14), transparent 62%);
+      opacity: 0.9;
+      z-index: 0;
+    }
+    #workbench-integration-mount .topbar {
+      height: 52px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78));
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(125, 211, 252, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      gap: 12px;
+      position: relative;
+      z-index: 3;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.06);
+    }
+    #workbench-integration-mount .topbar::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--wb-glow), transparent);
+      animation: wb-topbar-line 4.2s ease-in-out infinite;
+    }
+    #workbench-integration-mount .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+    #workbench-integration-mount .topbar-right {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+    #workbench-integration-mount .wb-topbar-home-link {
+      font-size: 13px;
+      font-weight: 600;
+      color: #5c4033;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(212, 165, 116, 0.45);
+      background: rgba(255, 255, 255, 0.85);
+      font-family: inherit;
+      white-space: nowrap;
+      transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease;
+    }
+    #workbench-integration-mount .wb-topbar-home-link:hover {
+      border-color: var(--accent);
+      color: #8b5a2b;
+      background: rgba(255, 250, 240, 0.95);
+    }
+    #workbench-integration-mount .topbar-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 12px;
+      padding: 2px;
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      background: rgba(15, 23, 42, 0.04);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    #workbench-integration-mount .topbar-logo:hover {
+      transform: translateY(-1px);
+      border-color: rgba(125, 211, 252, 0.45);
+      box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.12), 0 8px 22px rgba(15, 23, 42, 0.08);
+    }
+    #workbench-integration-mount .topbar-logo img {
+      height: 20px;
+      width: auto;
+      max-width: 80px;
+      filter: drop-shadow(0 0 8px rgba(125, 211, 252, 0.28));
+    }
+    #workbench-integration-mount .topbar-copy {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      min-width: 0;
+      flex: 1;
+    }
+    #workbench-integration-mount .topbar-title-link {
+      color: inherit;
+      text-decoration: none;
+      min-width: 0;
+    }
+    #workbench-integration-mount .topbar-title-link:hover .title {
+      color: var(--coffee);
+    }
+    #workbench-integration-mount .topbar .title {
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: min(46vw, 480px);
+    }
+    #workbench-integration-mount .toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
+    #workbench-integration-mount .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      padding: 4px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 253, 250, 0.55));
+      box-shadow: 0 0 0 1px rgba(212, 165, 116, 0.1), 0 0 24px rgba(125, 211, 252, 0.12);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    #workbench-integration-mount .topbar-brand:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(44, 36, 22, 0.08);
+    }
+    /* 顶栏右侧「律植」：与首页 hero 主标题同款 var(--font-marketing-brush) */
+    #workbench-integration-mount .topbar-brand .wb-topbar-mark {
+      display: inline-block;
+      font-family: var(--font-marketing-brush), "Noto Serif SC", "Source Han Serif SC", serif !important;
+      font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      color: var(--coffee);
+      text-shadow: 0 1px 0 rgba(92, 64, 51, 0.14), 0 2px 10px rgba(92, 64, 51, 0.06);
+      white-space: nowrap;
+    }
+    #workbench-integration-mount .pill {
+      height: 30px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0 11px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      font-family: inherit;
+    }
+    #workbench-integration-mount .topbar .pill {
+      border-color: rgba(125, 211, 252, 0.22);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(240, 253, 250, 0.35));
+      font-variant-numeric: tabular-nums;
+    }
+
+    #workbench-integration-mount .content {
+      flex: 1;
+      min-height: 0;
+      padding: 16px 18px 28px;
+      overflow: auto;
+      min-width: 0;
+      position: relative;
+      z-index: 2;
+      font-family: var(--wb-font);
+    }
+    #workbench-integration-mount .content > * {
+      max-width: 1240px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #workbench-integration-mount .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    #workbench-integration-mount .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 11px 12px;
+    }
+    #workbench-integration-mount .kpi .label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: inherit; }
+    #workbench-integration-mount .kpi .value { font-size: 21px; font-weight: 700; line-height: 1.1; }
+    #workbench-integration-mount .kpi .trend { font-size: 11px; margin-top: 5px; font-family: inherit; }
+    #workbench-integration-mount .kpi-chart-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    #workbench-integration-mount .kpi-chart-row .trend-label { font-size: 11px; font-family: inherit; white-space: nowrap; }
+    #workbench-integration-mount .up { color: var(--ok); }
+    #workbench-integration-mount .down { color: var(--danger); }
+
+    #workbench-integration-mount .spark {
+      width: 68px;
+      height: 26px;
+      flex-shrink: 0;
+      display: block;
+    }
+    #workbench-integration-mount .spark polyline {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    #workbench-integration-mount .trend-cell .spark {
+      width: 56px;
+      height: 22px;
+    }
+    #workbench-integration-mount .trend-cell {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      font-family: inherit;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+    }
+    #workbench-integration-mount .trend-cell .trend-pct { white-space: nowrap; }
+    #workbench-integration-mount .trend-pct.down { color: var(--danger); }
+
+    #workbench-integration-mount .metric-trend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    #workbench-integration-mount .metric-trend-row .metric-note {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: inherit;
+    }
+
+    #workbench-integration-mount .section {
+      margin-top: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      transition: box-shadow 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+    }
+    #workbench-integration-mount .section:hover {
+      box-shadow: 0 10px 32px rgba(44, 36, 22, 0.07);
+      border-color: rgba(212, 165, 116, 0.42);
+    }
+    #workbench-integration-mount .section--compact { margin-top: 8px; }
+    #workbench-integration-mount .section--compact .section-hd {
+      height: 34px;
+      font-size: 12px;
+      padding: 0 10px;
+    }
+    #workbench-integration-mount .section--compact .section-bd { padding: 8px 10px; }
+    #workbench-integration-mount .section-hd {
+      height: 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    #workbench-integration-mount .section-bd { padding: 12px; font-size: 12px; line-height: 1.55; color: #5a4f42; }
+
+    #workbench-integration-mount .metric-dense-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    #workbench-integration-mount .metric-tile {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 9px 10px;
+    }
+    #workbench-integration-mount .metric-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: inherit;
+    }
+    #workbench-integration-mount .metric-kind {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: rgba(255, 255, 255, 0.65);
+    }
+    #workbench-integration-mount .metric-number { font-size: 18px; font-weight: 700; line-height: 1.1; }
+    #workbench-integration-mount .metric-sub { margin-top: 3px; font-size: 11px; color: var(--muted); font-family: inherit; }
+
+    #workbench-integration-mount .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    #workbench-integration-mount .stack-col {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    #workbench-integration-mount .dense-table {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      font-family: inherit;
+      font-size: 11px;
+    }
+    #workbench-integration-mount .dense-row {
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr 0.65fr minmax(140px, 1fr);
+      gap: 6px;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(212, 165, 116, 0.22);
+      align-items: center;
+      min-width: 460px;
+      font-variant-numeric: tabular-nums;
+    }
+    #workbench-integration-mount .dense-row--5 {
+      grid-template-columns: 0.55fr 1.25fr 0.65fr 0.55fr minmax(88px, 0.85fr);
+      min-width: 520px;
+    }
+    #workbench-integration-mount .dense-row:last-child { border-bottom: 0; }
+    #workbench-integration-mount .dense-row.head {
+      background: rgba(212, 165, 116, 0.12);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    #workbench-integration-mount .coop-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    #workbench-integration-mount .coop-grid--three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    #workbench-integration-mount .coop-block {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 9px;
+      scroll-margin-top: 10px;
+    }
+    #workbench-integration-mount .coop-block-hd {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #5c4033;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    #workbench-integration-mount .coop-block-hd .hint {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      font-family: inherit;
+    }
+    #workbench-integration-mount .coop-block-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: -2px 0 6px;
+      font-family: inherit;
+    }
+    #workbench-integration-mount .todo { list-style: none; margin: 0; padding: 0; }
+    #workbench-integration-mount .todo li {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 9px;
+      margin-bottom: 5px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-family: inherit;
+    }
+    #workbench-integration-mount .status {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      color: #fff;
+    }
+    #workbench-integration-mount .s1 { background: var(--warn); }
+    #workbench-integration-mount .s2 { background: var(--danger); }
+    #workbench-integration-mount .s3 { background: var(--ok); }
+
+    #workbench-integration-mount .studio {
+      display: grid;
+      grid-template-columns: minmax(140px, 1fr) minmax(220px, 2fr) minmax(140px, 1fr);
+      gap: 10px;
+      margin-top: 8px;
+      align-items: stretch;
+      max-height: min(78vh, 960px);
+    }
+    #workbench-integration-mount .studio-col {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      min-height: 360px;
+      max-height: min(78vh, 960px);
+      display: flex;
+      flex-direction: column;
+    }
+    #workbench-integration-mount .studio-hd {
+      height: 34px;
+      border-bottom: 1px solid var(--border);
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    #workbench-integration-mount .studio-bd {
+      padding: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      flex: 1;
+      font-family: inherit;
+      line-height: 1.5;
+      min-height: 0;
+      overflow: auto;
+    }
+    #workbench-integration-mount .studio-box {
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      min-height: 192px;
+      max-height: min(56vh, 440px);
+      padding: 8px;
+      background: linear-gradient(180deg, #faf7f1, #fff);
+      overflow: auto;
+    }
+    #workbench-integration-mount .studio-col--upload .studio-bd {
+      display: flex;
+      flex-direction: column;
+      min-height: 320px;
+    }
+    #workbench-integration-mount .studio-col--upload input[type="file"] {
+      margin-top: auto;
+    }
+
+    #workbench-integration-mount .wb-purchased-hd-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #workbench-integration-mount .wb-skill-nav-plus,
+    #workbench-integration-mount .wb-skill-nav-minus {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #faf7f1;
+      color: #5c4033;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      text-decoration: none;
+      cursor: pointer;
+      font-family: inherit;
+      padding: 0;
+    }
+    #workbench-integration-mount .wb-skill-nav-minus {
+      background: #fff;
+    }
+    #workbench-integration-mount .wb-skill-nav-plus:hover,
+    #workbench-integration-mount .wb-skill-nav-minus:hover {
+      border-color: var(--accent);
+      color: #8b5a2b;
+    }
+    #workbench-integration-mount .wb-purchased-count {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-left: 2px;
+    }
+    #workbench-integration-mount .wb-purchased-skill-row {
+      padding: 6px 8px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+      color: var(--text);
+      font-size: 11px;
+    }
+    #workbench-integration-mount .wb-purchased-skill-row--pick {
+      outline: 1px dashed var(--accent);
+      cursor: pointer;
+      background: var(--accent-soft);
+    }
+    #workbench-integration-mount .wb-purchased-skill-row--selected {
+      outline: 1px solid rgba(212, 165, 116, 0.85);
+      background: rgba(255, 250, 240, 0.95);
+      cursor: pointer;
+    }
+    #workbench-integration-mount .wb-skill-exec-block {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(212, 165, 116, 0.22);
+    }
+    #workbench-integration-mount .wb-skill-exec-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    #workbench-integration-mount .wb-skill-runs-block {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(212, 165, 116, 0.18);
+    }
+    #workbench-integration-mount .wb-subcard-hd {
+      font-size: 11px;
+      font-weight: 700;
+      color: #5c4033;
+      margin-bottom: 6px;
+      letter-spacing: 0.02em;
+    }
+    #workbench-integration-mount .wb-subcard-hd--spaced {
+      margin-top: 12px;
+    }
+
+    /* 表格内操作：避免复用登录页 .social-btn（flex:1 等）导致不可见或撑破布局 */
+    #workbench-integration-mount .wb-table-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    #workbench-integration-mount a.wb-text-action,
+    #workbench-integration-mount button.wb-text-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(212, 165, 116, 0.55);
+      background: rgba(255, 255, 255, 0.96);
+      color: #5c4033 !important;
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none !important;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      line-height: 1.2;
+      box-sizing: border-box;
+    }
+    #workbench-integration-mount a.wb-text-action:hover,
+    #workbench-integration-mount button.wb-text-action:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: #8b5a2b !important;
+      background: rgba(255, 250, 240, 0.98);
+    }
+    #workbench-integration-mount button.wb-text-action:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    #workbench-integration-mount button.wb-text-action--primary {
+      border-color: rgba(92, 64, 51, 0.35);
+      background: linear-gradient(180deg, rgba(212, 165, 116, 0.35), rgba(212, 165, 116, 0.12));
+      color: #3d2e1f !important;
+    }
+
+    /* 求职者：已回复投递的回复小卡片 */
+    #workbench-integration-mount .wb-reply-card {
+      margin-top: 8px;
+      width: 100%;
+      max-width: min(100%, 22rem);
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(212, 165, 116, 0.4);
+      background: linear-gradient(165deg, rgba(255, 252, 248, 0.98), rgba(255, 248, 240, 0.88));
+      box-shadow: 0 6px 20px rgba(44, 36, 22, 0.06);
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--text);
+      text-align: left;
+    }
+    #workbench-integration-mount .wb-reply-card__label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    #workbench-integration-mount .wb-reply-card__label:first-child {
+      margin-top: 0;
+    }
+    #workbench-integration-mount .wb-reply-card__value {
+      font-size: 12px;
+      color: #3d2e1f;
+      font-weight: 600;
+    }
+    #workbench-integration-mount .wb-reply-card__body {
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 400;
+      color: #4a4036;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    #workbench-integration-mount .wb-reply-card.wb-reply-card--block {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+
+    #workbench-integration-mount .tagline {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: inherit;
+      margin-top: 10px;
+      line-height: 1.55;
+    }
+
+    #workbench-integration-mount .callout {
+      border-left: 3px solid var(--accent);
+      padding: 8px 10px;
+      background: var(--accent-soft);
+      border-radius: 0 8px 8px 0;
+      font-size: 11px;
+      font-family: inherit;
+      color: #5a4f42;
+      margin-top: 8px;
+    }
+
+    #workbench-integration-mount .dim-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+    }
+    #workbench-integration-mount .dim-tile {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px 9px;
+      font-family: inherit;
+    }
+    #workbench-integration-mount .dim-tile .dn { font-size: 10px; color: var(--muted); margin-bottom: 4px; line-height: 1.35; }
+    #workbench-integration-mount .dim-tile .ds { font-size: 17px; font-weight: 700; color: #5c4033; }
+    #workbench-integration-mount .dim-tile .dt { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    #workbench-integration-mount .suggest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    #workbench-integration-mount .suggest-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      font-size: 11px;
+      font-family: inherit;
+      line-height: 1.55;
+      color: #5a4f42;
+    }
+    #workbench-integration-mount .suggest-card h4 { margin: 0 0 6px; font-size: 12px; color: #5c4033; font-weight: 700; }
+
+    #workbench-integration-mount .foot {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: inherit;
+    }
+
+    #workbench-integration-mount .workbench-app-page-slot {
+      font-family: inherit;
+      color: var(--text);
+      min-width: 0;
+      overflow-x: auto;
+      animation: wb-fade-up 0.28s ease-out both;
+    }
+
+    #workbench-integration-mount .wb-page-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    #workbench-integration-mount .wb-form-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    #workbench-integration-mount .wb-form-table th,
+    #workbench-integration-mount .wb-form-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(212, 165, 116, 0.22);
+      vertical-align: middle;
+      text-align: left;
+    }
+    #workbench-integration-mount .wb-form-table th {
+      width: 112px;
+      color: var(--muted);
+      font-weight: 600;
+      background: rgba(212, 165, 116, 0.08);
+      white-space: nowrap;
+    }
+    #workbench-integration-mount .wb-form-table tr:last-child th,
+    #workbench-integration-mount .wb-form-table tr:last-child td { border-bottom: 0; }
+    #workbench-integration-mount .wb-form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+    #workbench-integration-mount .wb-hint {
+      margin: 0;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: inherit;
+      line-height: 1.45;
+    }
+    #workbench-integration-mount .wb-btn-compact.btn-slide {
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      min-height: 0;
+      border-radius: 8px;
+    }
+
+    #workbench-integration-mount .wb-analytics-charts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    #workbench-integration-mount .wb-chart-card {
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--card);
+      padding: 10px 12px;
+    }
+    #workbench-integration-mount .wb-chart-card-hd {
+      font-size: 12px;
+      font-weight: 600;
+      color: #5c4033;
+      margin-bottom: 8px;
+    }
+    #workbench-integration-mount .wb-chart-card .spark {
+      width: 100%;
+      max-width: 100%;
+      height: 26px;
+      display: block;
+    }
+    #workbench-integration-mount .wb-axis-chart {
+      width: 100%;
+      height: auto;
+      max-height: 104px;
+      display: block;
+    }
+    #workbench-integration-mount .wb-bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 6px;
+      height: 72px;
+      margin-top: 4px;
+    }
+    #workbench-integration-mount .wb-bar {
+      flex: 1;
+      min-width: 0;
+      border-radius: 6px 6px 2px 2px;
+      background: linear-gradient(180deg, rgba(212, 165, 116, 0.88), rgba(92, 64, 51, 0.32));
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+    }
+    #workbench-integration-mount .wb-bar:nth-child(2) { opacity: 0.92; }
+    #workbench-integration-mount .wb-bar:nth-child(3) { opacity: 0.84; }
+    #workbench-integration-mount .wb-bar:nth-child(4) { opacity: 0.76; }
+    #workbench-integration-mount .wb-bar:nth-child(5) { opacity: 0.68; }
+
+    @media (max-width: 1100px) {
+      #workbench-integration-mount .grid-4,
+      #workbench-integration-mount .metric-dense-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      #workbench-integration-mount .wb-analytics-charts {
+        grid-template-columns: 1fr;
+      }
+      #workbench-integration-mount .two-col { grid-template-columns: 1fr; }
+      #workbench-integration-mount .studio { grid-template-columns: 1fr; }
+      #workbench-integration-mount .coop-grid--three { grid-template-columns: 1fr; }
+      #workbench-integration-mount .dim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #workbench-integration-mount .suggest-grid { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 1600px) {
+      #workbench-integration-mount .content {
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+      #workbench-integration-mount .content > * {
+        max-width: 1360px;
+      }
+    }
+    @media (max-width: 820px) {
+      #workbench-integration-mount .role-panel.active { flex-direction: column; }
+      #workbench-integration-mount .sidebar { width: 100%; }
+    }
+  

@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>创作者工作台预演 · 律植</title>
+  <style>
+    :root {
+      --sidebar-bg: #5c4033;
+      --sidebar-text: rgba(255, 255, 255, 0.9);
+      --sidebar-muted: rgba(255, 255, 255, 0.5);
+      --accent: #d4a574;
+      --accent-soft: rgba(212, 165, 116, 0.15);
+      --page-bg: #f7f4ef;
+      --card: #ffffff;
+      --text: #2c2416;
+      --muted: #9a8b78;
+      --border: rgba(212, 165, 116, 0.3);
+      --ok: #3c8c5a;
+      --warn: #c77f2b;
+      --danger: #c15a4a;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Source Han Serif TC", "Noto Serif TC", "Songti TC", serif;
+      background: var(--page-bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .banner {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: #fff;
+      background: linear-gradient(90deg, #3f2e24, #5c4033);
+      letter-spacing: 0.02em;
+    }
+    .banner b { color: var(--accent); }
+
+    .app { display: flex; min-height: calc(100vh - 42px); }
+
+    .sidebar {
+      width: 268px;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 18px 14px;
+    }
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.25);
+    }
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    .nav {
+      padding: 4px 10px 18px;
+      overflow: auto;
+      flex: 1;
+    }
+    .nav-label {
+      margin: 14px 8px 8px;
+      color: var(--sidebar-muted);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      font-family: system-ui, sans-serif;
+      text-transform: uppercase;
+    }
+    .nav-item {
+      height: 38px;
+      border-radius: 10px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      margin-bottom: 4px;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+    }
+    .nav-item:hover { background: rgba(255, 255, 255, 0.06); }
+    .nav-item.active {
+      background: rgba(212, 165, 116, 0.2);
+      color: #fff;
+    }
+    .nav-sub {
+      padding-left: 18px;
+      font-size: 13px;
+      opacity: 0.95;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.75;
+      flex-shrink: 0;
+    }
+    .badge {
+      margin-left: auto;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-family: system-ui, sans-serif;
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .badge.red { background: var(--danger); color: #fff; }
+
+    .profile {
+      margin: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.14);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .name { font-size: 14px; font-weight: 600; }
+    .role { font-size: 12px; color: var(--sidebar-muted); }
+
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .topbar {
+      height: 56px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    .title { font-size: 17px; font-weight: 700; }
+    .toolbar { display: flex; gap: 8px; }
+    .pill {
+      height: 32px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0 12px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      font-family: system-ui, sans-serif;
+    }
+
+    .content { padding: 20px; overflow: auto; }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .kpi .label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .kpi .value { font-size: 24px; font-weight: 700; line-height: 1.1; }
+    .kpi .trend { font-size: 12px; margin-top: 6px; font-family: system-ui, sans-serif; }
+    .up { color: var(--ok); }
+    .down { color: var(--danger); }
+
+    .module-grid {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .module {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 160px;
+    }
+    .module h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .module p {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .tag {
+      font-size: 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      font-family: system-ui, sans-serif;
+    }
+
+    .section {
+      margin-top: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .section-hd {
+      height: 44px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .section-bd { padding: 14px; }
+
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .step {
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      font-size: 12px;
+      min-height: 86px;
+    }
+    .step b {
+      display: block;
+      margin-bottom: 4px;
+      color: #7b5f45;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      font-family: system-ui, sans-serif;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .list {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(212, 165, 116, 0.2);
+      font-size: 12px;
+      align-items: center;
+    }
+    .row:last-child { border-bottom: 0; }
+    .row.head {
+      background: rgba(212, 165, 116, 0.12);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+    }
+
+    .todo li {
+      list-style: none;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .status {
+      font-family: system-ui, sans-serif;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      color: #fff;
+    }
+    .s1 { background: var(--warn); }
+    .s2 { background: var(--danger); }
+    .s3 { background: var(--ok); }
+
+    .studio {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 240px 1fr 280px;
+      gap: 12px;
+      min-height: 380px;
+    }
+    .studio-col {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .studio-hd {
+      height: 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    .studio-bd { padding: 10px; overflow: auto; flex: 1; }
+    .skill-item {
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 12px;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+    .skill-item.active {
+      background: var(--accent-soft);
+      border-color: #c8a078;
+    }
+    .canvas-box {
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      min-height: 280px;
+      background: linear-gradient(180deg, #faf7f1, #fff);
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #6f614e;
+    }
+    .canvas-toolbar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .tool {
+      font-size: 11px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-family: system-ui, sans-serif;
+      color: var(--muted);
+    }
+    .file-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-size: 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .file-meta {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+    }
+    .metric-dense-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .metric-tile {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+    }
+    .metric-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: system-ui, sans-serif;
+    }
+    .metric-kind {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: rgba(255, 255, 255, 0.65);
+    }
+    .metric-number {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    .metric-sub {
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+    }
+    .mini-bars {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .mini-bar-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fff;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+    }
+    .bar-track {
+      margin-top: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(212, 165, 116, 0.2);
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #d4a574, #c2864f);
+    }
+    .analytics-3col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .analytics-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+    }
+    .ring-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .ring {
+      width: 60px;
+      height: 60px;
+      border-radius: 999px;
+      background: conic-gradient(#d4a574 0 var(--deg), rgba(212,165,116,0.2) var(--deg) 360deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ring-inner {
+      width: 42px;
+      height: 42px;
+      background: #fff;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: #6f614e;
+      font-family: system-ui, sans-serif;
+      border: 1px solid rgba(212,165,116,0.2);
+    }
+    .stat-list { margin: 0; padding: 0; }
+    .stat-list li {
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(212,165,116,0.3);
+    }
+    .stat-list li:last-child { border-bottom: 0; }
+
+    .coop-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .coop-block {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      scroll-margin-top: 12px;
+    }
+    .coop-block-hd {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #5c4033;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .coop-block-hd .hint {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+    }
+    .coop-block-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.55;
+      margin: -2px 0 8px;
+      font-family: system-ui, sans-serif;
+    }
+
+    .foot {
+      margin-top: 12px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      font-family: system-ui, sans-serif;
+    }
+
+    @media (max-width: 1200px) {
+      .grid-4, .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .workflow { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .two-col { grid-template-columns: 1fr; }
+      .studio { grid-template-columns: 1fr; }
+      .metric-dense-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .analytics-3col { grid-template-columns: 1fr; }
+      .coop-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 860px) {
+      .app { display: block; }
+      .sidebar { width: 100%; }
+      .workflow { grid-template-columns: 1fr; }
+      .grid-4, .module-grid { grid-template-columns: 1fr; }
+      .metric-dense-grid, .mini-bars { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr 1fr; }
+      .topbar { padding: 0 12px; }
+      .content { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="banner"><b>创作者工作台预演</b> · 四模块版本（个人信息 / 个人工作台 / 数据分析 / 消息与协作）</div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-dot"></span>
+        <span class="logo-text">律植</span>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-label">个人信息</div>
+        <a class="nav-item" href="#profile-section"><span class="dot"></span>个人资料</a>
+        <a class="nav-item" href="#verify-section"><span class="dot"></span>律师认证 <span class="badge">审核中</span></a>
+        <a class="nav-item" href="#settings-section"><span class="dot"></span>账号设置</a>
+
+        <div class="nav-label">个人工作台</div>
+        <a class="nav-item active" href="#overview-section"><span class="dot"></span>工作台总览</a>
+        <a class="nav-item" href="#skills-section"><span class="dot"></span>Skills 上传下载</a>
+        <a class="nav-item" href="#trial-section"><span class="dot"></span>试用管理</a>
+        <a class="nav-item" href="#purchase-section"><span class="dot"></span>个性化购买与使用</a>
+        <a class="nav-item" href="#studio-section"><span class="dot"></span>在线文件处理与画布</a>
+
+        <div class="nav-label">数据分析</div>
+        <a class="nav-item" href="#analytics-skills"><span class="dot"></span>Skills 经营数据</a>
+        <a class="nav-item" href="#analytics-posts"><span class="dot"></span>帖子与评论数据</a>
+        <a class="nav-item" href="#analytics-coop"><span class="dot"></span>邀请与留言分析</a>
+        <a class="nav-item" href="#analytics-trial"><span class="dot"></span>试用接受与转化</a>
+
+        <div class="nav-label">消息与协作</div>
+        <a class="nav-item" href="#coop-recv-cooperation"><span class="dot"></span>收到的合作邀请 <span class="badge red">3</span></a>
+        <a class="nav-item nav-sub" href="#coop-sent-cooperation"><span class="dot"></span>发出的合作邀请</a>
+        <a
+          class="nav-item nav-sub"
+          href="#coop-recv-trial"
+          title="其他创作者邀请你试用其在平台已发布的产品（对方为邀请方，你为被邀请方）"
+        ><span class="dot"></span>收到的试用邀请 <span class="badge">2</span></a>
+        <a
+          class="nav-item nav-sub"
+          href="#coop-sent-trial"
+          title="你向他人发出的试用邀请，邀请对方试用你在本平台发布的产品"
+        ><span class="dot"></span>发出的试用邀请</a>
+        <a class="nav-item" href="#coop-message"><span class="dot"></span>用户留言</a>
+        <a class="nav-item" href="#coop-notice"><span class="dot"></span>系统通知</a>
+      </nav>
+
+      <div class="profile">
+        <div class="avatar">李</div>
+        <div>
+          <div class="name">李律师</div>
+          <div class="role">认证创作者</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title">创作者工作台 · 总览预演</div>
+        <div class="toolbar">
+          <div class="pill">检索项目/技能包</div>
+          <div class="pill">时间范围：近30天</div>
+          <div class="pill">导出报表</div>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="grid-4" id="overview-section">
+          <article class="kpi">
+            <div class="label">本月收益</div>
+            <div class="value">¥ 23,680</div>
+            <div class="trend up">+18.6% 环比</div>
+          </article>
+          <article class="kpi">
+            <div class="label">Skills 购买数</div>
+            <div class="value">126</div>
+            <div class="trend up">+12.3% 环比</div>
+          </article>
+          <article class="kpi">
+            <div class="label">试用转化率</div>
+            <div class="value">34.2%</div>
+            <div class="trend up">+4.1% 环比</div>
+          </article>
+          <article class="kpi">
+            <div class="label">待处理协作消息</div>
+            <div class="value">9</div>
+            <div class="trend down">2 条超时待跟进</div>
+          </article>
+        </section>
+
+        <section class="section" id="profile-section">
+          <div class="section-hd"><span>个人资料（预演）</span></div>
+          <div class="section-bd">展示头像、简介、执业领域、地区、联系方式可见性等信息维护项。</div>
+        </section>
+
+        <section class="section" id="verify-section">
+          <div class="section-hd"><span>律师认证（预演）</span></div>
+          <div class="section-bd">展示认证状态、材料清单、审核进度、驳回原因和补交入口。</div>
+        </section>
+
+        <section class="section" id="settings-section">
+          <div class="section-hd"><span>账号设置（预演）</span></div>
+          <div class="section-bd">展示安全设置、登录设备、通知偏好、提现账户与隐私权限。</div>
+        </section>
+
+        <section class="section" id="skills-section">
+          <div class="section-hd"><span>Skills 上传下载（预演）</span></div>
+          <div class="section-bd">展示技能包上传、版本管理、发布状态、下载记录与授权范围。</div>
+        </section>
+
+        <section class="section" id="trial-section">
+          <div class="section-hd"><span>试用管理（预演）</span></div>
+          <div class="section-bd">
+            用于配置与运营你主动发出的试用：规则与模板、批次与配额、有效期与到期策略、跟进任务与转化统计等，并与侧栏「发出的试用邀请」的处理链路衔接。他人邀请你试用其在平台已上架产品的入口在消息与协作「收到的试用邀请」。
+          </div>
+        </section>
+
+        <section class="section" id="purchase-section">
+          <div class="section-hd"><span>个性化购买与使用（预演）</span></div>
+          <div class="section-bd">展示已购技能包、项目绑定、授权明细和复购建议。</div>
+        </section>
+
+        <section class="module-grid">
+          <article class="module">
+            <h3>01 · 个人信息</h3>
+            <p>统一维护创作者身份信息与认证状态，确保资料完整度与平台可信度。</p>
+            <div class="tags">
+              <span class="tag">个人资料</span>
+              <span class="tag">律师认证</span>
+              <span class="tag">账号安全</span>
+            </div>
+          </article>
+          <article class="module">
+            <h3>02 · 个人工作台</h3>
+            <p>围绕 Skills 使用闭环：上传/下载、试用、购买、在线处理、画布沉淀。</p>
+            <div class="tags">
+              <span class="tag">Skills 包管理</span>
+              <span class="tag">文件上传处理</span>
+              <span class="tag">下载结果</span>
+            </div>
+          </article>
+          <article class="module">
+            <h3>03 · 数据分析</h3>
+            <p>从经营、内容、协作、试用四类数据形成可执行策略。</p>
+            <div class="tags">
+              <span class="tag">浏览/点赞/购买</span>
+              <span class="tag">收益走势</span>
+              <span class="tag">邀请接受率</span>
+            </div>
+          </article>
+          <article class="module">
+            <h3>04 · 消息与协作</h3>
+            <p>集中处理合作与试用邀请、留言、通知，缩短响应路径并减少漏单。</p>
+            <div class="tags">
+              <span class="tag">收/发合作</span>
+              <span class="tag">收/发试用</span>
+              <span class="tag">提醒与升级</span>
+            </div>
+          </article>
+        </section>
+
+        <section class="section">
+          <div class="section-hd">
+            <span>个人工作台核心流程（上传文件、API 调用、Skills 处理、下载）</span>
+            <span style="font-size:12px;color:var(--muted);font-weight:400;">工作画布与处理记录贯穿全流程</span>
+          </div>
+          <div class="section-bd">
+            <div class="workflow">
+              <div class="step"><b>STEP 01</b>选择技能包（自有/已购）并绑定到项目空间。</div>
+              <div class="step"><b>STEP 02</b>上传合同、证据、文书等文件，自动生成任务。</div>
+              <div class="step"><b>STEP 03</b>调用 API 执行处理链路，展示进度与日志。</div>
+              <div class="step"><b>STEP 04</b>在工作画布审阅结果，补充标注与协作意见。</div>
+              <div class="step"><b>STEP 05</b>导出处理结果并下载文件，沉淀可复用模板。</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="studio-section">
+          <div class="section-hd">
+            <span>在线工作画布预演（左：技能包 / 中：处理画布 / 右：文件上下文）</span>
+            <span style="font-size:12px;color:var(--muted);font-weight:400;">模拟「上传、处理、审阅、下载」作业现场</span>
+          </div>
+          <div class="section-bd">
+            <div class="studio">
+              <div class="studio-col">
+                <div class="studio-hd">
+                  <span>当前 Skills</span>
+                  <span class="file-meta">3 个</span>
+                </div>
+                <div class="studio-bd">
+                  <div class="skill-item active">
+                    <b>合同审查技能包 v2.1</b><br />
+                    场景：法务审阅、风险点提取、修订建议输出
+                  </div>
+                  <div class="skill-item">
+                    <b>劳动争议流程包</b><br />
+                    场景：仲裁材料预处理、证据链路检查
+                  </div>
+                  <div class="skill-item">
+                    <b>尽调报告助手</b><br />
+                    场景：条款归类、结论摘要、报告草稿
+                  </div>
+                </div>
+              </div>
+
+              <div class="studio-col">
+                <div class="studio-hd">
+                  <span>工作画布</span>
+                  <span class="file-meta">任务 #C-2026-041</span>
+                </div>
+                <div class="studio-bd">
+                  <div class="canvas-toolbar">
+                    <span class="tool">上传文件</span>
+                    <span class="tool">调用 API</span>
+                    <span class="tool">生成摘要</span>
+                    <span class="tool">导出结果</span>
+                  </div>
+                  <div class="canvas-box">
+                    <b>处理日志（示意）</b><br />
+                    1) 已解析上传文件：委托合同.pdf、补充协议.docx<br />
+                    2) 已调用 /api/skills/process，任务状态：处理中（62%）<br />
+                    3) 已识别高风险条款 4 处，建议修订 7 处<br />
+                    4) 点击“导出结果”可下载审阅版本与风险清单<br /><br />
+                    这里可替换为真实组件：对话区、富文本批注、步骤卡片、进度条等。
+                  </div>
+                </div>
+              </div>
+
+              <div class="studio-col">
+                <div class="studio-hd">
+                  <span>文件与上下文</span>
+                  <span class="file-meta">自动同步</span>
+                </div>
+                <div class="studio-bd">
+                  <div class="file-item">
+                    <span>委托合同.pdf</span>
+                    <span class="file-meta">2.4MB</span>
+                  </div>
+                  <div class="file-item">
+                    <span>补充协议.docx</span>
+                    <span class="file-meta">438KB</span>
+                  </div>
+                  <div class="file-item">
+                    <span>历史沟通记录.txt</span>
+                    <span class="file-meta">91KB</span>
+                  </div>
+                  <div class="file-item">
+                    <span>风险清单_初版.xlsx</span>
+                    <span class="file-meta">导出中</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="two-col">
+          <section class="section" id="analytics-skills">
+            <div class="section-hd">数据分析示意（Skills / 内容 / 邀请 / 试用）</div>
+            <div class="section-bd">
+              <div class="metric-dense-grid">
+                <div class="metric-tile">
+                  <div class="metric-head"><span>浏览</span><span class="metric-kind">访问</span></div>
+                  <div class="metric-number">8,920</div>
+                  <div class="metric-sub up">+16.7% / 30天</div>
+                </div>
+                <div class="metric-tile">
+                  <div class="metric-head"><span>点赞</span><span class="metric-kind">互动</span></div>
+                  <div class="metric-number">1,346</div>
+                  <div class="metric-sub up">点赞率 15.1%</div>
+                </div>
+                <div class="metric-tile">
+                  <div class="metric-head"><span>下载</span><span class="metric-kind">交付</span></div>
+                  <div class="metric-number">624</div>
+                  <div class="metric-sub up">下载率 7.0%</div>
+                </div>
+                <div class="metric-tile">
+                  <div class="metric-head"><span>购买</span><span class="metric-kind">订单</span></div>
+                  <div class="metric-number">126</div>
+                  <div class="metric-sub up">转化率 20.2%</div>
+                </div>
+              </div>
+              <div class="list">
+                <div class="row head">
+                  <div>分析项</div><div>本期</div><div>上期</div><div>趋势</div>
+                </div>
+                <div class="row"><div>Skills 浏览</div><div>8,920</div><div>7,640</div><div class="up">+16.7%</div></div>
+                <div class="row"><div>Skills 购买</div><div>126</div><div>98</div><div class="up">+28.6%</div></div>
+                <div class="row"><div>帖子评论互动</div><div>468</div><div>510</div><div class="down">-8.2%</div></div>
+                <div class="row"><div>邀请接受率</div><div>41.3%</div><div>35.8%</div><div class="up">+5.5%</div></div>
+                <div class="row"><div>试用转付费</div><div>34.2%</div><div>30.1%</div><div class="up">+4.1%</div></div>
+              </div>
+              <div class="mini-bars">
+                <div class="mini-bar-card">
+                  <div>新客来源：自然流量 48%</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:48%;"></div></div>
+                </div>
+                <div class="mini-bar-card">
+                  <div>新客来源：帖子引流 31%</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:31%;"></div></div>
+                </div>
+                <div class="mini-bar-card">
+                  <div>新客来源：邀约转化 21%</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:21%;"></div></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="section" id="coop-invite">
+            <div class="section-hd">邀请与协作（拆分示意）</div>
+            <div class="section-bd">
+              <div class="coop-grid">
+                <div class="coop-block" id="coop-recv-cooperation">
+                  <div class="coop-block-hd">
+                    <span>收到的合作邀请</span>
+                    <span class="hint">待响应 3</span>
+                  </div>
+                  <ul class="todo" style="padding:0;margin:0;">
+                    <li><span>某公司法务部：常年顾问合作意向</span><span class="status s1">待处理</span></li>
+                    <li><span>某律所：案件协作邀请（超48h）</span><span class="status s2">紧急</span></li>
+                  </ul>
+                </div>
+                <div class="coop-block" id="coop-sent-cooperation">
+                  <div class="coop-block-hd">
+                    <span>发出的合作邀请</span>
+                    <span class="hint">跟进中 2</span>
+                  </div>
+                  <ul class="todo" style="padding:0;margin:0;">
+                    <li><span>已向某企业发出联合服务方案</span><span class="status s1">待回复</span></li>
+                    <li><span>已向某平台发出内容共创邀请</span><span class="status s3">已读</span></li>
+                  </ul>
+                </div>
+                <div class="coop-block" id="coop-recv-trial">
+                  <div class="coop-block-hd">
+                    <span>收到的试用邀请</span>
+                    <span class="hint">新到 2</span>
+                  </div>
+                  <p class="coop-block-desc">
+                    含义：其他创作者或机构邀请你试用其在平台已上架的产品（对方为邀请方，你为被邀请方）。
+                  </p>
+                  <ul class="todo" style="padding:0;margin:0;">
+                    <li><span>王律师邀请你试用其已发布 Skills「劳动争议材料整理包」（7 天）</span><span class="status s1">待处理</span></li>
+                    <li><span>某律所邀请你试用其已发布智能体「合同风险初筛助手」（30 次调用）</span><span class="status s1">待处理</span></li>
+                  </ul>
+                </div>
+                <div class="coop-block" id="coop-sent-trial">
+                  <div class="coop-block-hd">
+                    <span>发出的试用邀请</span>
+                    <span class="hint">进行中 5</span>
+                  </div>
+                  <p class="coop-block-desc">
+                    含义：你向他人发出的试用邀请，邀请对方试用你在本平台发布的产品，并跟踪接受与使用情况。
+                  </p>
+                  <ul class="todo" style="padding:0;margin:0;">
+                    <li><span>已向目标客户发出试用：对方试用你发布的「合同审查技能包」（名额 20，已接受 5）</span><span class="status s1">跟进</span></li>
+                    <li><span>已向合作机构发出试用：对方试用你发布的「尽调报告助手」（到期日 2026-04-30）</span><span class="status s1">待处理</span></li>
+                  </ul>
+                </div>
+              </div>
+              <div style="margin-top:12px;">
+                <div class="coop-block-hd" style="margin-bottom:6px;">
+                  <span>其他待办</span>
+                  <span class="hint">与邀请并行</span>
+                </div>
+                <ul class="todo" style="padding:0;margin:0;">
+                  <li><span>认证补充材料待提交</span><span class="status s1">待处理</span></li>
+                  <li><span>本周收益报表已生成</span><span class="status s3">完成</span></li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="section" id="analytics-posts">
+          <div class="section-hd"><span>帖子与评论数据（预演）</span></div>
+          <div class="section-bd">
+            <div class="analytics-3col">
+              <div class="analytics-card">
+                <div class="metric-head"><span>内容产出</span><span class="metric-kind">内容</span></div>
+                <ul class="stat-list">
+                  <li><span>本月发帖</span><b>34</b></li>
+                  <li><span>图文占比</span><b>61%</b></li>
+                  <li><span>平均更新间隔</span><b>1.8天</b></li>
+                </ul>
+              </div>
+              <div class="analytics-card">
+                <div class="metric-head"><span>互动质量</span><span class="metric-kind">评论</span></div>
+                <ul class="stat-list">
+                  <li><span>总评论</span><b>468</b></li>
+                  <li><span>有效互动率</span><b>57%</b></li>
+                  <li><span>收藏转化</span><b>12.4%</b></li>
+                </ul>
+              </div>
+              <div class="analytics-card">
+                <div class="metric-head"><span>内容热度</span><span class="metric-kind">热度</span></div>
+                <div class="ring-row">
+                  <div class="ring" style="--deg:252deg;"><span class="ring-inner">70%</span></div>
+                  <div class="file-meta">热帖贡献度 70%<br />建议继续复投「合同风险」主题。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="analytics-coop">
+          <div class="section-hd"><span>邀请与留言分析（预演）</span></div>
+          <div class="section-bd">
+            <div class="analytics-3col">
+              <div class="analytics-card">
+                <div class="metric-head"><span>邀约漏斗</span><span class="metric-kind">邀约</span></div>
+                <ul class="stat-list">
+                  <li><span>收到邀约</span><b>52</b></li>
+                  <li><span>有效沟通</span><b>31</b></li>
+                  <li><span>成交线索</span><b>14</b></li>
+                </ul>
+              </div>
+              <div class="analytics-card">
+                <div class="metric-head"><span>响应效率</span><span class="metric-kind">时效</span></div>
+                <ul class="stat-list">
+                  <li><span>平均响应时长</span><b>3.4h</b></li>
+                  <li><span>48h内响应率</span><b>86%</b></li>
+                  <li><span>超时待处理</span><b class="down">2</b></li>
+                </ul>
+              </div>
+              <div class="analytics-card">
+                <div class="metric-head"><span>留言主题</span><span class="metric-kind">主题</span></div>
+                <div class="mini-bar-card" style="margin:0 0 6px;">
+                  <div>合同审查咨询 44%</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:44%;"></div></div>
+                </div>
+                <div class="mini-bar-card" style="margin:0 0 6px;">
+                  <div>劳动争议咨询 33%</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:33%;"></div></div>
+                </div>
+                <div class="mini-bar-card" style="margin:0;">
+                  <div>企业合规咨询 23%</div>
+                  <div class="bar-track"><div class="bar-fill" style="width:23%;"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="analytics-trial">
+          <div class="section-hd"><span>试用接受与转化（预演）</span></div>
+          <div class="section-bd">
+            <div class="analytics-3col">
+              <div class="analytics-card">
+                <div class="metric-head"><span>试用接受</span><span class="metric-kind">接受</span></div>
+                <div class="ring-row">
+                  <div class="ring" style="--deg:149deg;"><span class="ring-inner">41%</span></div>
+                  <div class="file-meta">本月试用邀请接受率 41.3%，较上期提升明显。</div>
+                </div>
+              </div>
+              <div class="analytics-card">
+                <div class="metric-head"><span>使用深度</span><span class="metric-kind">深度</span></div>
+                <ul class="stat-list">
+                  <li><span>平均处理文件数</span><b>6.8</b></li>
+                  <li><span>平均调用次数</span><b>12.4</b></li>
+                  <li><span>7日留存</span><b>38%</b></li>
+                </ul>
+              </div>
+              <div class="analytics-card">
+                <div class="metric-head"><span>转付费与召回</span><span class="metric-kind">转化</span></div>
+                <ul class="stat-list">
+                  <li><span>转付费率</span><b class="up">34.2%</b></li>
+                  <li><span>召回成功率</span><b>18.6%</b></li>
+                  <li><span>建议召回用户</span><b>27</b></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="coop-message">
+          <div class="section-hd"><span>用户留言（预演）</span></div>
+          <div class="section-bd">展示留言列表、优先级标签、回复模板和转工单能力。</div>
+        </section>
+
+        <section class="section" id="coop-notice">
+          <div class="section-hd"><span>系统通知（预演）</span></div>
+          <div class="section-bd">展示审核通知、收益结算通知、平台公告与风险提醒。</div>
+        </section>
+
+        <div class="foot">演示文件：apps/web/public/creator-workbench-demo.html（静态预演，不含真实 API 与交互）</div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

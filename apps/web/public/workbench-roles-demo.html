@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>工作台多角色预演 · 律植</title>
+  <style>
+    :root {
+      --sidebar-bg: #5c4033;
+      --sidebar-text: rgba(255, 255, 255, 0.9);
+      --sidebar-muted: rgba(255, 255, 255, 0.5);
+      --accent: #d4a574;
+      --accent-soft: rgba(212, 165, 116, 0.15);
+      --page-bg: #f7f4ef;
+      --card: #ffffff;
+      --text: #2c2416;
+      --muted: #9a8b78;
+      --border: rgba(212, 165, 116, 0.3);
+      --ok: #3c8c5a;
+      --warn: #c77f2b;
+      --danger: #c15a4a;
+      --admin-bar: #2f3a44;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Source Han Serif TC", "Noto Serif TC", "Songti TC", serif;
+      background: var(--page-bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    .role-bar {
+      background: var(--admin-bar);
+      color: #fff;
+      padding: 10px 16px 12px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    }
+    .role-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+    .role-tab {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-family: system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .role-tab:hover { background: rgba(255, 255, 255, 0.12); }
+    .role-tab.active {
+      background: var(--accent);
+      color: #2c2416;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+    .role-hint {
+      margin-top: 8px;
+      text-align: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.72);
+      font-family: system-ui, sans-serif;
+      line-height: 1.5;
+    }
+
+    .role-panel { display: none; }
+    .role-panel.active { display: flex; min-height: calc(100vh - 96px); }
+
+    .app { flex: 1; display: flex; min-width: 0; }
+
+    .sidebar {
+      width: 268px;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      border-right: 1px solid rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 16px 12px;
+    }
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.25);
+    }
+    .logo-text { font-size: 19px; font-weight: 700; letter-spacing: 0.12em; }
+
+    .nav { padding: 4px 10px 16px; overflow: auto; flex: 1; }
+    .nav-label {
+      margin: 12px 8px 6px;
+      color: var(--sidebar-muted);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      font-family: system-ui, sans-serif;
+      text-transform: uppercase;
+    }
+    .nav-item {
+      height: 36px;
+      border-radius: 10px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      margin-bottom: 3px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .nav-item:hover { background: rgba(255, 255, 255, 0.06); }
+    .nav-item.active { background: rgba(212, 165, 116, 0.2); color: #fff; }
+    .nav-sub { padding-left: 18px; font-size: 13px; opacity: 0.95; }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: currentColor;
+      opacity: 0.75;
+      flex-shrink: 0;
+    }
+    .badge {
+      margin-left: auto;
+      font-size: 11px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-family: system-ui, sans-serif;
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .badge.red { background: var(--danger); color: #fff; }
+
+    .profile {
+      margin: 10px;
+      padding: 11px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.14);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .name { font-size: 14px; font-weight: 600; }
+    .role { font-size: 12px; color: var(--sidebar-muted); }
+
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .topbar {
+      height: 52px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+    }
+    .title { font-size: 16px; font-weight: 700; }
+    .toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
+    .pill {
+      height: 30px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 999px;
+      padding: 0 11px;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      font-family: system-ui, sans-serif;
+    }
+
+    .content { padding: 16px 18px 28px; overflow: auto; }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 11px 12px;
+    }
+    .kpi .label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: system-ui, sans-serif; }
+    .kpi .value { font-size: 21px; font-weight: 700; line-height: 1.1; }
+    .kpi .trend { font-size: 11px; margin-top: 5px; font-family: system-ui, sans-serif; }
+    .kpi-chart-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .kpi-chart-row .trend-label { font-size: 11px; font-family: system-ui, sans-serif; white-space: nowrap; }
+    .up { color: var(--ok); }
+    .down { color: var(--danger); }
+
+    .spark {
+      width: 68px;
+      height: 26px;
+      flex-shrink: 0;
+      display: block;
+    }
+    .spark polyline {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .trend-cell .spark {
+      width: 56px;
+      height: 22px;
+    }
+    .trend-cell {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      font-family: system-ui, sans-serif;
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+    }
+    .trend-cell .trend-pct { white-space: nowrap; }
+    .trend-pct.down { color: var(--danger); }
+
+    .metric-trend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .metric-trend-row .metric-note {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+    }
+
+    .section {
+      margin-top: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .section-hd {
+      height: 40px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .section-bd { padding: 12px; font-size: 12px; line-height: 1.55; color: #5a4f42; }
+
+    .metric-dense-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .metric-tile {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 9px 10px;
+    }
+    .metric-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-family: system-ui, sans-serif;
+    }
+    .metric-kind {
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 2px 7px;
+      background: rgba(255, 255, 255, 0.65);
+    }
+    .metric-number { font-size: 18px; font-weight: 700; line-height: 1.1; }
+    .metric-sub { margin-top: 3px; font-size: 11px; color: var(--muted); font-family: system-ui, sans-serif; }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .dense-table {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      font-family: system-ui, sans-serif;
+      font-size: 11px;
+    }
+    .dense-row {
+      display: grid;
+      grid-template-columns: 1.35fr 0.65fr 0.65fr minmax(140px, 1fr);
+      gap: 6px;
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(212, 165, 116, 0.22);
+      align-items: center;
+      min-width: 460px;
+    }
+    .dense-row:last-child { border-bottom: 0; }
+    .dense-row.head {
+      background: rgba(212, 165, 116, 0.12);
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    .coop-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .coop-grid--three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .coop-block {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 9px;
+      scroll-margin-top: 10px;
+    }
+    .coop-block-hd {
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #5c4033;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .coop-block-hd .hint {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+    }
+    .coop-block-desc {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin: -2px 0 6px;
+      font-family: system-ui, sans-serif;
+    }
+    .todo { list-style: none; margin: 0; padding: 0; }
+    .todo li {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 9px;
+      margin-bottom: 5px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-family: system-ui, sans-serif;
+    }
+    .status {
+      font-size: 10px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      color: #fff;
+    }
+    .s1 { background: var(--warn); }
+    .s2 { background: var(--danger); }
+    .s3 { background: var(--ok); }
+
+    .studio {
+      display: grid;
+      grid-template-columns: 220px 1fr 240px;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .studio-col {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      min-height: 200px;
+      display: flex;
+      flex-direction: column;
+    }
+    .studio-hd {
+      height: 34px;
+      border-bottom: 1px solid var(--border);
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .studio-bd { padding: 8px; font-size: 11px; color: var(--muted); flex: 1; font-family: system-ui, sans-serif; line-height: 1.5; }
+    .studio-box {
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      min-height: 140px;
+      padding: 8px;
+      background: linear-gradient(180deg, #faf7f1, #fff);
+    }
+
+    .tagline {
+      font-size: 11px;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+      margin-top: 10px;
+      line-height: 1.55;
+    }
+
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 8px 10px;
+      background: var(--accent-soft);
+      border-radius: 0 8px 8px 0;
+      font-size: 11px;
+      font-family: system-ui, sans-serif;
+      color: #5a4f42;
+      margin-top: 8px;
+    }
+
+    .dim-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .dim-tile {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px 9px;
+      font-family: system-ui, sans-serif;
+    }
+    .dim-tile .dn { font-size: 10px; color: var(--muted); margin-bottom: 4px; line-height: 1.35; }
+    .dim-tile .ds { font-size: 17px; font-weight: 700; color: #5c4033; }
+    .dim-tile .dt { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+    .suggest-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .suggest-card {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      font-size: 11px;
+      font-family: system-ui, sans-serif;
+      line-height: 1.55;
+      color: #5a4f42;
+    }
+    .suggest-card h4 { margin: 0 0 6px; font-size: 12px; color: #5c4033; font-weight: 700; }
+
+    .foot {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      font-family: system-ui, sans-serif;
+    }
+
+    @media (max-width: 1100px) {
+      .grid-4, .metric-dense-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .two-col { grid-template-columns: 1fr; }
+      .studio { grid-template-columns: 1fr; }
+      .coop-grid--three { grid-template-columns: 1fr; }
+      .dim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .suggest-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 820px) {
+      .role-panel.active { flex-direction: column; }
+      .sidebar { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="role-bar">
+    <div class="role-wrap">
+      <button type="button" class="role-tab active" data-role="client">客户工作台</button>
+      <button type="button" class="role-tab" data-role="creator">创作者工作台</button>
+      <button type="button" class="role-tab" data-role="admin">管理员工作台</button>
+      <button type="button" class="role-tab" data-role="super">超管工作台</button>
+    </div>
+    <div class="role-hint">
+      布局对齐创作者侧高密度信息架构。客户为创作者子集：同一壳层下收敛导航与经营模块；客户无上架与供给能力，不提供「发出的试用邀请」。岗位招聘为客户与创作者共有能力：均可对外发布岗位、管理已发岗位并处理投递。Skills 为核心载体时，以多维评价还原创作者能力，并输出设计提升与招聘、合作建议（示意）。管理员侧重平台治理与审核；超管在管理员之上增加系统级与高危域（示意）。
+    </div>
+  </div>
+
+  <!-- 客户：创作者子集 -->
+  <div id="panel-client" class="role-panel active app">
+    <aside class="sidebar">
+      <div class="logo"><span class="logo-dot"></span><span class="logo-text">律植</span></div>
+      <nav class="nav">
+        <div class="nav-label">个人信息</div>
+        <a class="nav-item active" href="#cli-overview"><span class="dot"></span>工作台总览</a>
+        <a class="nav-item" href="#cli-profile"><span class="dot"></span>个人资料</a>
+        <a class="nav-item" href="#cli-settings"><span class="dot"></span>账号设置</a>
+
+        <div class="nav-label">个人工作台</div>
+        <a class="nav-item" href="#cli-purchase"><span class="dot"></span>已购与使用</a>
+        <a class="nav-item" href="#cli-studio"><span class="dot"></span>工作画布与文件</a>
+        <a class="nav-item" href="#cli-jobs-publish"><span class="dot"></span>岗位发布</a>
+        <a class="nav-item nav-sub" href="#cli-jobs-apps"><span class="dot"></span>收到投递</a>
+
+        <div class="nav-label">数据分析</div>
+        <a class="nav-item" href="#cli-analytics"><span class="dot"></span>使用与消费</a>
+        <a class="nav-item nav-sub" href="#cli-analytics-jobs"><span class="dot"></span>岗位数据</a>
+        <a class="nav-item nav-sub" href="#cli-analytics-skills-eval"><span class="dot"></span>Skills 多维评价</a>
+
+        <div class="nav-label">消息与协作</div>
+        <a class="nav-item" href="#cli-coop-recv-c"><span class="dot"></span>收到的合作邀请</a>
+        <a class="nav-item nav-sub" href="#cli-coop-sent-c"><span class="dot"></span>发出的合作邀请</a>
+        <a class="nav-item nav-sub" href="#cli-coop-recv-t"><span class="dot"></span>收到的试用邀请</a>
+        <a class="nav-item" href="#cli-msg"><span class="dot"></span>留言与通知</a>
+      </nav>
+      <div class="profile">
+        <div class="avatar">周</div>
+        <div><div class="name">周律师</div><div class="role">客户</div></div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="title">客户工作台 · 总览</div>
+        <div class="toolbar">
+          <span class="pill">项目检索</span>
+          <span class="pill">近30天</span>
+        </div>
+      </header>
+      <div class="content">
+        <section class="grid-4" id="cli-overview">
+          <article class="kpi">
+            <div class="label">在办项目</div>
+            <div class="value">6</div>
+            <div class="kpi-chart-row">
+              <span class="trend-label up">+1 本周</span>
+              <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,20 20,17 38,14 56,11 74,7 92,4" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+          <article class="kpi">
+            <div class="label">已购 Skills</div>
+            <div class="value">14</div>
+            <div class="kpi-chart-row">
+              <span class="trend-label" style="color:var(--muted);">活跃 9</span>
+              <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,14 22,13 42,15 62,14 82,13 98,14" fill="none" stroke="#9a8b78" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+          <article class="kpi">
+            <div class="label">本月处理任务</div>
+            <div class="value">38</div>
+            <div class="kpi-chart-row">
+              <span class="trend-label up">+12% 环比</span>
+              <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,18 18,16 34,12 50,9 66,6 82,4 98,2" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+          <article class="kpi">
+            <div class="label">待处理协作</div>
+            <div class="value">4</div>
+            <div class="kpi-chart-row">
+              <span class="trend-label down">1 条超时</span>
+              <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,6 20,9 38,12 56,15 74,18 92,21" fill="none" stroke="#c15a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+        </section>
+
+        <div class="callout">子集规则：隐藏「Skills 上架供给、收益结算、经营级数据分析、发出的试用邀请」等创作者域；保留「购买后使用、文件处理、协作消息、岗位招聘与投递」闭环。说明：客户无上架与供给能力，不能向他人发出试用邀请；仍可收到他人邀请试用对方已上架产品。</div>
+
+        <div class="two-col">
+          <section class="section" id="cli-studio">
+            <div class="section-hd"><span>工作画布与文件（示意）</span><span class="pill" style="height:24px;font-size:11px;">任务 T-204</span></div>
+            <div class="section-bd">
+              <div class="studio">
+                <div class="studio-col">
+                  <div class="studio-hd"><span>已购 Skills</span><span style="font-size:10px;color:var(--muted);font-weight:400;">3</span></div>
+                  <div class="studio-bd">合同审查包 v2.1（当前）<br />劳动流程包<br />合规清单</div>
+                </div>
+                <div class="studio-col">
+                  <div class="studio-hd"><span>画布</span><span style="font-size:10px;color:var(--muted);font-weight:400;">上传 / API / 导出</span></div>
+                  <div class="studio-bd"><div class="studio-box">上传材料、调用处理、审阅结果、下载回写。与创作者侧同一交互骨架，仅收敛配置项。</div></div>
+                </div>
+                <div class="studio-col">
+                  <div class="studio-hd"><span>本案材料</span><span style="font-size:10px;color:var(--muted);font-weight:400;">只读</span></div>
+                  <div class="studio-bd">委托合同.pdf<br />证据目录.xlsx<br />沟通摘录.docx</div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section class="section" id="cli-coop-hub">
+            <div class="section-hd">消息与协作（拆分）</div>
+            <div class="section-bd">
+              <div class="coop-grid coop-grid--three">
+                <div class="coop-block" id="cli-coop-recv-c">
+                  <div class="coop-block-hd"><span>收到的合作邀请</span><span class="hint">待办 2</span></div>
+                  <ul class="todo"><li><span>某所请求联合办案</span><span class="status s1">待办</span></li></ul>
+                </div>
+                <div class="coop-block" id="cli-coop-sent-c">
+                  <div class="coop-block-hd"><span>发出的合作邀请</span><span class="hint">跟进 1</span></div>
+                  <ul class="todo"><li><span>已向客户发出协作方案</span><span class="status s3">已读</span></li></ul>
+                </div>
+                <div class="coop-block" id="cli-coop-recv-t">
+                  <div class="coop-block-hd"><span>收到的试用邀请</span><span class="hint">新到 1</span></div>
+                  <p class="coop-block-desc">他人邀请你试用其在平台已上架产品。</p>
+                  <ul class="todo"><li><span>李律师邀你试用其「尽调助手」</span><span class="status s1">待办</span></li></ul>
+                </div>
+              </div>
+              <div class="callout" style="margin-top:8px;">客户无上架与供给能力：不提供「发出的试用邀请」入口。试用仅保留「收到的试用邀请」。</div>
+            </div>
+          </section>
+        </div>
+
+        <section class="section" id="cli-analytics">
+          <div class="section-hd">使用与消费（高密度示意）</div>
+          <div class="section-bd">
+            <div class="metric-dense-grid">
+              <div class="metric-tile">
+                <div class="metric-head"><span>调用次数</span><span class="metric-kind">API</span></div>
+                <div class="metric-number">1,024</div>
+                <div class="metric-trend-row">
+                  <span class="metric-sub up">+9.2% 环比</span>
+                  <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,19 20,16 38,13 56,9 74,6 92,3" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-head"><span>处理页数</span><span class="metric-kind">文档</span></div>
+                <div class="metric-number">316</div>
+                <div class="metric-trend-row">
+                  <span class="metric-note">近30天 · +4.1%</span>
+                  <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,16 20,14 38,15 56,12 74,10 92,8" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-head"><span>支出</span><span class="metric-kind">消费</span></div>
+                <div class="metric-number">¥ 1,280</div>
+                <div class="metric-trend-row">
+                  <span class="metric-note">本月 · −3.0%</span>
+                  <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,5 20,8 38,11 56,14 74,17 92,20" fill="none" stroke="#c15a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-head"><span>留存任务</span><span class="metric-kind">项目</span></div>
+                <div class="metric-number">5</div>
+                <div class="metric-trend-row">
+                  <span class="metric-sub down">1 将到期</span>
+                  <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,8 22,10 42,12 62,15 82,18 98,21" fill="none" stroke="#c15a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="dense-table">
+              <div class="dense-row head"><div>已购 Skills</div><div>本期调用</div><div>最近使用</div><div>趋势（环比与走势）</div></div>
+              <div class="dense-row"><div>合同审查包</div><div>412</div><div>今天</div><div class="trend-cell"><span class="trend-pct up">+8.1%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,18 18,15 34,12 50,9 66,6 82,4 98,2" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+              <div class="dense-row"><div>劳动流程包</div><div>198</div><div>3天前</div><div class="trend-cell"><span class="trend-pct up">+2.4%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,16 22,14 42,13 62,12 82,10 98,9" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+              <div class="dense-row"><div>合规清单</div><div>64</div><div>12天前</div><div class="trend-cell"><span class="trend-pct down">−6.2%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,6 20,9 38,12 56,15 74,18 92,21" fill="none" stroke="#c15a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            </div>
+            <div id="cli-analytics-jobs" style="margin-top:10px;font-size:12px;font-weight:600;color:#5c4033;">岗位数据（示意）</div>
+            <div class="dense-table" style="margin-top:6px;">
+              <div class="dense-row head"><div>已发岗位</div><div>本期浏览</div><div>评论 / 投递</div><div>趋势（环比与走势）</div></div>
+              <div class="dense-row"><div>驻场法务（上海）</div><div>1,842</div><div>26 / 14</div><div class="trend-cell"><span class="trend-pct up">+12.0%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,20 20,17 40,13 60,10 80,6 98,3" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+              <div class="dense-row"><div>争议解决实习生</div><div>920</div><div>11 / 32</div><div class="trend-cell"><span class="trend-pct down">−4.5%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,7 22,9 42,12 62,15 82,18 98,20" fill="none" stroke="#c15a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="cli-analytics-skills-eval">
+          <div class="section-hd">Skills 多维评价与建议（示意）</div>
+          <div class="section-bd">
+            <p style="margin:0 0 8px;font-size:11px;color:var(--muted);font-family:system-ui,sans-serif;line-height:1.55;">
+              平台以 Skills 为交付单元：对已购或深度使用的产品，从多维度评分与文本反馈聚合为创作者能力画像，用于你侧招聘筛选、合作风险评估与对创作者的改进诉求表达（示意数据）。
+            </p>
+            <p style="margin:0 0 6px;font-size:11px;font-weight:600;color:#5c4033;font-family:system-ui,sans-serif;">示例对象：已购「合同审查技能包 v2.1」关联创作者</p>
+            <div class="dim-grid">
+              <div class="dim-tile"><div class="dn">效率提升</div><div class="ds">4.2</div><div class="dt">综合耗时下降感知</div></div>
+              <div class="dim-tile"><div class="dn">UI 界面设计</div><div class="ds">3.6</div><div class="dt">可读性与一致性</div></div>
+              <div class="dim-tile"><div class="dn">架构清晰度</div><div class="ds">4.5</div><div class="dt">步骤与边界是否清楚</div></div>
+              <div class="dim-tile"><div class="dn">成本控制</div><div class="ds">4.0</div><div class="dt">调用与人工替代成本</div></div>
+              <div class="dim-tile"><div class="dn">创意新颖性</div><div class="ds">3.9</div><div class="dt">方法论与模板新意</div></div>
+              <div class="dim-tile"><div class="dn">上手难易度</div><div class="ds">4.4</div><div class="dt">说明与示例充分度</div></div>
+              <div class="dim-tile"><div class="dn">适用法律领域普适性</div><div class="ds">4.1</div><div class="dt">跨行业/法域适配</div></div>
+              <div class="dim-tile"><div class="dn">调用权威数据量</div><div class="ds">4.4</div><div class="dt">法规/案例等权威源覆盖与命中强度</div></div>
+            </div>
+            <div class="suggest-grid">
+              <div class="suggest-card">
+                <h4>Skills 设计针对性提升（使用侧）</h4>
+                优先补齐「UI 引导与空状态说明」；在「架构清晰度」维度增加一页式流程图与输入输出契约；对高频场景提供默认参数预设，巩固「效率提升」与「上手难易度」；要求输出中显式标注权威数据来源与引用路径，便于复核「调用权威数据量」。
+              </div>
+              <div class="suggest-card">
+                <h4>招聘建议</h4>
+                岗位 JD 建议突出「合同审查自动化 + 结构化交付」；面试题库侧重「成本控制与质量平衡」案例；对「适用法律领域普适性」偏低项，可配置行业顾问复试；对「调用权威数据量」偏低项，增加「法源核验与证据链」实操题。
+              </div>
+              <div class="suggest-card">
+                <h4>合作建议</h4>
+                适合与「架构清晰度高」的争议解决团队做打包联售；对「创意新颖性」强项可做内容共创；合作合同中建议约定调用上限与版本升级节奏，对冲「成本控制」波动；对「调用权威数据量」可约定权威库范围、更新频率与留痕审计条款。
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="cli-jobs-publish">
+          <div class="section-hd">岗位发布（对外）</div>
+          <div class="section-bd">创建与编辑对外岗位信息、上下架、渠道展示开关、合规字段校验；与客户身份无关，创作者与客户共用同一套岗位编辑器与发布流程（权限在字段级收敛）。</div>
+        </section>
+        <section class="section" id="cli-jobs-apps">
+          <div class="section-hd">收到投递（针对已发出的岗位）</div>
+          <div class="section-bd">按岗位聚合简历与附件、初筛状态、邀约面试、标记不合适与归档；与「岗位数据」中的浏览、评论、投递统计联动。</div>
+        </section>
+
+        <section class="section" id="cli-profile"><div class="section-hd">个人资料</div><div class="section-bd">与创作者侧字段同源；不包含 Skills 上架、收益结算、发出的试用邀请等供给端能力。岗位招聘为共有模块。</div></section>
+        <section class="section" id="cli-settings"><div class="section-hd">账号设置</div><div class="section-bd">安全、通知、隐私、发票抬头等，与创作者共用组件库。</div></section>
+        <section class="section" id="cli-purchase"><div class="section-hd">已购与使用</div><div class="section-bd">授权范围、版本、下载记录、绑定项目；无「上架与分成」视图。</div></section>
+        <section class="section" id="cli-msg"><div class="section-hd">留言与通知</div><div class="section-bd">系统通知、审核结果、订单与风控提示聚合收件箱。</div></section>
+        <p class="foot">文件 apps/web/public/workbench-roles-demo.html · 当前角色：客户</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- 创作者：全量 -->
+  <div id="panel-creator" class="role-panel app">
+    <aside class="sidebar">
+      <div class="logo"><span class="logo-dot"></span><span class="logo-text">律植</span></div>
+      <nav class="nav">
+        <div class="nav-label">个人信息</div>
+        <a class="nav-item active" href="#cre-overview"><span class="dot"></span>工作台总览</a>
+        <a class="nav-item" href="#cre-profile"><span class="dot"></span>个人资料</a>
+        <a class="nav-item" href="#cre-verify"><span class="dot"></span>律师认证</a>
+        <a class="nav-item" href="#cre-settings"><span class="dot"></span>账号设置</a>
+
+        <div class="nav-label">个人工作台</div>
+        <a class="nav-item" href="#cre-skills"><span class="dot"></span>Skills 管理</a>
+        <a class="nav-item" href="#cre-trial"><span class="dot"></span>试用管理</a>
+        <a class="nav-item" href="#cre-purchase"><span class="dot"></span>已购与使用</a>
+        <a class="nav-item" href="#cre-studio"><span class="dot"></span>工作画布与文件</a>
+        <a class="nav-item" href="#cre-jobs-publish"><span class="dot"></span>岗位发布</a>
+        <a class="nav-item nav-sub" href="#cre-jobs-apps"><span class="dot"></span>收到投递</a>
+
+        <div class="nav-label">数据分析</div>
+        <a class="nav-item" href="#cre-analytics"><span class="dot"></span>经营与内容</a>
+        <a class="nav-item nav-sub" href="#cre-analytics-jobs"><span class="dot"></span>岗位数据</a>
+        <a class="nav-item nav-sub" href="#cre-analytics-skills-eval"><span class="dot"></span>Skills 多维评价</a>
+
+        <div class="nav-label">消息与协作</div>
+        <a class="nav-item" href="#cre-coop-recv-c"><span class="dot"></span>收到的合作邀请</a>
+        <a class="nav-item nav-sub" href="#cre-coop-sent-c"><span class="dot"></span>发出的合作邀请</a>
+        <a class="nav-item nav-sub" href="#cre-coop-recv-t"><span class="dot"></span>收到的试用邀请</a>
+        <a class="nav-item nav-sub" href="#cre-coop-sent-t"><span class="dot"></span>发出的试用邀请</a>
+        <a class="nav-item" href="#cre-msg"><span class="dot"></span>留言与通知</a>
+      </nav>
+      <div class="profile">
+        <div class="avatar">李</div>
+        <div><div class="name">李律师</div><div class="role">创作者</div></div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="title">创作者工作台 · 总览</div>
+        <div class="toolbar">
+          <span class="pill">经营检索</span>
+          <span class="pill">近30天</span>
+          <span class="pill">导出</span>
+        </div>
+      </header>
+      <div class="content">
+        <section class="grid-4" id="cre-overview">
+          <article class="kpi">
+            <div class="label">本月收益</div>
+            <div class="value">¥ 23,680</div>
+            <div class="kpi-chart-row">
+              <span class="trend-label up">+18.6% 环比</span>
+              <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,21 18,18 34,14 50,11 66,7 82,4 98,2" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+          <article class="kpi">
+            <div class="label">Skills 订单</div>
+            <div class="value">126</div>
+            <div class="kpi-chart-row">
+              <span class="trend-label up">+12.3% 环比</span>
+              <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,19 20,16 38,13 56,10 74,7 92,4" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+          <article class="kpi">
+            <div class="label">试用转化</div>
+            <div class="value">34.2%</div>
+            <div class="kpi-chart-row">
+              <span class="trend-label up">+4.1% 环比</span>
+              <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,17 25,15 50,12 75,9 98,6" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+          <article class="kpi">
+            <div class="label">待协作</div>
+            <div class="value">9</div>
+            <div class="kpi-chart-row">
+              <span class="trend-label down">2 超时</span>
+              <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,5 22,8 42,12 62,16 82,19 98,22" fill="none" stroke="#c15a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </article>
+        </section>
+
+        <section class="section" id="cre-analytics">
+          <div class="section-hd">经营与内容（示意）</div>
+          <div class="section-bd">
+            <div class="metric-dense-grid">
+              <div class="metric-tile">
+                <div class="metric-head"><span>浏览</span><span class="metric-kind">访问</span></div>
+                <div class="metric-number">8,920</div>
+                <div class="metric-trend-row">
+                  <span class="metric-sub up">+16.7% 环比</span>
+                  <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,20 18,17 34,13 50,10 66,7 82,4 98,2" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-head"><span>点赞</span><span class="metric-kind">互动</span></div>
+                <div class="metric-number">1,346</div>
+                <div class="metric-trend-row">
+                  <span class="metric-note">点赞率 15.1% · +1.2%</span>
+                  <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,15 22,14 42,13 62,12 82,11 98,10" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-head"><span>下载</span><span class="metric-kind">交付</span></div>
+                <div class="metric-number">624</div>
+                <div class="metric-trend-row">
+                  <span class="metric-note">下载率 7.0% · −0.6%</span>
+                  <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,8 22,9 42,11 62,13 82,15 98,17" fill="none" stroke="#c15a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+              <div class="metric-tile">
+                <div class="metric-head"><span>购买</span><span class="metric-kind">订单</span></div>
+                <div class="metric-number">126</div>
+                <div class="metric-trend-row">
+                  <span class="metric-note">转化 20.2% · +2.0%</span>
+                  <svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,18 20,15 38,12 56,9 74,6 92,4" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+            </div>
+            <div class="dense-table">
+              <div class="dense-row head"><div>内容项</div><div>本期曝光</div><div>互动</div><div>趋势（环比与走势）</div></div>
+              <div class="dense-row"><div>帖子：合同风险清单</div><div>5.2k</div><div>418</div><div class="trend-cell"><span class="trend-pct up">+6.0%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,17 20,14 38,11 56,9 74,6 92,4" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+              <div class="dense-row"><div>Skills：审查包 v2.1</div><div>3.1k</div><div>260</div><div class="trend-cell"><span class="trend-pct up">+11.0%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,19 18,16 34,12 50,9 66,6 82,3 98,2" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            </div>
+            <div id="cre-analytics-jobs" style="margin-top:10px;font-size:12px;font-weight:600;color:#5c4033;">岗位数据（示意）</div>
+            <div class="dense-table" style="margin-top:6px;">
+              <div class="dense-row head"><div>已发岗位</div><div>本期浏览</div><div>评论 / 投递</div><div>趋势（环比与走势）</div></div>
+              <div class="dense-row"><div>争议解决主办律师</div><div>4,560</div><div>38 / 56</div><div class="trend-cell"><span class="trend-pct up">+9.3%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,19 20,16 40,12 60,9 80,5 98,3" fill="none" stroke="#3c8c5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+              <div class="dense-row"><div>合规顾问（兼职）</div><div>2,210</div><div>19 / 24</div><div class="trend-cell"><span class="trend-pct down">−2.1%</span><svg class="spark" viewBox="0 0 100 26" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><polyline points="2,6 22,8 42,11 62,14 82,17 98,20" fill="none" stroke="#c15a4a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="cre-analytics-skills-eval">
+          <div class="section-hd">Skills 多维评价与建议（示意）</div>
+          <div class="section-bd">
+            <p style="margin:0 0 8px;font-size:11px;color:var(--muted);font-family:system-ui,sans-serif;line-height:1.55;">
+              面向你在架 Skills：将用户评价、使用遥测与质检抽样映射到统一维度，定位短板并生成改版清单；同步输出招聘侧能力补强建议与对外合作打包策略（示意数据）。
+            </p>
+            <p style="margin:0 0 6px;font-size:11px;font-weight:600;color:#5c4033;font-family:system-ui,sans-serif;">示例对象：在架「合同审查技能包 v2.1」</p>
+            <div class="dim-grid">
+              <div class="dim-tile"><div class="dn">效率提升</div><div class="ds">4.3</div><div class="dt">较 v2.0 +0.2</div></div>
+              <div class="dim-tile"><div class="dn">UI 界面设计</div><div class="ds">3.5</div><div class="dt">低于类目均值</div></div>
+              <div class="dim-tile"><div class="dn">架构清晰度</div><div class="ds">4.6</div><div class="dt">强项维持</div></div>
+              <div class="dim-tile"><div class="dn">成本控制</div><div class="ds">4.1</div><div class="dt">调用阶梯合理</div></div>
+              <div class="dim-tile"><div class="dn">创意新颖性</div><div class="ds">4.0</div><div class="dt">稳定</div></div>
+              <div class="dim-tile"><div class="dn">上手难易度</div><div class="ds">4.2</div><div class="dt">示例待扩充</div></div>
+              <div class="dim-tile"><div class="dn">适用法律领域普适性</div><div class="ds">3.8</div><div class="dt">制造业偏低</div></div>
+              <div class="dim-tile"><div class="dn">调用权威数据量</div><div class="ds">4.0</div><div class="dt">法规/案例等权威源覆盖与命中强度</div></div>
+            </div>
+            <div class="suggest-grid">
+              <div class="suggest-card">
+                <h4>Skills 设计针对性提升（供给侧）</h4>
+                v2.2 优先：重做引导页与模板选择器（拉升 UI 与上手）；补充「输入输出契约」与异常分支说明（巩固架构）；增加制造业专用附录或行业切换开关（拉升普适性）；扩充权威法源与案例库路由、命中日志与可解释引用，拉升「调用权威数据量」。
+              </div>
+              <div class="suggest-card">
+                <h4>招聘建议</h4>
+                若普适性与行业附录为短板，建议增补「行业顾问」兼职岗位或外包审读；JD 关键词与「成本控制、架构清晰度」高分维度对齐，降低培训成本；若「调用权威数据量」为短板，优先招「知识工程 / 法库对接」方向兼职。
+              </div>
+              <div class="suggest-card">
+                <h4>合作建议</h4>
+                以「架构清晰度 + 效率提升」为卖点寻求与企业法务系统对接；与「UI 与上手」强项团队做联名模板包；对制造业客户可捆绑咨询小时包，对冲普适性评分波动；对「调用权威数据量」可向数据方争取联合背书或白名单接口，写入 SLA。
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div class="two-col">
+          <section class="section" id="cre-studio">
+            <div class="section-hd">工作画布与文件</div>
+            <div class="section-bd"><div class="studio">
+              <div class="studio-col"><div class="studio-hd"><span>在架 Skills</span></div><div class="studio-bd">审查包 v2.1（编辑中）<br />劳动包 v1.4</div></div>
+              <div class="studio-col"><div class="studio-hd"><span>画布</span></div><div class="studio-bd"><div class="studio-box">与客户侧同构：材料、调用、审阅、导出；创作者多出版本与上架校验入口。</div></div></div>
+              <div class="studio-col"><div class="studio-hd"><span>材料</span></div><div class="studio-bd">示例合同、证据包、客户上传区</div></div>
+            </div></div>
+          </section>
+          <section class="section">
+            <div class="section-hd">协作四象限</div>
+            <div class="section-bd">
+              <div class="coop-grid">
+                <div class="coop-block" id="cre-coop-recv-c"><div class="coop-block-hd"><span>收到的合作邀请</span><span class="hint">3</span></div><ul class="todo"><li><span>常年顾问意向</span><span class="status s1">待办</span></li></ul></div>
+                <div class="coop-block" id="cre-coop-sent-c"><div class="coop-block-hd"><span>发出的合作邀请</span><span class="hint">2</span></div><ul class="todo"><li><span>已向企业发出联合方案</span><span class="status s1">待回复</span></li></ul></div>
+                <div class="coop-block" id="cre-coop-recv-t"><div class="coop-block-hd"><span>收到的试用邀请</span><span class="hint">2</span></div><p class="coop-block-desc">他人邀你试其已上架产品。</p><ul class="todo"><li><span>王律师邀你试「材料包」</span><span class="status s1">待办</span></li></ul></div>
+                <div class="coop-block" id="cre-coop-sent-t"><div class="coop-block-hd"><span>发出的试用邀请</span><span class="hint">5</span></div><p class="coop-block-desc">你邀他人试你发布的产品。</p><ul class="todo"><li><span>已向渠道发出试用批次</span><span class="status s1">跟进</span></li></ul></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="section" id="cre-jobs-publish">
+          <div class="section-hd">岗位发布（对外）</div>
+          <div class="section-bd">与客户共用岗位发布与展示链路：草稿、发布、上下架、合规字段、曝光与转化看板入口。创作者可在经营视图中与 Skills 数据并列分析。</div>
+        </section>
+        <section class="section" id="cre-jobs-apps">
+          <div class="section-hd">收到投递（针对已发出的岗位）</div>
+          <div class="section-bd">与客户同一套投递处理流：按岗位聚合、筛选、邀约、归档；投递与岗位下的浏览、评论指标联动。</div>
+        </section>
+        <section class="section" id="cre-skills"><div class="section-hd">Skills 管理</div><div class="section-bd">上架、版本、定价、下载包、授权策略；客户侧无此主导航。</div></section>
+        <section class="section" id="cre-trial"><div class="section-hd">试用管理</div><div class="section-bd">配置与运营你主动发出的试用：规则、批次、配额、到期与转化；与「发出的试用邀请」衔接。</div></section>
+        <section class="section" id="cre-purchase"><div class="section-hd">已购与使用</div><div class="section-bd">创作者亦可能购买他人 Skills：与客户同模块，权限按授权收敛。</div></section>
+        <section class="section" id="cre-profile"><div class="section-hd">个人资料</div><div class="section-bd">营销与专业背书字段全开。岗位招聘为客户与创作者共有模块。</div></section>
+        <section class="section" id="cre-verify"><div class="section-hd">律师认证</div><div class="section-bd">客户侧默认不展示主导航项，可在升级创作者后解锁。</div></section>
+        <section class="section" id="cre-settings"><div class="section-hd">账号设置</div><div class="section-bd">含提现账户、税务与结算信息（示意）。</div></section>
+        <section class="section" id="cre-msg"><div class="section-hd">留言与通知</div><div class="section-bd">审核、结算、风控、平台公告聚合。</div></section>
+        <p class="foot">文件 apps/web/public/workbench-roles-demo.html · 当前角色：创作者</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- 管理员 -->
+  <div id="panel-admin" class="role-panel app">
+    <aside class="sidebar">
+      <div class="logo"><span class="logo-dot"></span><span class="logo-text">律植</span></div>
+      <nav class="nav">
+        <div class="nav-label">治理</div>
+        <a class="nav-item active" href="#adm-overview"><span class="dot"></span>平台总览</a>
+        <a class="nav-item" href="#adm-users"><span class="dot"></span>用户与身份</a>
+        <a class="nav-item" href="#adm-content"><span class="dot"></span>内容与合规</a>
+        <a class="nav-item" href="#adm-trade"><span class="dot"></span>交易与结算</a>
+        <div class="nav-label">处置</div>
+        <a class="nav-item" href="#adm-queue"><span class="dot"></span>审核队列</a>
+        <a class="nav-item" href="#adm-risk"><span class="dot"></span>风险与举报</a>
+        <div class="nav-label">审计</div>
+        <a class="nav-item" href="#adm-audit"><span class="dot"></span>日志与审计</a>
+        <div class="nav-label">配置</div>
+        <a class="nav-item" href="#adm-config"><span class="dot"></span>业务参数</a>
+      </nav>
+      <div class="profile">
+        <div class="avatar">管</div>
+        <div><div class="name">管理员</div><div class="role">admin</div></div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="title">管理员工作台 · 治理总览</div>
+        <div class="toolbar"><span class="pill">工单模式</span><span class="pill">近24h</span></div>
+      </header>
+      <div class="content">
+        <section class="grid-4" id="adm-overview">
+          <article class="kpi"><div class="label">待审核</div><div class="value">86</div><div class="trend">Skills 42 / 认证 18</div></article>
+          <article class="kpi"><div class="label">开放举报</div><div class="value">23</div><div class="trend down">7 高优</div></article>
+          <article class="kpi"><div class="label">结算异常</div><div class="value">5</div><div class="trend">待复核</div></article>
+          <article class="kpi"><div class="label">登录风控</div><div class="value">14</div><div class="trend">拦截 9</div></article>
+        </section>
+        <div class="callout">权限边界：可处理平台日常审核、内容与交易治理、查看审计日志；系统级环境切换、全局角色授予、高危数据变更默认不在此角色（示意归超管）。</div>
+
+        <section class="section" id="adm-queue">
+          <div class="section-hd">审核队列（高密度表）</div>
+          <div class="section-bd">
+            <div class="dense-table">
+              <div class="dense-row head"><div>对象</div><div>类型</div><div>等待</div><div>优先级</div></div>
+              <div class="dense-row"><div>Skills「尽调助手」v1.3</div><div>上架</div><div>6h</div><div class="up">P1</div></div>
+              <div class="dense-row"><div>用户 u_9281 认证</div><div>资质</div><div>1.2d</div><div>P2</div></div>
+              <div class="dense-row"><div>帖子 #8832</div><div>举报</div><div>30m</div><div class="down">P0</div></div>
+            </div>
+          </div>
+        </section>
+
+        <div class="two-col">
+          <section class="section" id="adm-users"><div class="section-hd">用户与身份</div><div class="section-bd">冻结、解封、重置 MFA、变更角色申请流转（执行节点可配置为超管终审）。</div></section>
+          <section class="section" id="adm-content"><div class="section-hd">内容与合规</div><div class="section-bd">帖子、Skills、对外岗位信息等统一治理：下架、替换、敏感词命中复核、版权争议与虚假招聘举报工单。</div></section>
+          <section class="section" id="adm-trade"><div class="section-hd">交易与结算</div><div class="section-bd">对账差异、退款仲裁、发票异常；只读对接财务导出。</div></section>
+          <section class="section" id="adm-risk"><div class="section-hd">风险与举报</div><div class="section-bd">聚合多源信号：举报、模型输出风险标记、异常调用。</div></section>
+        </div>
+
+        <section class="section" id="adm-audit"><div class="section-hd">日志与审计</div><div class="section-bd">按对象追溯：谁、何时、对何资源、做了什么；支持导出与留存策略。</div></section>
+        <section class="section" id="adm-config"><div class="section-hd">业务参数</div><div class="section-bd">费率展示规则、试用默认上限、邀请模板等；破坏性变更建议双人复核（示意）。</div></section>
+        <p class="foot">文件 apps/web/public/workbench-roles-demo.html · 当前角色：管理员</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- 超管 -->
+  <div id="panel-super" class="role-panel app">
+    <aside class="sidebar">
+      <div class="logo"><span class="logo-dot"></span><span class="logo-text">律植</span></div>
+      <nav class="nav">
+        <div class="nav-label">继承</div>
+        <a class="nav-item active" href="#sup-overview"><span class="dot"></span>平台总览</a>
+        <a class="nav-item" href="#sup-admin-all"><span class="dot"></span>管理员能力全集</a>
+        <div class="nav-label">系统</div>
+        <a class="nav-item" href="#sup-env"><span class="dot"></span>环境与部署</a>
+        <a class="nav-item" href="#sup-perm"><span class="dot"></span>权限矩阵</a>
+        <a class="nav-item" href="#sup-tenant"><span class="dot"></span>租户与数据域</a>
+        <div class="nav-label">高危</div>
+        <a class="nav-item" href="#sup-danger"><span class="dot"></span>高危操作</a>
+      </nav>
+      <div class="profile">
+        <div class="avatar">超</div>
+        <div><div class="name">超管</div><div class="role">superadmin</div></div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="title">超管工作台 · 系统域</div>
+        <div class="toolbar"><span class="pill">变更窗口</span><span class="pill">双人规则</span></div>
+      </header>
+      <div class="content">
+        <section class="grid-4" id="sup-overview">
+          <article class="kpi"><div class="label">全局健康</div><div class="value">99.95%</div><div class="trend">SLA 30d</div></article>
+          <article class="kpi"><div class="label">阻塞工单</div><div class="value">3</div><div class="trend down">需升级</div></article>
+          <article class="kpi"><div class="label">待终审角色</div><div class="value">2</div><div class="trend">admin 授予</div></article>
+          <article class="kpi"><div class="label">密钥轮换</div><div class="value">1</div><div class="trend">计划中</div></article>
+        </section>
+
+        <div class="callout">设定：超管包含管理员全部菜单与处置能力，并额外拥有系统配置、跨租户数据策略、密钥与集成、以及不可逆或全站影响操作的入口（示意，生产需 MFA、审批流、审计留痕）。</div>
+
+        <section class="section" id="sup-admin-all">
+          <div class="section-hd">管理员能力全集（折叠示意）</div>
+          <div class="section-bd">与上一页「管理员工作台」同构，此处以高密度摘要代替完整树：用户与身份、内容合规、交易结算、审核队列、风险举报、日志审计、业务参数。</div>
+        </section>
+
+        <div class="two-col">
+          <section class="section" id="sup-env"><div class="section-hd">环境与部署</div><div class="section-bd">版本发布、特性开关、维护窗、回滚点；与业务参数解耦。</div></section>
+          <section class="section" id="sup-perm"><div class="section-hd">权限矩阵</div><div class="section-bd">角色到资源动作映射；支持临时授权与时间盒权限。</div></section>
+          <section class="section" id="sup-tenant"><div class="section-hd">租户与数据域</div><div class="section-bd">跨组织隔离、导出策略、法务冻结；默认仅超管可见。</div></section>
+          <section class="section" id="sup-danger"><div class="section-hd">高危操作</div><div class="section-bd">全站配置覆盖、批量数据修复、密钥吊销、删除级操作；必须二次确认与工单关联（文案示意）。</div></section>
+        </div>
+        <p class="foot">文件 apps/web/public/workbench-roles-demo.html · 当前角色：超管</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var tabs = document.querySelectorAll(".role-tab");
+      var panels = document.querySelectorAll(".role-panel");
+      function activate(role) {
+        tabs.forEach(function (t) {
+          t.classList.toggle("active", t.getAttribute("data-role") === role);
+        });
+        panels.forEach(function (p) {
+          p.classList.toggle("active", p.id === "panel-" + role);
+        });
+      }
+      tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () {
+          activate(tab.getAttribute("data-role"));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

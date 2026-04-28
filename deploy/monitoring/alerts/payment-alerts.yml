@@ -1,0 +1,59 @@
+groups:
+  - name: payment-alerts
+    interval: 30s
+    rules:
+      # 支付失败率过高
+      - alert: PaymentHighFailureRate
+        expr: rate(payment_count_total{status="failed"}[5m]) / rate(payment_count_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          service: lvzhi-payment
+        annotations:
+          summary: "支付失败率过高"
+          description: "支付失败率 {{ $value | printf \"%.2f\" }}%，超过 10% 阈值，需要立即检查！"
+          runbook_url: "https://docs.lvxzhi.com/runbooks/payment-high-failure"
+
+      # 支付渠道异常
+      - alert: PaymentChannelDown
+        expr: rate(payment_count_total{channel="alipay"}[5m]) == 0 and rate(payment_count_total{channel="wechat"}[5m]) > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: lvzhi-payment
+        annotations:
+          summary: "支付宝渠道无交易"
+          description: "过去 10 分钟无支付宝交易，可能渠道异常"
+
+      # 微信支付渠道异常
+      - alert: WechatPaymentChannelDown
+        expr: rate(payment_count_total{channel="wechat"}[5m]) == 0 and rate(payment_count_total{channel="alipay"}[5m]) > 0
+        for: 10m
+        labels:
+          severity: warning
+          service: lvzhi-payment
+        annotations:
+          summary: "微信支付渠道无交易"
+          description: "过去 10 分钟无微信支付交易，可能渠道异常"
+
+      # 支付金额异常
+      - alert: PaymentAmountAnomaly
+        expr: abs(increase(payment_amount_total[5m]) - avg_over_time(increase(payment_amount_total[5m])[1h:5m])) > 3 * stddev_over_time(increase(payment_amount_total[5m])[1h:5m])
+        for: 5m
+        labels:
+          severity: warning
+          service: lvzhi-payment
+        annotations:
+          summary: "支付金额异常波动"
+          description: "支付金额波动超过正常范围的 3 倍标准差"
+
+      # 重复支付检测
+      - alert: PotentialDuplicatePayment
+        expr: increase(payment_count_total{status="success"}[1m]) > 10 and increase(payment_amount_total[1m]) / increase(payment_count_total[status="success"][1m]) < 1
+        for: 1m
+        labels:
+          severity: critical
+          service: lvzhi-payment
+        annotations:
+          summary: "可能存在重复支付"
+          description: "检测到大量小额支付，可能存在重复支付攻击"

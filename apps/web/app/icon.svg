@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Pot -->
+  <path d="M40 85 L35 110 C34 115 36 120 41 120 L87 120 C92 120 94 115 93 110 L88 85 Z"
+        fill="#E8DCC8" stroke="#C4B5A0" stroke-width="2"/>
+
+  <!-- Pot rim -->
+  <ellipse cx="64" cy="85" rx="26" ry="6" fill="#D4C5B0"/>
+
+  <!-- Soil -->
+  <ellipse cx="64" cy="85" rx="24" ry="5" fill="#8B7355"/>
+
+  <!-- Main stem -->
+  <path d="M64 85 Q64 70 64 55"
+        stroke="#4A7C59" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+  <!-- Left leaf 1 -->
+  <path d="M64 70 Q50 65 45 68 Q48 72 64 75 Z"
+        fill="#5FB878" stroke="#4A7C59" stroke-width="1.5"/>
+
+  <!-- Right leaf 1 -->
+  <path d="M64 70 Q78 65 83 68 Q80 72 64 75 Z"
+        fill="#6FCF97" stroke="#4A7C59" stroke-width="1.5"/>
+
+  <!-- Left leaf 2 -->
+  <path d="M64 60 Q48 58 42 62 Q45 66 64 65 Z"
+        fill="#6FCF97" stroke="#4A7C59" stroke-width="1.5"/>
+
+  <!-- Right leaf 2 -->
+  <path d="M64 60 Q80 58 86 62 Q83 66 64 65 Z"
+        fill="#5FB878" stroke="#4A7C59" stroke-width="1.5"/>
+
+  <!-- Top leaves (律 character shape inspired) -->
+  <path d="M64 55 Q52 48 48 52 Q51 56 64 58 Z"
+        fill="#7FD99A" stroke="#4A7C59" stroke-width="1.5"/>
+
+  <path d="M64 55 Q76 48 80 52 Q77 56 64 58 Z"
+        fill="#7FD99A" stroke="#4A7C59" stroke-width="1.5"/>
+
+  <!-- Center top leaf -->
+  <ellipse cx="64" cy="48" rx="8" ry="12"
+           fill="#8FE9AA" stroke="#4A7C59" stroke-width="1.5"/>
+
+  <!-- Cute sparkles -->
+  <circle cx="45" cy="50" r="2" fill="#FFE66D" opacity="0.8"/>
+  <circle cx="83" cy="55" r="2" fill="#FFE66D" opacity="0.8"/>
+  <circle cx="70" cy="42" r="1.5" fill="#FFE66D" opacity="0.8"/>
+</svg>

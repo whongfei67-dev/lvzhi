@@ -1,0 +1,174 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { api, Agent } from "@/lib/api/client";
+import { PageHeader } from "@/components/layout/page-header";
+import { CardGrid } from "@/components/common/list-components";
+import { Pagination } from "@/components/common/pagination";
+import { GuestGate } from "@/components/common/guest-gate";
+import { Bot, Star } from "lucide-react";
+
+const SORT_OPTIONS = [
+  { value: "popular", label: "最受欢迎" },
+  { value: "latest", label: "最新发布" },
+  { value: "rating", label: "评分最高" },
+];
+
+interface PageProps {
+  params: Promise<{ tag: string }>;
+}
+
+export default function AgentsTagPage({ params }: PageProps) {
+  const [tagSlug, setTagSlug] = useState<string>("");
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState("popular");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    params.then((p) => setTagSlug(p.tag));
+  }, [params]);
+
+  useEffect(() => {
+    if (tagSlug) {
+      fetchAgents();
+    }
+  }, [tagSlug, sortBy, page]);
+
+  const fetchAgents = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await api.agents.list({
+        page,
+        limit: 12,
+        tag: tagSlug,
+      });
+      setAgents(result.items as unknown as Agent[]);
+      setTotalPages(Math.ceil(result.total / 12));
+    } catch (err) {
+      console.error("获取智能体列表失败:", err);
+      setError("获取数据失败，请稍后重试");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[rgba(212,165,116,0.08)]">
+      <PageHeader
+        variant="inspiration"
+        title={`#${decodeURIComponent(tagSlug)}`}
+        description={`浏览所有带有「${decodeURIComponent(tagSlug)}」标签的智能体`}
+        backHref="/inspiration/agents"
+      />
+
+      <section className="mx-auto max-w-6xl px-6 py-4 lg:px-8">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-medium text-[#5D4E3A]">相关标签:</span>
+          {["合同审查", "劳动争议", "法律咨询", "合规审查", "文书生成"].map((tag) => (
+            <Link
+              key={tag}
+              href={`/inspiration/agents/tag/${encodeURIComponent(tag)}`}
+              className={`rounded-full border px-3 py-1 text-sm transition-colors ${
+                decodeURIComponent(tagSlug) === tag
+                  ? "border-[#D4A574] bg-[#D4A574] text-white"
+                  : "border-[rgba(212,165,116,0.25)] bg-white text-[#5D4E3A] hover:border-[#D4A574] hover:text-[#D4A574]"
+              }`}
+            >
+              #{tag}
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
+        <div className="mb-6 flex items-center justify-between">
+          <p className="text-sm text-[#5D4E3A]">
+            共找到 <span className="font-medium text-[#2C2416]">{totalPages * 12}</span> 个智能体
+          </p>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="rounded-xl border border-[rgba(212,165,116,0.25)] bg-white px-4 py-2 text-sm text-[#5D4E3A] focus:border-[#D4A574] focus:outline-none"
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>{option.label}</option>
+            ))}
+          </select>
+        </div>
+
+        {loading ? (
+          <div className="grid gap-4 lg:grid-cols-3 sm:grid-cols-2">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="animate-pulse rounded-xl border border-[rgba(212,165,116,0.25)] bg-white p-5">
+                <div className="h-12 w-12 rounded-xl bg-[rgba(212,165,116,0.15)]" />
+                <div className="mt-4 h-6 w-full rounded bg-[rgba(212,165,116,0.15)]" />
+                <div className="mt-2 h-4 w-3/4 rounded bg-[rgba(212,165,116,0.15)]" />
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="rounded-xl bg-red-50 p-6 text-center text-red-600">{error}</div>
+        ) : agents.length === 0 ? (
+          <div className="rounded-2xl border border-[rgba(212,165,116,0.25)] bg-white p-12 text-center">
+            <Bot className="mx-auto h-12 w-12 text-[#9A8B78]" />
+            <h3 className="mt-4 text-lg font-semibold text-[#2C2416]">暂无相关智能体</h3>
+            <p className="mt-2 text-sm text-[#5D4E3A]">试试其他标签吧</p>
+          </div>
+        ) : (
+          <>
+            <CardGrid>
+              {agents.map((agent) => (
+                <AgentCard key={agent.id} agent={agent} />
+              ))}
+            </CardGrid>
+            <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} className="mt-8" />
+          </>
+        )}
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 pb-16 lg:px-8">
+        <GuestGate action="使用和体验" mode="prompt" />
+      </section>
+    </div>
+  );
+}
+
+function AgentCard({ agent }: { agent: Agent }) {
+  return (
+    <Link
+      href={`/inspiration/${agent.slug || agent.id}`}
+      className="group flex flex-col rounded-xl border border-[rgba(212,165,116,0.25)] bg-white p-5 transition-all hover:-translate-y-1 hover:border-[#D4A574] hover:shadow-md"
+    >
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-[#D4A574] to-[#B8860B]">
+        <Bot className="h-7 w-7 text-white" />
+      </div>
+      <div className="mb-2 flex items-center justify-between">
+        <span className="rounded-full bg-[rgba(212,165,116,0.15)] px-3 py-1 text-xs font-medium text-[#5D4E3A]">
+          {agent.category || "通用助手"}
+        </span>
+        {agent.rating && (
+          <span className="flex items-center gap-1 text-sm font-medium text-[#D4A574]">
+            <Star className="h-4 w-4 fill-current" />
+            {agent.rating.toFixed(1)}
+          </span>
+        )}
+      </div>
+      <h3 className="mb-2 font-medium text-[#2C2416] transition-colors group-hover:text-[#D4A574] line-clamp-1">
+        {agent.name}
+      </h3>
+      {agent.description && (
+        <p className="mb-3 flex-1 text-sm text-[#5D4E3A] line-clamp-2">{agent.description}</p>
+      )}
+      <div className="mt-auto h-px bg-gradient-to-r from-transparent via-[rgba(212,165,116,0.2)] to-transparent" />
+      <div className="flex items-center justify-between pt-3 text-sm text-[#9A8B78]">
+        <span>{agent.usage_count || 0} 次对话</span>
+        <span className="text-[#D4A574]">开始使用 →</span>
+      </div>
+    </Link>
+  );
+}

@@ -1,0 +1,15 @@
+{
+  "name": "load-test",
+  "version": "1.0.0",
+  "description": "## 安装 k6",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "k6": "^0.0.0"
+  }
+}

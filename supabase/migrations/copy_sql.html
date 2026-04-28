@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>复制 SQL 迁移代码</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning {
+            background: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            resize: vertical;
+            background: #f8f9fa;
+        }
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #1976d2;
+            transform: translateY(-1px);
+        }
+        .btn-success {
+            background: #4caf50;
+            color: white;
+        }
+        .btn-secondary {
+            background: #757575;
+            color: white;
+        }
+        .success-message {
+            display: none;
+            background: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .steps {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .steps ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .steps li {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+        code {
+            background: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗄️ Supabase 数据库迁移</h1>
+        <p style="color: #666;">律植项目 - 完整数据库系统架构（12个迁移文件合并）</p>
+
+        <div class="info">
+            <strong>📦 包含的系统模块：</strong>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>商品管理与订单系统</li>
+                <li>订阅系统</li>
+                <li>优惠券系统</li>
+                <li>评论与点赞系统</li>
+                <li>权限系统</li>
+                <li>API 调用系统（隐藏后门）</li>
+                <li>扩展与统计视图</li>
+                <li>用户认证系统增强</li>
+                <li>防火墙与安全系统</li>
+                <li>数据管理系统</li>
+                <li>反爬虫系统</li>
+                <li>下载限制与文件上传安全</li>
+            </ul>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ 注意事项：</strong>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>执行前请确保已备份数据库</li>
+                <li>执行时间约 1-2 分钟，请耐心等待</li>
+                <li>如果执行失败，请检查是否有表名冲突</li>
+            </ul>
+        </div>
+
+        <div class="steps">
+            <strong>📝 执行步骤：</strong>
+            <ol>
+                <li>点击下方 <strong>"复制 SQL 代码"</strong> 按钮</li>
+                <li>访问 Supabase Dashboard：<code>https://supabase.com/dashboard/project/kqtpdsgwkvzinonkprcl/sql/new</code></li>
+                <li>在 SQL Editor 中粘贴代码（Cmd+V）</li>
+                <li>点击右下角绿色的 <strong>Run</strong> 按钮执行</li>
+                <li>等待执行完成，查看结果</li>
+            </ol>
+        </div>
+
+        <textarea id="sqlCode" readonly></textarea>
+
+        <div class="button-group">
+            <button class="btn-primary" onclick="copySql()">📋 复制 SQL 代码</button>
+            <button class="btn-success" onclick="openSupabase()">🚀 打开 Supabase Dashboard</button>
+            <button class="btn-secondary" onclick="downloadSql()">💾 下载 SQL 文件</button>
+        </div>
+
+        <div id="successMessage" class="success-message">
+            ✅ SQL 代码已复制到剪贴板！现在可以前往 Supabase Dashboard 粘贴执行。
+        </div>
+    </div>
+
+    <script>
+        // 加载 SQL 文件内容
+        fetch('all_new_migrations.sql')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('sqlCode').value = data;
+            })
+            .catch(error => {
+                console.error('Error loading SQL file:', error);
+                alert('无法加载 SQL 文件，请确保 all_new_migrations.sql 文件在同一目录下');
+            });
+
+        function copySql() {
+            const textarea = document.getElementById('sqlCode');
+            textarea.select();
+            document.execCommand('copy');
+
+            const message = document.getElementById('successMessage');
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 3000);
+        }
+
+        function openSupabase() {
+            window.open('https://supabase.com/dashboard/project/kqtpdsgwkvzinonkprcl/sql/new', '_blank');
+        }
+
+        function downloadSql() {
+            const textarea = document.getElementById('sqlCode');
+            const blob = new Blob([textarea.value], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'supabase_migrations.sql';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

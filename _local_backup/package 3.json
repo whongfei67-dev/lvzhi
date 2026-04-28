@@ -1,0 +1,19 @@
+{
+  "name": "lvzhi",
+  "private": true,
+  "packageManager": "pnpm@10.16.1",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:api": "pnpm --filter api dev",
+    "dev": "pnpm --parallel --filter web --filter api dev",
+    "build:web": "pnpm --filter web build",
+    "build:api": "pnpm --filter api build",
+    "typecheck": "pnpm --recursive typecheck",
+    "db:migrate:local": "node ./scripts/run-db-migrations.mjs",
+    "db:verify:one-shot": "node ./scripts/verify-one-shot-sql.mjs",
+    "db:verify:repeatable": "node ./scripts/verify-repeatable-sql.mjs"
+  },
+  "devDependencies": {
+    "typescript": "5.8.3"
+  }
+}

@@ -1,0 +1,64 @@
+# Dependencies
+**/node_modules
+**/.pnpm-store
+
+# Build outputs
+**/.next
+**/dist
+**/.nuxt
+**/.output
+
+# Git
+**/.git
+**/.gitignore
+
+# IDE
+**/.vscode
+**/.idea
+**/*.swp
+**/*.swo
+
+# Environment files
+**/.env
+**/.env.*
+**/.env.build
+**/.env.local
+**/.env.production
+**/.env.development
+
+# Allow specific env files (use ! prefix)
+!apps/**/.env
+!packages/**/.env
+
+# Logs
+**/*.log
+**/npm-debug.log*
+**/pnpm-debug.log*
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Docker
+**/Dockerfile*
+**/docker-compose*
+**/.dockerignore
+
+# Test
+**/__tests__
+**/*.test.*
+**/*.spec.*
+**/coverage
+
+# Docs
+**/*.md
+**/docs
+
+# CI/CD
+**/.github
+**/.gitlab-ci.yml
+
+# Misc
+**/*.bak
+**/*.tmp
+**/.cache
