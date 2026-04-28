@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useState } from "react";
+import { ReactNode, isValidElement, useState } from "react";
 import { ChevronDown, SlidersHorizontal } from "lucide-react";
 
 interface FilterOption {
@@ -65,7 +65,7 @@ interface CategoryTabsProps {
   tabs: {
     id: string;
     label: string;
-    icon?: ReactNode | React.ComponentType<{ className?: string }>;
+    icon?: ReactNode | React.ElementType<{ className?: string }>;
     count?: number;
   }[];
   activeTab: string;
@@ -77,11 +77,13 @@ export function CategoryTabs({ tabs, activeTab, onChange, className = "" }: Cate
   return (
     <div className={`flex gap-1 rounded-xl bg-[#EEF4EF] p-1 ${className}`}>
       {tabs.map((tab) => {
-        const Icon = tab.icon;
-        const iconNode =
-          typeof Icon === "function"
-            ? <Icon className="h-4 w-4" />
-            : Icon ?? null;
+        let iconNode: ReactNode = null;
+        if (isValidElement(tab.icon)) {
+          iconNode = tab.icon;
+        } else if (tab.icon && (typeof tab.icon === "function" || typeof tab.icon === "object")) {
+          const Icon = tab.icon as React.ElementType<{ className?: string }>;
+          iconNode = <Icon className="h-4 w-4" />;
+        }
         return (
           <button
             key={tab.id}
