@@ -57,8 +57,7 @@ ENV NODE_ENV=production
 
 # 创建非 root 用户
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
-    apk add --no-cache wget
+    adduser --system --uid 1001 nextjs
 
 # 复制 Next.js 构建产物（非 standalone 模式）
 COPY --from=builder /app/apps/web/.next ./.next
@@ -95,10 +94,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# 创建非 root 用户；健康检查需要 wget
+# 创建非 root 用户
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 api && \
-    apk add --no-cache wget
+    adduser --system --uid 1001 api
 
 # 在 monorepo 根目录用 lockfile 安装 api 的生产依赖（api-runner 内仅有 package.json 时无 lockfile 会失败）
 COPY --from=builder /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml ./
@@ -126,9 +124,6 @@ CMD ["node", "dist/index.js"]
 
 # ---- 阶段 4: Nginx ----
 FROM docker.m.daocloud.io/library/nginx:alpine AS nginx
-
-# docker-compose healthcheck 使用 wget；官方 nginx:alpine 镜像不含 wget
-RUN apk add --no-cache wget
 
 # 复制自定义 nginx 配置
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
