@@ -23,7 +23,7 @@ jobs:
     environment: production
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy on ECS
         uses: appleboy/ssh-action@v1.0.3
@@ -51,6 +51,15 @@ jobs:
               exit 1
             fi
 
-            docker compose --env-file "${ENV_FILE}" build web api nginx
-            docker compose --env-file "${ENV_FILE}" up -d web api nginx
+            # 生产部署固定 80/443，并避免宿主机 nginx 抢占端口
+            sed -i 's/^NGINX_HTTP_PORT=.*/NGINX_HTTP_PORT=80/' "${ENV_FILE}"
+            sed -i 's/^NGINX_HTTPS_PORT=.*/NGINX_HTTPS_PORT=443/' "${ENV_FILE}"
+            systemctl stop nginx || true
+            systemctl disable nginx || true
+
+            # ECS 国内网络不稳定时，关闭 buildkit 更稳
+            export DOCKER_BUILDKIT=0
+            export COMPOSE_DOCKER_CLI_BUILD=0
+            docker compose --env-file "${ENV_FILE}" build web admin api nginx
+            docker compose --env-file "${ENV_FILE}" up -d web admin api nginx
             docker compose --env-file "${ENV_FILE}" ps
