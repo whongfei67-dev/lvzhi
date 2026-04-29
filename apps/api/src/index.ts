@@ -42,6 +42,7 @@ import { workspaceRoute } from './routes/workspace.js'
 import { creatorRoute } from './routes/creator.js'
 import { lawyersRoute } from './routes/lawyers.js'
 import { notificationsRoute } from './routes/notifications.js'
+import { mediaRoute } from './routes/media.js'
 
 // 安全中间件
 import { csrfProtection, ipFilter, botDetection } from './middleware/security.js'
@@ -298,6 +299,7 @@ await app.register(workspaceRoute)
 await app.register(creatorRoute)
 await app.register(lawyersRoute)
 await app.register(notificationsRoute)
+await app.register(mediaRoute)
 
 // ============================================
 // 全局错误处理
