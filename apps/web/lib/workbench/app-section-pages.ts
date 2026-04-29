@@ -34,5 +34,7 @@ export function getWorkbenchSectionInfo(role: WorkbenchDemoRole, id: string): Wo
 }
 
 export function firstWorkbenchSectionId(role: WorkbenchDemoRole): string {
-  return workbenchSectionInfos(role)[0]?.id ?? 'overview';
+  const infos = workbenchSectionInfos(role);
+  const profileFirst = infos.find((item) => /profile/i.test(item.id));
+  return profileFirst?.id ?? infos[0]?.id ?? 'overview';
 }

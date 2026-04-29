@@ -203,7 +203,7 @@ function SearchResultsInner() {
             {inspirationHits.length === 0 && lawyers.length === 0 && !lawyersLoading && !lawyersError ? (
               <div className="card mt-10 flex flex-col items-center p-10 text-center">
                 <Scale className="h-10 w-10 text-[#9A8B78]" aria-hidden />
-                <p className="mt-3 text-sm text-[#5D4E3A]">未找到与「{rawQ}」相关的结果，可换个关键词或到各频道浏览。</p>
+                <p className="mt-3 text-sm text-[#5D4E3A]">暂时无法搜索到您想要的内容，可换个关键词或到各频道浏览。</p>
               </div>
             ) : null}
           </>

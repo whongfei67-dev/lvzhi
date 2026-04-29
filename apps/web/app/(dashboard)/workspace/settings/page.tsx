@@ -92,7 +92,7 @@ function ProfileSettings() {
             type="text"
             value={formData.display_name}
             onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
-            className="w-full rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-4 py-3 text-[#2C2416] placeholder:text-[#9A8B78] focus:border-[#D4A574] focus:bg-white focus:outline-none"
+            className="w-full rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-3 py-2 text-sm text-[#2C2416] placeholder:text-[#9A8B78] focus:border-[#D4A574] focus:bg-white focus:outline-none"
           />
         </div>
 
@@ -103,7 +103,7 @@ function ProfileSettings() {
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
             rows={4}
             placeholder="介绍一下你自己..."
-            className="w-full resize-none rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-4 py-3 text-[#2C2416] placeholder:text-[#9A8B78] focus:border-[#D4A574] focus:bg-white focus:outline-none"
+            className="w-full resize-none rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-3 py-2 text-sm text-[#2C2416] placeholder:text-[#9A8B78] focus:border-[#D4A574] focus:bg-white focus:outline-none"
           />
         </div>
 
@@ -114,7 +114,7 @@ function ProfileSettings() {
             value={formData.location}
             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
             placeholder="例如：北京"
-            className="w-full rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-4 py-3 text-[#2C2416] placeholder:text-[#9A8B78] focus:border-[#D4A574] focus:bg-white focus:outline-none"
+            className="w-full rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-3 py-2 text-sm text-[#2C2416] placeholder:text-[#9A8B78] focus:border-[#D4A574] focus:bg-white focus:outline-none"
           />
         </div>
       </div>
@@ -140,7 +140,7 @@ function WorkspaceAccountTabSettings() {
           <input
             type="email"
             defaultValue="user@example.com"
-            className="w-full rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-4 py-3 text-[#2C2416] focus:border-[#D4A574] focus:bg-white focus:outline-none"
+            className="w-full rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-3 py-2 text-sm text-[#2C2416] focus:border-[#D4A574] focus:bg-white focus:outline-none"
           />
         </div>
 
@@ -149,7 +149,7 @@ function WorkspaceAccountTabSettings() {
           <input
             type="tel"
             defaultValue="138 **** 8888"
-            className="w-full rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-4 py-3 text-[#2C2416] focus:border-[#D4A574] focus:bg-white focus:outline-none"
+            className="w-full rounded-xl border border-[rgba(212,165,116,0.25)] bg-[rgba(212,165,116,0.08)] px-3 py-2 text-sm text-[#2C2416] focus:border-[#D4A574] focus:bg-white focus:outline-none"
           />
           <button className="mt-2 text-sm text-[#D4A574]">更换手机号</button>
         </div>

@@ -1103,6 +1103,16 @@
       min-height: 0;
       border-radius: 8px;
     }
+    #workbench-integration-mount .form-input {
+      padding: 6px 10px;
+      font-size: 12px;
+      line-height: 1.35;
+      min-height: 34px;
+      border-radius: 8px;
+    }
+    #workbench-integration-mount textarea.form-input {
+      min-height: 72px;
+    }
 
     #workbench-integration-mount .wb-analytics-charts {
       display: grid;

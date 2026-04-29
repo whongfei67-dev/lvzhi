@@ -42,6 +42,7 @@ function uploadFailureMessage(err: unknown, fallback: string): string {
 // 允许的文件类型
 const ALLOWED_FILE_TYPES = [
   'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+  'image/heic', 'image/heif',
   'application/pdf',
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -56,7 +57,7 @@ const ALLOWED_FILE_TYPES = [
 ]
 
 // 允许的图片类型
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
 
 export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
 

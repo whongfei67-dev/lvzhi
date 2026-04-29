@@ -255,6 +255,7 @@ export default function InspirationPage() {
   }, [])
 
   const { filteredItems, matchedTotal } = useMemo(() => {
+    const keyword = searchValue.trim().toLowerCase()
     const merged = [...items]
     const byKey = new Map<string, InspirationDemoProduct>()
     for (const item of merged) {
@@ -264,7 +265,19 @@ export default function InspirationPage() {
     }
     const list = Array.from(byKey.values()).filter((item) => {
       if (!categoryMatchesPracticeTag(item.category, practiceTag)) return false
-      if (searchValue && !item.title.toLowerCase().includes(searchValue.toLowerCase())) return false
+      if (keyword) {
+        const haystack = [
+          item.title,
+          item.description,
+          item.author,
+          item.category,
+          item.reviewExcerpt,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+        if (!haystack.includes(keyword)) return false
+      }
       return true
     })
 
@@ -471,6 +484,12 @@ export default function InspirationPage() {
                   <InspirationProductCard key={item.id} item={item} index={i} />
                 ))}
               </div>
+              {!itemsLoading && filteredItems.length === 0 ? (
+                <div className="mt-6 rounded-2xl border border-[rgba(212,165,116,0.24)] bg-[rgba(255,248,240,0.72)] px-5 py-7 text-center">
+                  <p className="text-base font-semibold text-[#5C4033]">暂时无法搜索到您想要的内容</p>
+                  <p className="mt-2 text-sm text-[#8A6C4D]">请尝试更换关键词，或切换业务类型与排序后重试。</p>
+                </div>
+              ) : null}
               {!isLoggedIn ? <GuestMarketingUnlockContentVeil /> : null}
             </div>
             {!isLoggedIn ? (

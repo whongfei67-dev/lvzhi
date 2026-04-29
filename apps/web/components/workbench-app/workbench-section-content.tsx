@@ -3638,6 +3638,42 @@ function CreatorSkillsManage({ sessionId }: { sessionId: string }) {
                   <button type="button" className="social-btn wb-btn-compact" onClick={() => openEdit(r.id)}>
                     修改
                   </button>
+                  <button
+                    type="button"
+                    className="social-btn wb-btn-compact"
+                    disabled={ipApplying}
+                    onClick={async () => {
+                      if (ipApplying) return;
+                      const current = rows.find((x) => x.id === r.id) ?? null;
+                      if (!current) {
+                        flashSave("未找到对应 Skills，无法提交知产申请");
+                        return;
+                      }
+                      setSelectedId(r.id);
+                      setIpApplying(true);
+                      try {
+                        await api.creator.applyIp({
+                          source_type: "skill",
+                          source_id: current.id,
+                          materials: {
+                            title: current.title,
+                            submission_type: current.submissionType,
+                            status: current.status,
+                            price: current.price,
+                            background: current.background,
+                            architecture: current.architecture,
+                          },
+                        });
+                        flashSave(`《${current.title || "该 Skills"}》知产申请已提交`);
+                      } catch (e) {
+                        flashSave(e instanceof ApiError ? e.message : "提交知产申请失败，请稍后重试");
+                      } finally {
+                        setIpApplying(false);
+                      }
+                    }}
+                  >
+                    {ipApplying && selectedId === r.id ? "提交中…" : "一键知识产权申请"}
+                  </button>
                 </div>
               </div>
             ))

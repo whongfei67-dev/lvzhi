@@ -21,6 +21,8 @@ export const ALLOWED_FILE_TYPES = [
   'image/png',
   'image/gif',
   'image/webp',
+  'image/heic',
+  'image/heif',
   'image/svg+xml',
   'application/pdf',
   'application/msword',
@@ -179,11 +181,15 @@ export async function uploadToOSS(
     return `/uploads/${filePath}`
   }
 
-  const url = `https://${config.bucket}.${config.endpoint}/${filePath}`
+  let effectiveEndpoint = config.endpoint
   const defaultUsePublicReadAcl = process.env.OSS_UPLOAD_PUBLIC_READ !== 'false'
 
-  async function putObject(usePublicReadAcl: boolean): Promise<{ ok: boolean; status: number; statusText: string; detail: string }> {
+  async function putObject(
+    usePublicReadAcl: boolean,
+    endpoint: string
+  ): Promise<{ ok: boolean; status: number; statusText: string; detail: string; regionHint: string }> {
     const date = new Date().toUTCString()
+    const url = `https://${config.bucket}.${endpoint}/${filePath}`
     const ossHeaders: Record<string, string> = usePublicReadAcl
       ? { 'x-oss-object-acl': 'public-read' }
       : {}
@@ -217,17 +223,35 @@ export async function uploadToOSS(
     })
 
     const detail = (await response.text().catch(() => '')).slice(0, 220).replace(/\s+/g, ' ').trim()
-    return { ok: response.ok, status: response.status, statusText: response.statusText, detail }
+    const regionHint =
+      response.headers.get('x-oss-bucket-region') ||
+      response.headers.get('x-oss-location') ||
+      ''
+    return { ok: response.ok, status: response.status, statusText: response.statusText, detail, regionHint }
   }
 
-  let uploadResult = await putObject(defaultUsePublicReadAcl)
+  let uploadResult = await putObject(defaultUsePublicReadAcl, effectiveEndpoint)
   if (!uploadResult.ok && defaultUsePublicReadAcl) {
     const maybeAclDenied =
       uploadResult.status === 403 &&
       /AccessDenied|Put public object acl/i.test(uploadResult.detail)
     if (maybeAclDenied) {
       console.warn('[OSS] ACL public-read denied, retrying upload without object ACL')
-      uploadResult = await putObject(false)
+      uploadResult = await putObject(false, effectiveEndpoint)
+    }
+  }
+
+  if (!uploadResult.ok) {
+    const hintedEndpoint = uploadResult.regionHint
+      ? `oss-${uploadResult.regionHint}.aliyuncs.com`
+      : ''
+    const endpointMismatch =
+      uploadResult.status === 301 ||
+      /bucket you are attempting to access must be addressed using the specified endpoint/i.test(uploadResult.detail)
+    if (hintedEndpoint && endpointMismatch && hintedEndpoint !== effectiveEndpoint) {
+      console.warn(`[OSS] Endpoint mismatch, retrying with hinted endpoint: ${hintedEndpoint}`)
+      effectiveEndpoint = hintedEndpoint
+      uploadResult = await putObject(false, effectiveEndpoint)
     }
   }
 
@@ -239,7 +263,7 @@ export async function uploadToOSS(
 
   // 返回 CDN 加速 URL（如果有配置）
   const cdnUrl = process.env.OSS_CDN_URL
-  return cdnUrl ? `${cdnUrl}/${filePath}` : url
+  return cdnUrl ? `${cdnUrl}/${filePath}` : `https://${config.bucket}.${effectiveEndpoint}/${filePath}`
 }
 
 // 从 OSS 删除文件
