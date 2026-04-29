@@ -59,6 +59,33 @@ const ALLOWED_FILE_TYPES = [
 // 允许的图片类型
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif']
 
+const MIME_BY_EXT: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  heic: 'image/heic',
+  heif: 'image/heif',
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  zip: 'application/zip',
+  rar: 'application/vnd.rar',
+  '7z': 'application/x-7z-compressed',
+  txt: 'text/plain',
+  md: 'text/markdown',
+  json: 'application/json',
+  csv: 'text/csv',
+}
+
+function resolveMimeType(filename: string, rawMimeType: string): string {
+  const fromRequest = String(rawMimeType || '').toLowerCase().trim()
+  if (fromRequest && fromRequest !== 'application/octet-stream') return fromRequest
+  const ext = filename.includes('.') ? filename.split('.').pop()?.toLowerCase() || '' : ''
+  return MIME_BY_EXT[ext] || fromRequest || 'application/octet-stream'
+}
+
 export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
 
   // ============================================
@@ -78,6 +105,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     }
 
     const { filename, mimetype } = data
+    const effectiveMimeType = resolveMimeType(filename, mimetype)
     // @fastify/multipart v8：toBuffer 在 MultipartFile 根对象上，不在内部的 file 流上
     const buffer = await data.toBuffer()
 
@@ -91,7 +119,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     }
 
     // 文件类型限制
-    if (!ALLOWED_FILE_TYPES.includes(mimetype)) {
+    if (!ALLOWED_FILE_TYPES.includes(effectiveMimeType)) {
       return errors.badRequest(reply, '不支持的文件类型')
     }
 
@@ -102,14 +130,14 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       const filePath = `uploads/${userId}/${uniqueName}`
 
       // 上传到阿里云 OSS
-      const url = await uploadToOSS(filePath, buffer, mimetype)
+      const url = await uploadToOSS(filePath, buffer, effectiveMimeType)
 
       // 记录到数据库
       const result = await query(
         `INSERT INTO uploaded_files (user_id, filename, original_name, size, mime_type, url, category)
          VALUES ($1, $2, $3, $4, $5, $6, 'other')
          RETURNING id, user_id, filename, original_name, size, mime_type, url, created_at`,
-        [userId, uniqueName, filename, buffer.length, mimetype, url]
+        [userId, uniqueName, filename, buffer.length, effectiveMimeType, url]
       )
 
       return created(reply, result.rows[0], 'File uploaded successfully')
@@ -137,6 +165,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     }
 
     const { filename, mimetype } = data
+    const effectiveMimeType = resolveMimeType(filename, mimetype)
     // @fastify/multipart v8：toBuffer 在 MultipartFile 根对象上，不在内部的 file 流上
     const buffer = await data.toBuffer()
 
@@ -150,7 +179,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     }
 
     // 只允许图片
-    if (!ALLOWED_IMAGE_TYPES.includes(mimetype)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(effectiveMimeType)) {
       return errors.badRequest(reply, '仅支持 jpg / png / gif / webp 图片')
     }
 
@@ -160,7 +189,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       const filePath = `avatars/${uniqueName}`
 
       // 上传到阿里云 OSS
-      const url = await uploadToOSS(filePath, buffer, mimetype)
+      const url = await uploadToOSS(filePath, buffer, effectiveMimeType)
 
       // 更新用户头像
       await query(
@@ -172,7 +201,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       await query(
         `INSERT INTO uploaded_files (user_id, filename, original_name, size, mime_type, url, category)
          VALUES ($1, $2, $3, $4, $5, $6, 'avatar')`,
-        [userId, uniqueName, filename, buffer.length, mimetype, url]
+        [userId, uniqueName, filename, buffer.length, effectiveMimeType, url]
       )
 
       return success(reply, { url }, 'Avatar uploaded successfully')
@@ -219,6 +248,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     }
 
     const { filename, mimetype } = data
+    const effectiveMimeType = resolveMimeType(filename, mimetype)
     // @fastify/multipart v8：toBuffer 在 MultipartFile 根对象上，不在内部的 file 流上
     const buffer = await data.toBuffer()
 
@@ -231,7 +261,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       return errors.badRequest(reply, '图片过大（最大 5MB）')
     }
 
-    if (!ALLOWED_IMAGE_TYPES.includes(mimetype)) {
+    if (!ALLOWED_IMAGE_TYPES.includes(effectiveMimeType)) {
       return errors.badRequest(reply, '仅支持 jpg / png / gif / webp 图片')
     }
 
@@ -241,7 +271,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       const filePath = `agent-avatars/${uniqueName}`
 
       // 上传到阿里云 OSS
-      const url = await uploadToOSS(filePath, buffer, mimetype)
+      const url = await uploadToOSS(filePath, buffer, effectiveMimeType)
 
       // 更新智能体头像
       await query(
@@ -253,7 +283,7 @@ export const uploadRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       await query(
         `INSERT INTO uploaded_files (user_id, filename, original_name, size, mime_type, url, category)
          VALUES ($1, $2, $3, $4, $5, $6, 'agent_avatar')`,
-        [userId, uniqueName, filename, buffer.length, mimetype, url]
+        [userId, uniqueName, filename, buffer.length, effectiveMimeType, url]
       )
 
       return success(reply, { url }, 'Agent avatar uploaded successfully')

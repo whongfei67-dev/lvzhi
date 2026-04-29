@@ -7,7 +7,7 @@ import { ChevronDown, Menu, X, Search } from "lucide-react";
 import { Logo } from "@/components/common/logo";
 import { preferTradForKeShiLu } from "@/lib/keshilu-text";
 import { beijingGreetingWord } from "@/lib/datetime/beijing-greeting";
-import { defaultHomePathForRole } from "@/lib/auth/default-home";
+import { workbenchPathForRole } from "@/lib/auth/default-home";
 import type { Session } from "@/lib/auth/session-types";
 import { clearSessionCache, getSession, logout as apiLogout } from "@/lib/api/client";
 
@@ -285,7 +285,7 @@ export function TopNav() {
                   }}
                 >
                   <Link
-                    href={defaultHomePathForRole(session.role)}
+                    href={workbenchPathForRole(session.role)}
                     className="block px-3 py-2.5 text-sm text-[#2C2416] transition-colors hover:bg-[rgba(212,165,116,0.18)]"
                     role="menuitem"
                     onClick={() => setUserMenuOpen(false)}
@@ -411,7 +411,7 @@ export function TopNav() {
                   {beijingGreetingWord()}，{marketingNickname(session)}
                 </p>
                 <Link
-                  href={defaultHomePathForRole(session.role)}
+                  href={workbenchPathForRole(session.role)}
                   onClick={() => setMobileOpen(false)}
                   className="home-cta-brush-title block rounded-xl py-2.5 text-center text-base font-normal tracking-wide text-[#2C2416]"
                   style={{ border: "1px solid rgba(212,165,116,0.35)", background: "rgba(255,248,240,0.75)" }}

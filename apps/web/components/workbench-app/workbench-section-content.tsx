@@ -265,7 +265,12 @@ function ProfileForm({ session, role, msg, onDone }: { session: Props["session"]
                     setAvatarUploading(true);
                     setAvatarUploadTip("");
                     try {
-                      const row = await uploadAvatarFile(f);
+                      let row = await uploadAvatarFile(f).catch(async () => {
+                        // 兜底：当专用头像接口失败时，回退到通用上传并回写 profiles.avatar_url
+                        const uploaded = await uploadFormFile(f);
+                        await api.users.updateProfile(session.id, { avatar_url: uploaded.url });
+                        return { url: uploaded.url };
+                      });
                       const previewUrl = `${row.url}${row.url.includes("?") ? "&" : "?"}v=${Date.now()}`;
                       setAvatarUrl(previewUrl);
                       window.dispatchEvent(new CustomEvent("lvzhi:avatar-updated", { detail: { url: previewUrl } }));
