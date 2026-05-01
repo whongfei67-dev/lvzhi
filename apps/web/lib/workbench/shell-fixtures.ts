@@ -36,6 +36,7 @@ const CLIENT_SHELL: WorkbenchShellFixture = {
       label: "消息与协作",
       items: [
         { href: "#cli-msg", label: "帖子与留言（含合作邀请）" },
+        { href: "#cli-following", label: "我关注的账号" },
         { href: "#cli-notice", label: "通知", sub: true },
       ],
     },
@@ -111,6 +112,7 @@ const CREATOR_SHELL: WorkbenchShellFixture = {
         { href: "#cre-trial", label: "试用邀请" },
         { href: "#cre-msg", label: "留言（含合作邀请）" },
         { href: "#cre-followers", label: "关注我的用户" },
+        { href: "#cre-following", label: "我关注的账号" },
         { href: "#cre-notice", label: "通知", sub: true },
       ],
     },

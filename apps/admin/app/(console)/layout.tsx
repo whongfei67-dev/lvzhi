@@ -6,10 +6,10 @@ import { AdminAccountMenu } from "@/components/admin-account-menu";
 export default async function ConsoleLayout({ children }: { children: React.ReactNode }) {
   const session = await getAdminSessionServer();
   if (!session) {
-    redirect("/login?next=/review");
+    redirect("/admin/login?next=/admin/review");
   }
   if (!isAdminRole(session.role)) {
-    redirect("/login?next=/review");
+    redirect("/admin/login?next=/admin/review");
   }
   const superAdmin = isSuperAdminRole(session.role);
 

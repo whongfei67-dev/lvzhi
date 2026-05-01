@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { GuestGate } from "@/components/common/guest-gate";
 import { ReportCornerButton } from "@/components/common/report-corner-button";
+import { FollowToggleButton } from "@/components/creator/follow-toggle-button";
 import { api, getSession } from "@/lib/api/client";
 import {
   Award,
@@ -701,6 +702,14 @@ export default function LawyerDetailPage() {
                 未登录为半锁定预览；登录后可填写留言并由系统推送给律师。
               </p>
               <LawyerMessageCta slug={slug} />
+              {String(view.id || "").trim() ? (
+                <div className="mt-3">
+                  <FollowToggleButton
+                    targetUserId={String(view.id)}
+                    className="inline-flex h-10 items-center rounded-xl border border-[rgba(212,165,116,0.35)] px-4 text-sm font-semibold text-[#B8860B] transition hover:bg-[rgba(212,165,116,0.08)] disabled:cursor-not-allowed disabled:opacity-60"
+                  />
+                </div>
+              ) : null}
             </div>
 
             <Link

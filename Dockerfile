@@ -1,6 +1,6 @@
 # ============================================
 # 律植 - 多阶段构建 Dockerfile
-# 支持：Web (Next.js) + API (Fastify)
+# 支持：Web (Next.js) + Admin (Next.js) + API (Fastify)
 # ============================================
 
 # ---- 阶段 1: Builder ----
@@ -17,6 +17,7 @@ RUN npm config set registry https://registry.npmmirror.com
 # 复制依赖文件
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/admin/package.json ./apps/admin/
 COPY apps/api/package.json ./apps/api/
 COPY packages/*/package.json ./packages/
 
@@ -43,6 +44,9 @@ RUN chmod +x /tmp/build-web.sh
 
 # 在构建脚本中执行 web 构建（脚本会从 .env.build 读取配置）
 RUN /bin/sh /tmp/build-web.sh
+
+# 构建 Admin 服务
+RUN pnpm --filter admin build
 
 # 构建 API 服务
 RUN rm -rf apps/api/dist && pnpm --filter api build
@@ -87,7 +91,38 @@ ENV HOSTNAME="0.0.0.0"
 CMD ["pnpm", "start"]
 
 
-# ---- 阶段 3: API Runtime ----
+# ---- 阶段 3: Admin Runtime ----
+FROM docker.m.daocloud.io/library/node:20-alpine AS admin-runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 admin
+
+COPY --from=builder /app/apps/admin/.next ./.next
+COPY --from=builder /app/apps/admin/public ./public
+COPY --from=builder /app/apps/admin/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+
+RUN corepack enable && corepack prepare pnpm@10.16.1 --activate
+RUN npm config set registry https://registry.npmmirror.com
+RUN pnpm install --prod
+
+RUN chown -R admin:nodejs /app
+
+USER admin
+
+EXPOSE 3100
+
+ENV PORT=3100
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["pnpm", "start", "-p", "3100"]
+
+
+# ---- 阶段 4: API Runtime ----
 FROM docker.m.daocloud.io/library/node:20-alpine AS api-runner
 
 WORKDIR /app
@@ -122,7 +157,7 @@ WORKDIR /app/apps/api
 CMD ["node", "dist/index.js"]
 
 
-# ---- 阶段 4: Nginx ----
+# ---- 阶段 5: Nginx ----
 FROM docker.m.daocloud.io/library/nginx:alpine AS nginx
 
 # 复制自定义 nginx 配置
@@ -136,7 +171,7 @@ EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]
 
 
-# ---- 阶段 5: All-in-One (开发/测试用) ----
+# ---- 阶段 6: All-in-One (开发/测试用) ----
 FROM docker.m.daocloud.io/library/node:20-alpine AS all-in-one
 
 WORKDIR /app
@@ -148,6 +183,7 @@ RUN corepack enable && corepack prepare pnpm@10.16.1 --activate
 # 复制依赖文件
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/web/package.json ./apps/web/
+COPY apps/admin/package.json ./apps/admin/
 COPY apps/api/package.json ./apps/api/
 
 RUN pnpm install --frozen-lockfile
@@ -157,6 +193,7 @@ COPY . .
 
 # 构建
 RUN pnpm --filter web build
+RUN pnpm --filter admin build
 RUN pnpm --filter api build
 
 # 启动命令

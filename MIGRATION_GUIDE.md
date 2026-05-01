@@ -104,18 +104,23 @@ psql -h lvzhi-prod.pg.polardb.rds.aliyuncs.com -p 5432 -U mamba_01 -d data01
 ## 四、常见问题
 
 ### 1. 密码输入错误
+
 ```
 psql: error: connection to server failed: FATAL: password authentication failed
 ```
+
 → 请确认数据库密码正确
 
 ### 2. 表已存在
+
 ```
 ERROR: relation "trial_invitations" already exists
 ```
+
 → 这不是错误，说明表已经存在，可以忽略或使用 `IF NOT EXISTS`
 
 ### 3. 后端启动失败
+
 ```bash
 # 查看具体错误
 cd apps/api && pnpm dev 2>&1
@@ -125,3 +130,4 @@ cd apps/api && pnpm dev 2>&1
 # - 环境变量缺失：检查 .env 文件
 # - 模块未找到：pnpm install
 ```
+

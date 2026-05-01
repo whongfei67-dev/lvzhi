@@ -342,6 +342,19 @@ export const users = {
       items: Array<Record<string, unknown>>;
     }>(`/api/users/${userId}/followers${qs ? `?${qs}` : ""}`);
   },
+
+  async getFollowing(userId: string, params?: { page?: number; pageSize?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", String(params.page));
+    if (params?.pageSize) searchParams.set("pageSize", String(params.pageSize));
+    const qs = searchParams.toString();
+    return request<{
+      page: number;
+      pageSize: number;
+      total: number;
+      items: Array<Record<string, unknown>>;
+    }>(`/api/users/${userId}/following${qs ? `?${qs}` : ""}`);
+  },
 };
 
 // ============================================

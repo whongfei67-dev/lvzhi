@@ -54,6 +54,7 @@ export function WorkbenchSectionContent({ role, section, session }: Props) {
   const postsSections = new Set(["cli-posts", "cre-posts"]);
   const noticeSections = new Set(["cli-notice", "cre-notice"]);
   const followersSections = new Set(["cre-followers"]);
+  const followingSections = new Set(["cli-following", "cre-following"]);
 
   if (profileSections.has(section)) return <ProfileForm session={session} role={role} onDone={setMsg} msg={msg} />;
   if (settingsSections.has(section)) return <AccountSettings email={session.email} onDone={setMsg} msg={msg} />;
@@ -66,6 +67,7 @@ export function WorkbenchSectionContent({ role, section, session }: Props) {
   if (postsSections.has(section)) return <MyPostsPanel title="帖子管理" />;
   if (messageHubSections.has(section)) return <MessagesAndCoopHub />;
   if (followersSections.has(section)) return <FollowersPanel sessionId={session.id} />;
+  if (followingSections.has(section)) return <FollowingPanel sessionId={session.id} />;
   if (noticeSections.has(section)) return <NoticeBoard />;
 
   return <Card title="功能建设中">该模块正在对齐联调页，马上补齐。</Card>;
@@ -4199,6 +4201,79 @@ function FollowersPanel({ sessionId }: { sessionId: string }) {
         {!rows.length && !loading ? (
           <div className="dense-row">
             <div>暂无关注者</div>
+            <div>—</div>
+            <div>—</div>
+          </div>
+        ) : null}
+      </div>
+    </Card>
+  );
+}
+
+function FollowingPanel({ sessionId }: { sessionId: string }) {
+  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<Record<string, unknown>[]>([]);
+  const [total, setTotal] = useState(0);
+  const [err, setErr] = useState("");
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    setErr("");
+    try {
+      const res = await api.users.getFollowing(sessionId, { page: 1, pageSize: 50 });
+      setRows(Array.isArray(res.items) ? res.items : []);
+      setTotal(Number(res.total || 0));
+    } catch (error) {
+      setRows([]);
+      setErr(error instanceof Error ? error.message : "加载失败");
+    } finally {
+      setLoading(false);
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  return (
+    <Card title="我关注的账号">
+      <div className="wb-form-actions mb-2">
+        <span className="wb-hint">
+          当前已关注 {total} 个账号。{loading ? "正在同步最新列表..." : "列表已按最近关注时间排序。"}
+        </span>
+        <button type="button" className="social-btn wb-btn-compact" onClick={load} disabled={loading}>
+          刷新
+        </button>
+      </div>
+      {err ? <div className="wb-hint text-[#b35a5a]">{err}</div> : null}
+      <div className="dense-table">
+        <div className="dense-row head"><div>已关注账号</div><div>身份</div><div>关注时间</div></div>
+        {rows.map((item) => {
+          const name = String(item.display_name || item.email || "未命名用户");
+          const role = String(item.role || "user");
+          const creatorLevel = String(item.creator_level || "");
+          const roleLabel =
+            role === "creator"
+              ? creatorLevel === "lawyer"
+                ? "创作者 · 执业律师"
+                : "创作者"
+              : role === "client"
+                ? "普通用户"
+                : role;
+          return (
+            <div key={String(item.following_id || name)} className="dense-row">
+              <div>
+                <div className="font-medium">{name}</div>
+                <div className="wb-hint">{String(item.email || "—")}</div>
+              </div>
+              <div>{roleLabel}</div>
+              <div>{formatLocalDateTime(item.followed_at)}</div>
+            </div>
+          );
+        })}
+        {!rows.length && !loading ? (
+          <div className="dense-row">
+            <div>暂无关注账号</div>
             <div>—</div>
             <div>—</div>
           </div>

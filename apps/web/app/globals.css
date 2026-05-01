@@ -176,6 +176,30 @@
     padding: 0 2rem;
   }
 
+  /* 营销页统一：减少左右留白，提升有效内容宽度 */
+  .marketing-layout .mx-auto.max-w-7xl {
+    max-width: min(92rem, calc(100vw - 1.25rem));
+  }
+  .marketing-layout .mx-auto.max-w-6xl {
+    max-width: min(84rem, calc(100vw - 1.25rem));
+  }
+  .marketing-layout .mx-auto.max-w-5xl {
+    max-width: min(76rem, calc(100vw - 1.25rem));
+  }
+  .marketing-layout .hero-container {
+    max-width: min(1860px, calc(100vw - 1.25rem));
+    padding-inline: clamp(0.5rem, 1.15vw, 1rem);
+  }
+
+  @media (max-width: 1024px) {
+    .marketing-layout .mx-auto.max-w-7xl,
+    .marketing-layout .mx-auto.max-w-6xl,
+    .marketing-layout .mx-auto.max-w-5xl,
+    .marketing-layout .hero-container {
+      max-width: calc(100vw - 1rem);
+    }
+  }
+
   /* ── 卡片 ── */
   .card {
     border: 1px solid rgba(212,165,116,0.34);

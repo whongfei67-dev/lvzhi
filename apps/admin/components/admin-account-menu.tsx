@@ -30,7 +30,7 @@ export function AdminAccountMenu({ displayName, email, userId, role }: Props) {
       // ignore network errors, still force route jump
     } finally {
       setLoading(false);
-      router.replace("/login?next=/review");
+      router.replace("/admin/login?next=/admin/review");
       router.refresh();
     }
   }

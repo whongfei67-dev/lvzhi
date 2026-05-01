@@ -15,6 +15,7 @@ function upstreamApiBase(): string {
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  basePath: "/admin",
   outputFileTracingRoot: path.join(__dirname, "../../"),
   async rewrites() {
     const upstream = upstreamApiBase();

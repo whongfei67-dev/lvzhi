@@ -18,6 +18,7 @@ type OverviewItem = {
   status: string;
   verified: boolean;
   verification_status: string | null;
+  follower_count?: number | null;
   created_at: string;
 };
 
@@ -113,6 +114,9 @@ type OverviewPayload = {
           favorite_count: number;
           created_at: string;
         }>;
+        total_follow_relations: number;
+        followed_accounts_total: number;
+        follower_users_total: number;
         follower_leaderboard: Array<{
           user_id: string;
           display_name: string;
@@ -902,6 +906,8 @@ export default function DataOverviewClient() {
             <div style={{ fontWeight: 600, marginBottom: 8 }}>律师数据</div>
             <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
               <MetricCard title="执业律师人数" value={formatCount(business?.practicing_lawyers_total || 0)} iconPath="M4 20h16M7 20V8h10v12M12 8V4M9 4h6" />
+              <MetricCard title="总关注关系数" value={formatCount(business?.total_follow_relations || 0)} iconPath="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8" />
+              <MetricCard title="被关注账号数" value={formatCount(business?.followed_accounts_total || 0)} iconPath="M3 11l9-8 9 8v9a2 2 0 0 1-2 2h-4v-6H9v6H5a2 2 0 0 1-2-2z" />
             </div>
             <div style={{ marginTop: 10, display: "grid", gap: 8 }}>
               {lawyerDomainEntries.map((entry) => (
@@ -919,7 +925,7 @@ export default function DataOverviewClient() {
             </div>
             <div style={{ marginTop: 12 }}>
               <div style={{ fontSize: 12, color: "#7c6a56", marginBottom: 6 }}>
-                关注者人数排行榜（创作者 / 律师）
+                关注者人数排行榜（创作者 / 律师） · 关注用户数 {formatCount(business?.follower_users_total || 0)}
               </div>
               <div style={{ overflowX: "auto" }}>
                 <table className="admin-table" style={{ minWidth: 680 }}>
@@ -1371,6 +1377,7 @@ export default function DataOverviewClient() {
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap", fontSize: 12, color: "#6b5b4d" }}>
                     <span>角色：{roleLabel(item.role)}</span>
                     <span>状态：{statusLabel(item.status)}</span>
+                    <span>关注我的人数：{formatCount(Number(item.follower_count || 0))}</span>
                     <span>城市：{item.city || "—"}</span>
                     <span>年龄：{inferAge(item.birth_year)}</span>
                   </div>
@@ -1392,6 +1399,7 @@ export default function DataOverviewClient() {
                 <div><strong>角色：</strong>{roleLabel(selectedUser.role)}</div>
                 <div><strong>账号状态：</strong>{statusLabel(selectedUser.status)}</div>
                 <div><strong>认证状态：</strong>{selectedUser.verification_status || (selectedUser.verified ? "verified" : "unverified")}</div>
+                <div><strong>关注我的人数：</strong>{formatCount(Number(selectedUser.follower_count || 0))}</div>
                 <div><strong>城市：</strong>{selectedUser.city || "—"}</div>
                 <div><strong>性别：</strong>{genderLabel(selectedUser.gender || "unknown")}</div>
                 <div><strong>年龄：</strong>{inferAge(selectedUser.birth_year)}</div>

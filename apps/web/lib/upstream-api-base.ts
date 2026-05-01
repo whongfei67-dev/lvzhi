@@ -6,7 +6,8 @@ export function getUpstreamApiBaseUrl(): string {
     process.env.API_PROXY_TARGET ||
     process.env.NEXT_PUBLIC_API_URL ||
     "http://127.0.0.1:4000";
-  return raw.replace(/\/$/, "");
+  // 统一返回 API 服务根地址（不含末尾 /api），避免拼接出 /api/api/*
+  return raw.replace(/\/$/, "").replace(/\/api$/, "");
 }
 
 /** 生产环境 CSRF 中间件要求带 Origin，与 API 的 WEB_URL / ALLOWED_ORIGINS 对齐 */

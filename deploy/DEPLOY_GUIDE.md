@@ -299,6 +299,45 @@ pm2 show lvzhi-web
 
 ---
 
+## 每日 2 分钟巡检（Docker 生产环境）
+
+> 适用当前 ECS + Docker Compose 部署方式。建议每天至少执行 1 次。
+
+```bash
+cd /opt/lvzhi
+
+# 1) 磁盘与 Docker 空间
+df -h
+docker system df
+
+# 2) 核心容器状态
+docker compose --env-file deploy/.env ps
+
+# 3) 核心服务健康检查
+curl -sS -o /dev/null -w "web %{http_code}\n" https://www.lvxzhi.com/
+curl -sS -o /dev/null -w "admin %{http_code}\n" https://www.lvxzhi.com/admin/login
+curl -sS -o /dev/null -w "api-health %{http_code}\n" http://127.0.0.1:3001/health
+
+# 4) OSS 配置生效检查（应看到 bucket=mamba01）
+curl -s "http://127.0.0.1:3001/api/oss/health"
+
+# 5) 最近错误日志（近 10 分钟）
+docker compose --env-file deploy/.env logs --since=10m api | grep -Ei "error|failed|nosuch|accessdenied|signature|forbidden" || true
+docker compose --env-file deploy/.env logs --since=10m web | grep -Ei "error|failed|exception" || true
+docker compose --env-file deploy/.env logs --since=10m nginx | grep -Ei " 4[0-9][0-9] | 5[0-9][0-9] " || true
+```
+
+巡检通过标准：
+
+- `docker compose ps` 中 `web/api/admin/nginx` 均为 `Up`（`web/api/admin` 建议为 `healthy`）
+- `web` 返回 `200`
+- `admin/login` 返回 `200` 或 `302`
+- `api-health` 返回 `200`
+- `/api/oss/health` 显示 `bucket` 为 `mamba01`
+- 最近 10 分钟无持续错误日志
+
+---
+
 ## 更新部署
 
 ### 推荐：GitHub Actions 自动发布（含人工审批）

@@ -2593,6 +2593,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         opportunitiesStatsResult,
         opportunitiesDetailsResult,
         skillsDetailsResult,
+        followerStatsResult,
         followerLeaderboardResult,
       ] = await Promise.all([
         query<{ total: string }>(`SELECT COUNT(*) as total FROM profiles ${whereClause}`, params),
@@ -2613,6 +2614,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
              status,
              verified,
              verification_status,
+             COALESCE(follower_count, 0)::int AS follower_count,
              created_at,
              avatar_url
            FROM profiles
@@ -2939,6 +2941,17 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
           LIMIT 120
         `),
         query<{
+          total_follow_relations: string
+          followed_accounts_total: string
+          follower_users_total: string
+        }>(`
+          SELECT
+            COUNT(*)::text AS total_follow_relations,
+            COUNT(DISTINCT following_id)::text AS followed_accounts_total,
+            COUNT(DISTINCT follower_id)::text AS follower_users_total
+          FROM user_follows
+        `),
+        query<{
           user_id: string
           display_name: string | null
           role: string | null
@@ -3122,6 +3135,9 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
               opportunities_applications_total: parseInt(opportunitiesStatsResult.rows[0]?.total_applications || '0'),
               opportunities_details: opportunitiesDetails,
               skills_details: skillsDetails,
+              total_follow_relations: parseInt(followerStatsResult.rows[0]?.total_follow_relations || '0'),
+              followed_accounts_total: parseInt(followerStatsResult.rows[0]?.followed_accounts_total || '0'),
+              follower_users_total: parseInt(followerStatsResult.rows[0]?.follower_users_total || '0'),
               follower_leaderboard: followerLeaderboard,
               refreshed_at: new Date().toISOString(),
               refresh_cycle: 'daily',
