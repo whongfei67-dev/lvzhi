@@ -144,11 +144,12 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
 
       const whereClause = `WHERE ${conditions.join(' AND ')}`
 
-      let orderBy = 'p.verified DESC, p.follower_count DESC'
+      // Add deterministic tie-breakers so repeated refreshes keep stable order.
+      let orderBy = 'p.verified DESC, p.follower_count DESC, p.created_at DESC, p.id ASC'
       if (sort === 'reviews') {
-        orderBy = 'p.follower_count DESC'
+        orderBy = 'p.follower_count DESC, p.verified DESC, p.created_at DESC, p.id ASC'
       } else if (sort === 'activity') {
-        orderBy = 'p.created_at DESC'
+        orderBy = 'p.created_at DESC, p.follower_count DESC, p.id ASC'
       }
 
       const countResult = await query<{ count: string }>(
@@ -217,7 +218,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
           AND COALESCE(p.lawyer_profile_visible, true) = true
           AND p.verified = true
           AND COALESCE(p.recommendation_suspended_until, '1970-01-01'::timestamptz) <= NOW()
-        ORDER BY p.follower_count DESC
+        ORDER BY p.follower_count DESC, p.verified DESC, p.created_at DESC, p.id ASC
         LIMIT 6`
       )
 
@@ -273,7 +274,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
           p.creator_level
         FROM profiles p
         ${whereClause}
-        ORDER BY p.follower_count DESC, p.verified DESC
+        ORDER BY p.follower_count DESC, p.verified DESC, p.created_at DESC, p.id ASC
         LIMIT $${paramIndex}`,
         [...params, limitNum]
       )
