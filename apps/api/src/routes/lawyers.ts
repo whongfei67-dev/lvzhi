@@ -11,13 +11,33 @@ import { randomUUID } from 'crypto'
 import { query } from '../lib/database.js'
 import { success, created, errors, paginated } from '../utils/response.js'
 import type { JwtPayload, LawyerListQuery } from '../types.js'
-import { isVisitor, applyVisitorLimit } from '../plugins/auth.js'
+import { isVisitor } from '../plugins/auth.js'
 import { ensureUserSanctionColumns } from '../utils/user-sanctions.js'
 
 /** 律师详情路由：UUID 按 id；否则按展示名精确匹配（与首页/榜单中文链接一致） */
 function isLawyerProfileUuid(slug: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug)
 }
+
+const REAL_USER_EMAIL_FILTER = `
+  p.email IS NOT NULL
+  AND BTRIM(p.email) <> ''
+  AND POSITION('@' IN p.email) > 1
+  AND lower(p.email) !~ '^(test|demo|mock|sample|qa|dev|tmp|temp|note_|upd_|e2e)'
+  AND lower(p.email) NOT LIKE '%+test@%'
+  AND lower(p.email) NOT LIKE '%+qa@%'
+  AND lower(p.email) NOT LIKE '%+dev@%'
+  AND split_part(lower(p.email), '@', 2) NOT IN (
+    'example.com',
+    'example.org',
+    'example.net',
+    'test.com',
+    'test.local',
+    'localhost',
+    'mailinator.com',
+    'tempmail.com'
+  )
+`
 
 export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
   await ensureUserSanctionColumns()
@@ -114,6 +134,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
     try {
       // 律师 = creator + (lawyer_verified=true 或 creator_level='lawyer')
       const conditions: string[] = [
+        REAL_USER_EMAIL_FILTER,
         "p.role = 'creator'",
         "(p.lawyer_verified = true OR p.creator_level = 'lawyer')",
         "COALESCE(p.lawyer_profile_visible, true) = true"
@@ -183,7 +204,9 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
       let items = result.rows
 
       if (userIsVisitor) {
-        items = applyVisitorLimit(items, 0.5, true)
+        // Keep visitor view deterministic: no random sampling on refresh.
+        const limitedCount = Math.ceil(items.length * 0.5)
+        items = items.slice(0, limitedCount)
         total = Math.ceil(total * 0.5)
         reply.header('X-Content-Limited', 'true')
         reply.header('X-Visitor-Limited', 'true')
@@ -213,7 +236,8 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
           p.specialty as expertise,
           p.bio
         FROM profiles p
-        WHERE p.role = 'creator' 
+        WHERE ${REAL_USER_EMAIL_FILTER}
+          AND p.role = 'creator' 
           AND (p.lawyer_verified = true OR p.creator_level = 'lawyer')
           AND COALESCE(p.lawyer_profile_visible, true) = true
           AND p.verified = true
@@ -245,6 +269,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
 
     try {
       const conditions: string[] = [
+        REAL_USER_EMAIL_FILTER,
         "p.role = 'creator'",
         "(p.lawyer_verified = true OR p.creator_level = 'lawyer')",
         "COALESCE(p.lawyer_profile_visible, true) = true",
@@ -298,7 +323,8 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
       const result = await query(
         `SELECT city, COUNT(*) as count
          FROM profiles p
-         WHERE p.role = 'creator' 
+         WHERE ${REAL_USER_EMAIL_FILTER}
+           AND p.role = 'creator' 
            AND (p.lawyer_verified = true OR p.creator_level = 'lawyer')
            AND COALESCE(p.lawyer_profile_visible, true) = true
            AND p.law_firm IS NOT NULL
@@ -322,7 +348,8 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
       const result = await query(
         `SELECT DISTINCT unnest(specialty) as expertise, COUNT(*) as count
          FROM profiles p
-         WHERE p.role = 'creator' 
+         WHERE ${REAL_USER_EMAIL_FILTER}
+           AND p.role = 'creator' 
            AND (p.lawyer_verified = true OR p.creator_level = 'lawyer')
            AND COALESCE(p.lawyer_profile_visible, true) = true
            AND specialty IS NOT NULL
@@ -514,7 +541,8 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
           p.verified,
           p.created_at
         FROM profiles p
-        WHERE p.role = 'creator'
+        WHERE ${REAL_USER_EMAIL_FILTER}
+          AND p.role = 'creator'
           AND (p.lawyer_verified = true OR p.creator_level = 'lawyer')
           AND COALESCE(p.lawyer_profile_visible, true) = true
           AND (${byId ? 'p.id = $1::uuid' : 'p.display_name = $1'})`,
@@ -558,7 +586,8 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
       // 检查是否是律师
       const profileResult = await query(
         `SELECT id, display_name FROM profiles 
-         WHERE id = $1 AND role = 'creator' 
+         WHERE id = $1 AND ${REAL_USER_EMAIL_FILTER}
+           AND role = 'creator' 
            AND (lawyer_verified = true OR creator_level = 'lawyer')
            AND COALESCE(lawyer_profile_visible, true) = true`,
         [id]

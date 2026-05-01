@@ -67,6 +67,10 @@ function segmentSlug(raw: string | string[] | undefined): string {
   return Array.isArray(raw) ? (raw[0] ?? "") : raw;
 }
 
+function isUuidSlug(v: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.trim());
+}
+
 /** 未登录半遮罩；登录后跳转留言登记表单 */
 function LawyerMessageCta({ slug }: { slug: string }) {
   const [loggedIn, setLoggedIn] = useState<boolean | undefined>(undefined);
@@ -223,12 +227,14 @@ export default function LawyerDetailPage() {
 
   const [view, setView] = useState<LawyerDetailView | null>(null);
   const [loading, setLoading] = useState(true);
+  const [missingProfile, setMissingProfile] = useState(false);
   const [reviewsVersion, setReviewsVersion] = useState(0);
 
   useEffect(() => {
     let gen = 0;
     const run = async (myGen: number) => {
       setLoading(true);
+      setMissingProfile(false);
       let apiRow: Record<string, unknown> | null = null;
       let reviewRows: LawyerReviewItem[] | null = null;
       let reviewTotal: number | null = null;
@@ -252,6 +258,12 @@ export default function LawyerDetailPage() {
         if (!apiRow) apiRow = null;
       }
       if (myGen !== gen) return;
+      if (!apiRow && isUuidSlug(slug)) {
+        setView(null);
+        setMissingProfile(true);
+        setLoading(false);
+        return;
+      }
       const nextView = buildLawyerDetailView(slug, apiRow);
       if (reviewRows) {
         nextView.reviews = reviewRows;
@@ -273,7 +285,7 @@ export default function LawyerDetailPage() {
     };
   }, [slug, reviewsVersion]);
 
-  if (loading || !view) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-[#FFF8F0]">
         <div className="mx-auto max-w-6xl px-6 py-12">
@@ -284,6 +296,27 @@ export default function LawyerDetailPage() {
               <div className="h-96 rounded-2xl bg-[rgba(212,165,116,0.1)]" />
               <div className="h-72 rounded-2xl bg-[rgba(212,165,116,0.1)]" />
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (missingProfile || !view) {
+    return (
+      <div className="min-h-screen bg-[#FFF8F0]">
+        <div className="mx-auto max-w-3xl px-6 py-16">
+          <div className="rounded-2xl border border-[rgba(212,165,116,0.25)] bg-white p-8 text-center shadow-sm">
+            <h1 className="text-2xl font-semibold text-[#2C2416]">未找到该律师档案</h1>
+            <p className="mt-3 text-sm text-[#5D4E3A]">
+              该链接对应的律师可能已下线，或不在当前可展示名单中。
+            </p>
+            <Link
+              href="/lawyers"
+              className="mt-6 inline-flex items-center rounded-xl border border-[rgba(212,165,116,0.35)] px-4 py-2 text-sm font-medium text-[#5C4033] hover:border-[#D4A574] hover:text-[#D4A574]"
+            >
+              返回律师列表
+            </Link>
           </div>
         </div>
       </div>
