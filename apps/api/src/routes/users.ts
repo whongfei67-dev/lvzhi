@@ -196,6 +196,8 @@ export async function usersRoutes(fastify: FastifyInstance) {
            p.email,
            p.role,
            p.verified,
+           p.creator_level,
+           p.lawyer_verified,
            p.created_at,
            p.display_name,
            p.phone,
@@ -230,6 +232,8 @@ export async function usersRoutes(fastify: FastifyInstance) {
            p.email,
            p.role,
            p.verified,
+           p.creator_level,
+           p.lawyer_verified,
            p.created_at,
            p.display_name,
            p.phone,
@@ -454,6 +458,9 @@ export async function usersRoutes(fastify: FastifyInstance) {
   }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
     const currentUserId = request.user.id
     const { id: targetUserId } = request.params
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId)) {
+      return reply.status(400).send({ code: 400, message: '无效的用户 ID' })
+    }
 
     if (currentUserId === targetUserId) {
       return reply.status(400).send({ code: 400, message: '不能关注自己' })
@@ -500,6 +507,98 @@ export async function usersRoutes(fastify: FastifyInstance) {
     } catch (error) {
       console.error('Follow user error:', error)
       return reply.status(500).send({ code: 500, message: '操作失败' })
+    }
+  })
+
+  // 获取当前用户对目标用户的关注状态
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fastify.get('/api/users/:id/follow-status', {
+    preHandler: [(fastify as any).authenticate],
+  }, async (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => {
+    const currentUserId = request.user.id
+    const { id: targetUserId } = request.params
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId)) {
+      return reply.status(400).send({ code: 400, message: '无效的用户 ID' })
+    }
+
+    try {
+      const result = await query<{ id: string }>(
+        'SELECT id FROM user_follows WHERE follower_id = $1 AND following_id = $2 LIMIT 1',
+        [currentUserId, targetUserId]
+      )
+      return success(reply, {
+        is_following: result.rows.length > 0,
+      } as Record<string, unknown>)
+    } catch (error) {
+      console.error('Get follow status error:', error)
+      return reply.status(500).send({ code: 500, message: '获取关注状态失败' })
+    }
+  })
+
+  // 获取某用户的粉丝列表（本人或管理员可见）
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fastify.get('/api/users/:id/followers', {
+    preHandler: [(fastify as any).authenticate],
+  }, async (request: FastifyRequest<{ Params: { id: string }; Querystring: { page?: string; pageSize?: string } }>, reply: FastifyReply) => {
+    const currentUserId = request.user.id
+    const currentRole = String(request.user.role || '')
+    const { id: targetUserId } = request.params
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId)) {
+      return reply.status(400).send({ code: 400, message: '无效的用户 ID' })
+    }
+    const { page = '1', pageSize = '20' } = request.query
+    const pageNum = Math.max(parseInt(page, 10) || 1, 1)
+    const pageSizeNum = Math.min(Math.max(parseInt(pageSize, 10) || 20, 1), 100)
+    const offset = (pageNum - 1) * pageSizeNum
+    const canRead =
+      currentUserId === targetUserId || currentRole === 'admin' || currentRole === 'superadmin'
+    if (!canRead) {
+      return reply.status(403).send({ code: 403, message: '无权查看他人的粉丝列表' })
+    }
+
+    try {
+      const [countResult, listResult] = await Promise.all([
+        query<{ total: string }>(
+          'SELECT COUNT(*)::text AS total FROM user_follows WHERE following_id = $1',
+          [targetUserId]
+        ),
+        query<{
+          follower_id: string
+          display_name: string | null
+          email: string | null
+          avatar_url: string | null
+          role: string | null
+          lawyer_verified: boolean | null
+          creator_level: string | null
+          followed_at: string
+        }>(
+          `SELECT
+             uf.follower_id::text AS follower_id,
+             p.display_name,
+             p.email,
+             p.avatar_url,
+             p.role,
+             p.lawyer_verified,
+             p.creator_level,
+             uf.created_at::text AS followed_at
+           FROM user_follows uf
+           LEFT JOIN profiles p ON p.id = uf.follower_id
+           WHERE uf.following_id = $1
+           ORDER BY uf.created_at DESC
+           LIMIT $2 OFFSET $3`,
+          [targetUserId, pageSizeNum, offset]
+        ),
+      ])
+
+      return success(reply, {
+        page: pageNum,
+        pageSize: pageSizeNum,
+        total: parseInt(String(countResult.rows[0]?.total || '0'), 10),
+        items: listResult.rows,
+      } as Record<string, unknown>)
+    } catch (error) {
+      console.error('Get followers list error:', error)
+      return reply.status(500).send({ code: 500, message: '获取粉丝列表失败' })
     }
   })
 }

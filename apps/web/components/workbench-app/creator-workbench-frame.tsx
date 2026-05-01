@@ -32,7 +32,9 @@ export function CreatorWorkbenchFrame({ children }: { children: ReactNode }) {
         return;
       }
       setSession(s);
-      setLawyerVerified(Boolean(s.creator_level === "lawyer"));
+      const level = String(s.creator_level ?? "").toLowerCase();
+      const fromSession = Boolean(s.lawyer_verified) || level === "lawyer";
+      setLawyerVerified(fromSession);
       setReady(true);
     })();
     return () => {
@@ -78,7 +80,11 @@ export function CreatorWorkbenchFrame({ children }: { children: ReactNode }) {
         const creatorLevel = String(lawyerDetail.creator_level ?? "").toLowerCase();
         setLawyerVerified(Boolean(lawyerDetail.lawyer_verified) || creatorLevel === "lawyer");
       } catch {
-        if (!cancelled) setLawyerVerified(Boolean(session.creator_level === "lawyer"));
+        if (!cancelled) {
+          const level = String(session.creator_level ?? "").toLowerCase();
+          const fromSession = Boolean(session.lawyer_verified) || level === "lawyer";
+          setLawyerVerified(fromSession);
+        }
       }
     })();
     return () => {

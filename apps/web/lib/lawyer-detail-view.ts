@@ -831,59 +831,58 @@ export function buildLawyerDetailView(
       ? { ...preset, name, firm, jobTitle: String(api.title ?? preset.jobTitle) }
       : null;
     const mergedBio = (() => {
-      if (!bioText.trim()) return base?.bio ?? getMockLawyerDetailView(name).bio;
+      if (!bioText.trim()) return ["该律师暂未填写个人简介。"];
       const paras = bioText
         .split(/\n\s*\n/)
         .map((s) => s.trim())
         .filter(Boolean);
-      return paras.length ? paras : [bioText.trim()];
+      return paras.length ? paras : ["该律师暂未填写个人简介。"];
     })();
-    const fill = getMockLawyerDetailView(name);
     const eduFromJson = parseEducationDetailFromApi(api.education_detail ?? api.education_json);
     const mergedEducation = educationWithEmblems(
       eduFromJson && eduFromJson.length
         ? eduFromJson
         : api.education != null && String(api.education).trim()
           ? [{ title: String(api.education), sub: "" }]
-          : base?.education ?? fill.education
+          : []
     );
-    const mergedReviews =
-      (base?.reviews && base.reviews.length ? base.reviews : null) ?? fill.reviews;
+    const mergedReviews: LawyerReviewItem[] = [];
     const mergedCases = parseCasesFromApi(
       api.cases_json ?? api.cases_detail ?? api.cases,
-      base?.cases ?? fill.cases
+      []
     );
     const mergedWork = parseWorkFromApi(
       api.work_history_json ?? api.work_history,
-      base?.workHistory ?? fill.workHistory
+      []
     );
-    const py = practiceYears || base?.practiceYears || 8;
+    const py = practiceYears || 0;
     const cityStr = String(api.city ?? base?.city ?? "全国");
     const yearsDisp = String(py);
     const yearsStat = yearsDisp.includes("年") ? yearsDisp : `${yearsDisp}年`;
     const followersStr =
-      typeof api.follower_count === "number" && api.follower_count > 0
+      typeof api.follower_count === "number" && api.follower_count >= 0
         ? String(api.follower_count)
-        : base?.followersDisplay ?? "1,280";
+        : "0";
+    const realExpertise = expertise.length ? expertise : [];
 
     return {
       id: String(api.id),
       name,
       avatarUrl: withPublicMediaProxy(
-        String(api.avatar ?? api.avatar_url ?? base?.avatarUrl ?? `https://i.pravatar.cc/160?u=${encodeURIComponent(name)}`)
+        String(api.avatar ?? api.avatar_url ?? `https://i.pravatar.cc/160?u=${encodeURIComponent(name)}`)
       ),
       verified: Boolean(api.lawyer_verified) || textFromApi(api.creator_level) === "lawyer",
       firm,
       jobTitle: String(api.title ?? base?.jobTitle ?? "律师"),
       titleLine: `${firm} · ${String(api.title ?? base?.jobTitle ?? "律师")}`,
       rating,
-      reviewCount: reviewCount || 12,
+      reviewCount: reviewCount || 0,
       city: cityStr,
       practiceYears: py,
       clientsLabel:
-        textFromApi(api.clients_label) ?? base?.clientsLabel ?? fill.clientsLabel ?? "100+ 客户",
-      tagLabels: expertise.length ? expertise : base?.tagLabels ?? ["常年顾问", "争议解决"],
-      expertise: expertise.length ? expertise : base?.expertise ?? ["常年顾问", "争议解决"],
+        textFromApi(api.clients_label) ?? "—",
+      tagLabels: realExpertise,
+      expertise: realExpertise,
       bio: mergedBio,
       education: mergedEducation,
       workHistory: mergedWork,
@@ -894,25 +893,22 @@ export function buildLawyerDetailView(
         { value: yearsStat, label: "执业年限" },
         { value: cityStr, label: "常驻城市" },
       ],
-      sidebarArticles: parseArticlesFromApi(api.articles_json ?? api.articles, fill.sidebarArticles),
-      sidebarSkills: defaultCreatorOfferings(
-        name,
-        expertise.length ? expertise : base?.tagLabels ?? fill.tagLabels
-      ),
+      sidebarArticles: parseArticlesFromApi(api.articles_json ?? api.articles, []),
+      sidebarSkills: [],
       firmAddress:
         textFromApi(api.firm_address) ??
         textFromApi(api.office_address) ??
-        fill.firmAddress,
+        "未公开",
       firmLandline:
         textFromApi(api.firm_landline) ??
         textFromApi(api.office_phone) ??
         textFromApi(api.landline) ??
         textFromApi(api.firm_phone) ??
-        fill.firmLandline,
+        "未公开",
       followersDisplay: followersStr,
-      productsCount: base?.productsCount ?? "6",
+      productsCount: "0",
       yearsDisplay: yearsDisp,
-      related: base?.related ?? RELATED_DEFAULT,
+      related: [],
       showDemoNotice: false,
       consultPrice: textFromApi(api.consult_price) ?? textFromApi(api.consultPrice) ?? "500",
       consultUnit: textFromApi(api.consult_unit) ?? textFromApi(api.consultUnit) ?? "/ 小时",

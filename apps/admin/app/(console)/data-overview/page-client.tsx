@@ -113,6 +113,14 @@ type OverviewPayload = {
           favorite_count: number;
           created_at: string;
         }>;
+        follower_leaderboard: Array<{
+          user_id: string;
+          display_name: string;
+          role: string;
+          creator_level: string;
+          lawyer_verified: boolean;
+          follower_count: number;
+        }>;
         refreshed_at: string;
         refresh_cycle: string;
       };
@@ -413,6 +421,7 @@ export default function DataOverviewClient() {
   const business = payload?.summary.analytics?.business;
   const lawyerDomainEntries = business?.practicing_lawyers_by_domain || [];
   const skillCategoryEntries = business?.online_skills_by_category || [];
+  const followerLeaderboardEntries = business?.follower_leaderboard || [];
   const selectedCityCount = useMemo(() => {
     if (city === "all") return totalUsers;
     return cityEntries.find((x) => x.city === city)?.count ?? 0;
@@ -907,6 +916,49 @@ export default function DataOverviewClient() {
                 </div>
               ))}
               {!lawyerDomainEntries.length ? <div style={{ fontSize: 12, color: "#7c6a56" }}>暂无律师领域细分数据</div> : null}
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <div style={{ fontSize: 12, color: "#7c6a56", marginBottom: 6 }}>
+                关注者人数排行榜（创作者 / 律师）
+              </div>
+              <div style={{ overflowX: "auto" }}>
+                <table className="admin-table" style={{ minWidth: 680 }}>
+                  <thead>
+                    <tr>
+                      <th>排名</th>
+                      <th>用户</th>
+                      <th>身份</th>
+                      <th>关注者</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {followerLeaderboardEntries.slice(0, 20).map((item, index) => (
+                      <tr key={item.user_id}>
+                        <td>#{index + 1}</td>
+                        <td>
+                          <div>{item.display_name || "未命名用户"}</div>
+                          <div style={{ fontSize: 12, color: "#7c6a56" }}>{item.user_id}</div>
+                        </td>
+                        <td>
+                          {item.lawyer_verified || item.creator_level === "lawyer"
+                            ? "执业律师"
+                            : item.role === "creator"
+                              ? "创作者"
+                              : item.role}
+                        </td>
+                        <td>{(item.follower_count || 0).toLocaleString("zh-CN")}</td>
+                      </tr>
+                    ))}
+                    {!followerLeaderboardEntries.length ? (
+                      <tr>
+                        <td colSpan={4} style={{ color: "#7c6a56" }}>
+                          暂无关注者排行榜数据
+                        </td>
+                      </tr>
+                    ) : null}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 

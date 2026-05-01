@@ -110,6 +110,7 @@ const CREATOR_SHELL: WorkbenchShellFixture = {
       items: [
         { href: "#cre-trial", label: "试用邀请" },
         { href: "#cre-msg", label: "留言（含合作邀请）" },
+        { href: "#cre-followers", label: "关注我的用户" },
         { href: "#cre-notice", label: "通知", sub: true },
       ],
     },

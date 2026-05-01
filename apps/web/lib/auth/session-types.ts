@@ -10,6 +10,7 @@ export interface Session {
   verified: boolean;
   balance: number;
   creator_level?: "basic" | "excellent" | "master" | "lawyer";
+  lawyer_verified?: boolean;
   is_superadmin?: boolean;
   created_at: string;
 }

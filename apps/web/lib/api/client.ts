@@ -319,6 +319,29 @@ export const users = {
       body: JSON.stringify(data),
     });
   },
+
+  async toggleFollow(userId: string) {
+    return request<{ is_following: boolean }>(`/api/users/${userId}/follow`, {
+      method: "POST",
+    });
+  },
+
+  async getFollowStatus(userId: string) {
+    return request<{ is_following: boolean }>(`/api/users/${userId}/follow-status`);
+  },
+
+  async getFollowers(userId: string, params?: { page?: number; pageSize?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.page) searchParams.set("page", String(params.page));
+    if (params?.pageSize) searchParams.set("pageSize", String(params.pageSize));
+    const qs = searchParams.toString();
+    return request<{
+      page: number;
+      pageSize: number;
+      total: number;
+      items: Array<Record<string, unknown>>;
+    }>(`/api/users/${userId}/followers${qs ? `?${qs}` : ""}`);
+  },
 };
 
 // ============================================

@@ -7,6 +7,7 @@
  */
 
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
+import { randomUUID } from 'crypto'
 import { query } from '../lib/database.js'
 import { success, created, errors, paginated } from '../utils/response.js'
 import type { JwtPayload, LawyerListQuery } from '../types.js'
@@ -41,6 +42,52 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
   }
 
   await ensureLawyerProfileVisibilityColumns()
+  let lawyerReviewsTableEnsured = false
+
+  async function ensureLawyerReviewsTable(): Promise<void> {
+    if (lawyerReviewsTableEnsured) return
+    try {
+      await query(`
+        CREATE TABLE IF NOT EXISTS lawyer_reviews (
+          id UUID PRIMARY KEY,
+          lawyer_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+          reviewer_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+          rating SMALLINT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+          tags TEXT[] NOT NULL DEFAULT ARRAY[]::text[],
+          content TEXT NOT NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          UNIQUE(lawyer_id, reviewer_id)
+        )
+      `)
+      await query('CREATE INDEX IF NOT EXISTS idx_lawyer_reviews_lawyer_created ON lawyer_reviews(lawyer_id, created_at DESC)')
+      await query('CREATE INDEX IF NOT EXISTS idx_lawyer_reviews_reviewer ON lawyer_reviews(reviewer_id, created_at DESC)')
+      await query('ALTER TABLE lawyer_reviews ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN NOT NULL DEFAULT false')
+      await query('ALTER TABLE lawyer_reviews ADD COLUMN IF NOT EXISTS hidden_reason TEXT')
+      await query('ALTER TABLE lawyer_reviews ADD COLUMN IF NOT EXISTS hidden_by UUID REFERENCES profiles(id) ON DELETE SET NULL')
+      await query('ALTER TABLE lawyer_reviews ADD COLUMN IF NOT EXISTS hidden_at TIMESTAMPTZ')
+      await query('CREATE INDEX IF NOT EXISTS idx_lawyer_reviews_hidden_created ON lawyer_reviews(is_hidden, created_at DESC)')
+    } catch (err) {
+      console.warn('[lawyers] ensureLawyerReviewsTable failed:', err)
+    }
+    lawyerReviewsTableEnsured = true
+  }
+
+  await ensureLawyerReviewsTable()
+
+  async function resolveLawyerIdBySlug(slug: string): Promise<string | null> {
+    const byId = isLawyerProfileUuid(slug)
+    const result = await query<{ id: string }>(
+      `SELECT p.id::text AS id
+       FROM profiles p
+       WHERE p.role = 'creator'
+         AND COALESCE(p.lawyer_profile_visible, true) = true
+         AND (${byId ? 'p.id = $1::uuid' : 'p.display_name = $1'})
+       LIMIT 1`,
+      [slug]
+    )
+    return result.rows[0]?.id ?? null
+  }
 
   // ============================================
   // GET /api/lawyers - 律师列表
@@ -292,6 +339,141 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
   })
 
   // ============================================
+  // GET /api/lawyers/:slug/reviews - 律师评价列表
+  // ============================================
+  app.get<{ Params: { slug: string }; Querystring: { page?: string; page_size?: string } }>('/api/lawyers/:slug/reviews', async (request, reply) => {
+    const { slug } = request.params
+    const { page = '1', page_size = '20' } = request.query
+    const pageNum = Math.max(parseInt(String(page), 10) || 1, 1)
+    const limitNum = Math.min(Math.max(parseInt(String(page_size), 10) || 20, 1), 100)
+    const offset = (pageNum - 1) * limitNum
+
+    try {
+      const lawyerId = await resolveLawyerIdBySlug(slug)
+      if (!lawyerId) {
+        return errors.notFound(reply, '律师不存在')
+      }
+
+      const [countResult, listResult] = await Promise.all([
+        query<{ count: string }>(
+          'SELECT COUNT(*)::text AS count FROM lawyer_reviews WHERE lawyer_id = $1 AND COALESCE(is_hidden, false) = false',
+          [lawyerId]
+        ),
+        query<{
+          id: string
+          lawyer_id: string
+          reviewer_id: string
+          reviewer_name: string | null
+          reviewer_avatar: string | null
+          rating: number
+          tags: string[] | null
+          content: string
+          created_at: string
+        }>(
+          `SELECT
+             lr.id::text AS id,
+             lr.lawyer_id::text AS lawyer_id,
+             lr.reviewer_id::text AS reviewer_id,
+             p.display_name AS reviewer_name,
+             p.avatar_url AS reviewer_avatar,
+             lr.rating,
+             lr.tags,
+             lr.content,
+             lr.created_at::text AS created_at
+           FROM lawyer_reviews lr
+           LEFT JOIN profiles p ON p.id = lr.reviewer_id
+           WHERE lr.lawyer_id = $1
+             AND COALESCE(lr.is_hidden, false) = false
+           ORDER BY lr.created_at DESC
+           LIMIT $2 OFFSET $3`,
+          [lawyerId, limitNum, offset]
+        ),
+      ])
+
+      const total = parseInt(countResult.rows[0]?.count || '0', 10)
+      return paginated(reply, listResult.rows, total, pageNum, limitNum)
+    } catch (err) {
+      console.error('Get lawyer reviews error:', err)
+      return paginated(reply, [], 0, pageNum, limitNum)
+    }
+  })
+
+  // ============================================
+  // POST /api/lawyers/:slug/reviews - 提交律师评价
+  // ============================================
+  app.post<{ Params: { slug: string }; Body: { rating?: number; tags?: string[]; content?: string } }>(
+    '/api/lawyers/:slug/reviews',
+    { preHandler: [app.authenticate] },
+    async (request, reply) => {
+      const { slug } = request.params
+      const actor = request.user as JwtPayload
+      const reviewerId = String(actor?.user_id || actor?.id || '').trim()
+      const body = request.body || {}
+      const rating = Math.floor(Number(body.rating))
+      const content = String(body.content || '').trim()
+      const tags = Array.isArray(body.tags)
+        ? body.tags.map((x) => String(x || '').trim()).filter(Boolean).slice(0, 8)
+        : []
+
+      if (!reviewerId || reviewerId === 'visitor') {
+        return errors.unauthorized(reply, '请先登录')
+      }
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        return errors.badRequest(reply, '评分范围为 1-5')
+      }
+      if (content.length < 2 || content.length > 1000) {
+        return errors.badRequest(reply, '评价内容长度需在 2-1000 字符之间')
+      }
+
+      try {
+        const lawyerId = await resolveLawyerIdBySlug(slug)
+        if (!lawyerId) {
+          return errors.notFound(reply, '律师不存在')
+        }
+        if (reviewerId === lawyerId) {
+          return errors.badRequest(reply, '不能给自己评价')
+        }
+
+        const id = randomUUID()
+        const result = await query<{
+          id: string
+          lawyer_id: string
+          reviewer_id: string
+          rating: number
+          tags: string[] | null
+          content: string
+          created_at: string
+          updated_at: string
+        }>(
+          `INSERT INTO lawyer_reviews (id, lawyer_id, reviewer_id, rating, tags, content)
+           VALUES ($1::uuid, $2::uuid, $3::uuid, $4, $5::text[], $6)
+           ON CONFLICT (lawyer_id, reviewer_id)
+           DO UPDATE SET
+             rating = EXCLUDED.rating,
+             tags = EXCLUDED.tags,
+             content = EXCLUDED.content,
+             updated_at = NOW()
+           RETURNING
+             id::text AS id,
+             lawyer_id::text AS lawyer_id,
+             reviewer_id::text AS reviewer_id,
+             rating,
+             tags,
+             content,
+             created_at::text AS created_at,
+             updated_at::text AS updated_at`,
+          [id, lawyerId, reviewerId, rating, tags, content]
+        )
+
+        return created(reply, result.rows[0], '评价已提交')
+      } catch (err) {
+        console.error('Create lawyer review error:', err)
+        return errors.internal(reply, '提交评价失败')
+      }
+    }
+  )
+
+  // ============================================
   // GET /api/lawyers/:slug - 律师详情
   // ============================================
   app.get<{ Params: { slug: string } }>('/api/lawyers/:slug', async (request, reply) => {
@@ -326,6 +508,8 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
           p.lawyer_verified,
           p.creator_level,
           p.follower_count,
+          COALESCE((SELECT ROUND(AVG(lr.rating)::numeric, 1) FROM lawyer_reviews lr WHERE lr.lawyer_id = p.id AND COALESCE(lr.is_hidden, false) = false), 0) AS rating,
+          COALESCE((SELECT COUNT(*) FROM lawyer_reviews lr WHERE lr.lawyer_id = p.id AND COALESCE(lr.is_hidden, false) = false), 0) AS review_count,
           p.verified,
           p.created_at
         FROM profiles p

@@ -23,7 +23,27 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
   let profileContactColumnsEnsured = false
   let ordersPaymentColumnsEnsured = false
   let dataOverviewIndexesEnsured = false
+  let lawyerReviewsModerationEnsured = false
   const detailQueryCache = new Map<string, { expiresAt: number; payload: unknown }>()
+  const REAL_USER_EMAIL_FILTER = `
+    email IS NOT NULL
+    AND BTRIM(email) <> ''
+    AND POSITION('@' IN email) > 1
+    AND lower(email) !~ '^(test|demo|mock|sample|qa|dev|tmp|temp|note_|upd_)'
+    AND lower(email) NOT LIKE '%+test@%'
+    AND lower(email) NOT LIKE '%+qa@%'
+    AND lower(email) NOT LIKE '%+dev@%'
+    AND split_part(lower(email), '@', 2) NOT IN (
+      'example.com',
+      'example.org',
+      'example.net',
+      'test.com',
+      'test.local',
+      'localhost',
+      'mailinator.com',
+      'tempmail.com'
+    )
+  `
 
   async function ensureWithdrawColumns() {
     if (withdrawColumnsEnsured) return
@@ -217,6 +237,34 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     dataOverviewIndexesEnsured = true
   }
 
+  async function ensureLawyerReviewsModeration() {
+    if (lawyerReviewsModerationEnsured) return
+    try {
+      await query(`
+        CREATE TABLE IF NOT EXISTS lawyer_reviews (
+          id UUID PRIMARY KEY,
+          lawyer_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+          reviewer_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+          rating SMALLINT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+          tags TEXT[] NOT NULL DEFAULT ARRAY[]::text[],
+          content TEXT NOT NULL,
+          created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+          UNIQUE(lawyer_id, reviewer_id)
+        )
+      `)
+      await query('ALTER TABLE lawyer_reviews ADD COLUMN IF NOT EXISTS is_hidden BOOLEAN NOT NULL DEFAULT false')
+      await query('ALTER TABLE lawyer_reviews ADD COLUMN IF NOT EXISTS hidden_reason TEXT')
+      await query('ALTER TABLE lawyer_reviews ADD COLUMN IF NOT EXISTS hidden_by UUID REFERENCES profiles(id) ON DELETE SET NULL')
+      await query('ALTER TABLE lawyer_reviews ADD COLUMN IF NOT EXISTS hidden_at TIMESTAMPTZ')
+      await query('CREATE INDEX IF NOT EXISTS idx_lawyer_reviews_lawyer_created ON lawyer_reviews(lawyer_id, created_at DESC)')
+      await query('CREATE INDEX IF NOT EXISTS idx_lawyer_reviews_hidden_created ON lawyer_reviews(is_hidden, created_at DESC)')
+    } catch (err) {
+      console.warn('[admin] ensureLawyerReviewsModeration failed:', err)
+    }
+    lawyerReviewsModerationEnsured = true
+  }
+
   const DEFAULT_POLICIES = {
     settlement: {
       auto_settle_days: 7,
@@ -292,6 +340,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
   await ensureCommunityModerationColumns()
   await ensureOrdersPaymentColumns()
   await ensureDataOverviewIndexes()
+  await ensureLawyerReviewsModeration()
   await ensureUserSanctionColumns()
 
   app.get('/api/admin/actions', {
@@ -341,6 +390,196 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
   })
 
   // ============================================
+  // GET /api/admin/lawyer-reviews - 律师评价审核列表
+  // ============================================
+  app.get('/api/admin/lawyer-reviews', {
+    preHandler: [app.authenticateAdmin],
+  }, async (request: any, reply) => {
+    const {
+      page = '1',
+      pageSize = '20',
+      status = 'visible',
+      q = '',
+    } = request.query as {
+      page?: string
+      pageSize?: string
+      status?: 'all' | 'visible' | 'hidden'
+      q?: string
+    }
+
+    const pageNum = Math.max(parseInt(page) || 1, 1)
+    const pageSizeNum = Math.min(Math.max(parseInt(pageSize) || 20, 1), 100)
+    const offset = (pageNum - 1) * pageSizeNum
+    const normalizedStatus = ['all', 'visible', 'hidden'].includes(String(status))
+      ? String(status)
+      : 'visible'
+    const keyword = String(q || '').trim()
+
+    try {
+      await ensureLawyerReviewsModeration()
+      const conditions: string[] = []
+      const params: unknown[] = []
+      let idx = 1
+      if (normalizedStatus === 'visible') {
+        conditions.push('COALESCE(lr.is_hidden, false) = false')
+      } else if (normalizedStatus === 'hidden') {
+        conditions.push('COALESCE(lr.is_hidden, false) = true')
+      }
+      if (keyword) {
+        conditions.push(`(
+          COALESCE(lr.content, '') ILIKE $${idx}
+          OR COALESCE(lawyer.display_name, '') ILIKE $${idx}
+          OR COALESCE(reviewer.display_name, '') ILIKE $${idx}
+        )`)
+        params.push(`%${keyword}%`)
+        idx += 1
+      }
+      const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''
+
+      const countResult = await query<{ total: string }>(
+        `SELECT COUNT(*)::text AS total
+         FROM lawyer_reviews lr
+         LEFT JOIN profiles lawyer ON lawyer.id = lr.lawyer_id
+         LEFT JOIN profiles reviewer ON reviewer.id = lr.reviewer_id
+         ${whereClause}`,
+        params
+      )
+      const total = parseInt(countResult.rows[0]?.total || '0')
+
+      const listParams = [...params, pageSizeNum, offset]
+      const result = await query(
+        `SELECT
+           lr.id,
+           lr.lawyer_id,
+           COALESCE(lawyer.display_name, '未命名律师') AS lawyer_name,
+           lr.reviewer_id,
+           COALESCE(reviewer.display_name, '匿名用户') AS reviewer_name,
+           lr.rating,
+           lr.tags,
+           lr.content,
+           COALESCE(lr.is_hidden, false) AS is_hidden,
+           lr.hidden_reason,
+           lr.hidden_at,
+           COALESCE(hider.display_name, '') AS hidden_by_name,
+           lr.created_at,
+           lr.updated_at
+         FROM lawyer_reviews lr
+         LEFT JOIN profiles lawyer ON lawyer.id = lr.lawyer_id
+         LEFT JOIN profiles reviewer ON reviewer.id = lr.reviewer_id
+         LEFT JOIN profiles hider ON hider.id = lr.hidden_by
+         ${whereClause}
+         ORDER BY lr.created_at DESC
+         LIMIT $${idx} OFFSET $${idx + 1}`,
+        listParams
+      )
+
+      return success(reply, {
+        items: result.rows,
+        total,
+        page: pageNum,
+        pageSize: pageSizeNum,
+      })
+    } catch (error) {
+      request.log.error('Get lawyer reviews error:', error)
+      return reply.status(500).send({ code: 500, message: '获取律师评价审核列表失败' })
+    }
+  })
+
+  // ============================================
+  // PATCH /api/admin/lawyer-reviews/:id/moderate - 律师评价审核处置
+  // ============================================
+  app.patch('/api/admin/lawyer-reviews/:id/moderate', {
+    preHandler: [app.authenticateAdmin],
+  }, async (request: any, reply) => {
+    const actorId = String(request.user?.user_id || request.user?.id || '').trim()
+    const { id } = request.params as { id: string }
+    const { action, reason } = request.body as {
+      action?: 'hide' | 'restore' | 'delete'
+      reason?: string
+    }
+    const normalizedAction = String(action || '').trim()
+    const normalizedReason = String(reason || '').trim()
+    if (!['hide', 'restore', 'delete'].includes(normalizedAction)) {
+      return reply.status(400).send({ code: 400, message: '无效 action 参数' })
+    }
+    if ((normalizedAction === 'hide' || normalizedAction === 'delete') && !normalizedReason) {
+      return reply.status(400).send({ code: 400, message: '该操作需要填写处置理由' })
+    }
+
+    try {
+      await ensureLawyerReviewsModeration()
+      const beforeResult = await query(
+        `SELECT
+           id, lawyer_id, reviewer_id, rating, tags, content,
+           is_hidden, hidden_reason, hidden_by, hidden_at, created_at, updated_at
+         FROM lawyer_reviews
+         WHERE id = $1`,
+        [id]
+      )
+      if (!beforeResult.rows.length) {
+        return reply.status(404).send({ code: 404, message: '评价记录不存在' })
+      }
+      const before = beforeResult.rows[0] as Record<string, unknown>
+      let afterSnapshot: Record<string, unknown> = {}
+
+      if (normalizedAction === 'hide') {
+        const updated = await query(
+          `UPDATE lawyer_reviews
+           SET is_hidden = true,
+               hidden_reason = $1,
+               hidden_by = $2,
+               hidden_at = NOW(),
+               updated_at = NOW()
+           WHERE id = $3
+           RETURNING id, is_hidden, hidden_reason, hidden_by, hidden_at, updated_at`,
+          [normalizedReason, actorId || null, id]
+        )
+        afterSnapshot = updated.rows[0] as Record<string, unknown>
+      } else if (normalizedAction === 'restore') {
+        const updated = await query(
+          `UPDATE lawyer_reviews
+           SET is_hidden = false,
+               hidden_reason = NULL,
+               hidden_by = NULL,
+               hidden_at = NULL,
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING id, is_hidden, hidden_reason, hidden_by, hidden_at, updated_at`,
+          [id]
+        )
+        afterSnapshot = updated.rows[0] as Record<string, unknown>
+      } else {
+        await query('DELETE FROM lawyer_reviews WHERE id = $1', [id])
+        afterSnapshot = {
+          id,
+          deleted: true,
+          deleted_at: new Date().toISOString(),
+        }
+      }
+
+      await logAdminAction({
+        actorId,
+        actionType:
+          normalizedAction === 'hide'
+            ? 'lawyer_review_hide'
+            : normalizedAction === 'restore'
+              ? 'lawyer_review_restore'
+              : 'lawyer_review_delete',
+        targetType: 'lawyer_review',
+        targetId: id,
+        beforeSnapshot: before,
+        afterSnapshot,
+        reason: normalizedReason || null,
+      })
+
+      return success(reply, afterSnapshot, '律师评价审核操作已完成')
+    } catch (error) {
+      request.log.error('Moderate lawyer review error:', error)
+      return reply.status(500).send({ code: 500, message: '律师评价审核操作失败' })
+    }
+  })
+
+  // ============================================
   // GET /api/admin/users - 获取用户列表
   // ============================================
   app.get('/api/admin/users', {
@@ -360,7 +599,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     try {
       await ensureProfileContactColumns()
       // 查询总数
-      const countResult = await query('SELECT COUNT(*) as total FROM profiles')
+      const countResult = await query(`SELECT COUNT(*) as total FROM profiles WHERE ${REAL_USER_EMAIL_FILTER}`)
       const total = parseInt(countResult.rows[0]?.total || '0')
 
       // 查询用户列表 - 直接从 profiles 表查询
@@ -378,6 +617,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
           bio,
           verified
         FROM profiles
+        WHERE ${REAL_USER_EMAIL_FILTER}
         ORDER BY created_at DESC
         LIMIT $1 OFFSET $2`,
         [pageSizeNum, offset]
@@ -453,7 +693,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     const offset = (pageNum - 1) * pageSizeNum
 
     try {
-      const conditions: string[] = []
+      const conditions: string[] = [REAL_USER_EMAIL_FILTER]
       const params: unknown[] = []
       let paramIndex = 1
 
@@ -2353,9 +2593,10 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         opportunitiesStatsResult,
         opportunitiesDetailsResult,
         skillsDetailsResult,
+        followerLeaderboardResult,
       ] = await Promise.all([
         query<{ total: string }>(`SELECT COUNT(*) as total FROM profiles ${whereClause}`, params),
-        query<{ total: string }>('SELECT COUNT(*) as total FROM profiles'),
+        query<{ total: string }>(`SELECT COUNT(*) as total FROM profiles WHERE ${REAL_USER_EMAIL_FILTER}`),
         query(
           `SELECT
              id,
@@ -2380,14 +2621,15 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
            LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,
           [...params, pageSizeNum, offset]
         ),
-        query<{ role: string; total: string }>('SELECT role, COUNT(*) as total FROM profiles GROUP BY role'),
-        query<{ status: string; total: string }>('SELECT status, COUNT(*) as total FROM profiles GROUP BY status'),
-        query<{ verified_total: string }>('SELECT COUNT(*) as verified_total FROM profiles WHERE verified = true'),
+        query<{ role: string; total: string }>(`SELECT role, COUNT(*) as total FROM profiles WHERE ${REAL_USER_EMAIL_FILTER} GROUP BY role`),
+        query<{ status: string; total: string }>(`SELECT status, COUNT(*) as total FROM profiles WHERE ${REAL_USER_EMAIL_FILTER} GROUP BY status`),
+        query<{ verified_total: string }>(`SELECT COUNT(*) as verified_total FROM profiles WHERE ${REAL_USER_EMAIL_FILTER} AND verified = true`),
         query<{ gender: string; total: string }>(`
           SELECT
             COALESCE(NULLIF(BTRIM(gender), ''), 'unknown') AS gender,
             COUNT(*)::text AS total
           FROM profiles
+          WHERE ${REAL_USER_EMAIL_FILTER}
           GROUP BY COALESCE(NULLIF(BTRIM(gender), ''), 'unknown')
         `),
         query<{ age_bucket: string; total: string }>(`
@@ -2403,6 +2645,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
             END AS age_bucket,
             COUNT(*)::text AS total
           FROM profiles
+          WHERE ${REAL_USER_EMAIL_FILTER}
           GROUP BY
             CASE
               WHEN birth_year IS NULL OR birth_year < 1900 OR birth_year > EXTRACT(YEAR FROM CURRENT_DATE)::int THEN 'unknown'
@@ -2417,7 +2660,8 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         query<{ city: string; total: string }>(`
           SELECT city, COUNT(*)::text AS total
           FROM profiles
-          WHERE city IS NOT NULL AND BTRIM(city) <> ''
+          WHERE ${REAL_USER_EMAIL_FILTER}
+            AND city IS NOT NULL AND BTRIM(city) <> ''
           GROUP BY city
           ORDER BY COUNT(*) DESC, city ASC
           LIMIT 200
@@ -2443,7 +2687,8 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         query<{ total_lawyers: string }>(`
           SELECT COUNT(*)::text AS total_lawyers
           FROM profiles
-          WHERE role IN ('creator', 'admin', 'superadmin')
+          WHERE ${REAL_USER_EMAIL_FILTER}
+            AND role IN ('creator', 'admin', 'superadmin')
             AND (COALESCE(lawyer_verified, false) = true OR COALESCE(creator_level, '') = 'lawyer')
         `),
         query<{ domain: string; total: string }>(`
@@ -2451,7 +2696,8 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
             unnest(specialty) AS domain,
             COUNT(*)::text AS total
           FROM profiles
-          WHERE role IN ('creator', 'admin', 'superadmin')
+          WHERE ${REAL_USER_EMAIL_FILTER}
+            AND role IN ('creator', 'admin', 'superadmin')
             AND (COALESCE(lawyer_verified, false) = true OR COALESCE(creator_level, '') = 'lawyer')
             AND specialty IS NOT NULL
             AND array_length(specialty, 1) > 0
@@ -2650,7 +2896,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
           SELECT
             o.id::text AS id,
             o.title,
-            o.type,
+            o.opportunity_type AS type,
             o.status,
             o.publisher_id::text AS publisher_id,
             p.display_name AS publisher_name,
@@ -2691,6 +2937,28 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
           WHERE s.status IN ('active', 'published')
           ORDER BY s.created_at DESC
           LIMIT 120
+        `),
+        query<{
+          user_id: string
+          display_name: string | null
+          role: string | null
+          creator_level: string | null
+          lawyer_verified: boolean | null
+          follower_count: string | null
+        }>(`
+          SELECT
+            p.id::text AS user_id,
+            p.display_name,
+            p.role,
+            p.creator_level,
+            p.lawyer_verified,
+            p.follower_count::text AS follower_count
+          FROM profiles p
+          WHERE ${REAL_USER_EMAIL_FILTER}
+            AND p.role IN ('creator', 'admin', 'superadmin')
+            AND COALESCE(p.follower_count, 0) > 0
+          ORDER BY COALESCE(p.follower_count, 0) DESC, p.created_at DESC
+          LIMIT 50
         `),
       ])
 
@@ -2808,6 +3076,14 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         favorite_count: parseInt(row.favorite_count || '0'),
         created_at: row.created_at,
       }))
+      const followerLeaderboard = followerLeaderboardResult.rows.map((row) => ({
+        user_id: row.user_id,
+        display_name: String(row.display_name || '').trim() || '未命名创作者',
+        role: String(row.role || '').trim() || 'creator',
+        creator_level: String(row.creator_level || '').trim() || 'basic',
+        lawyer_verified: Boolean(row.lawyer_verified),
+        follower_count: parseInt(row.follower_count || '0'),
+      }))
 
       return success(reply, {
         summary: {
@@ -2846,6 +3122,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
               opportunities_applications_total: parseInt(opportunitiesStatsResult.rows[0]?.total_applications || '0'),
               opportunities_details: opportunitiesDetails,
               skills_details: skillsDetails,
+              follower_leaderboard: followerLeaderboard,
               refreshed_at: new Date().toISOString(),
               refresh_cycle: 'daily',
             },
@@ -3426,7 +3703,8 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         query<{ id: string; display_name: string | null; city: string | null; specialty: string[] | null }>(`
           SELECT id, display_name, city, specialty
           FROM profiles
-          WHERE role IN ('creator', 'admin', 'superadmin')
+          WHERE ${REAL_USER_EMAIL_FILTER}
+            AND role IN ('creator', 'admin', 'superadmin')
             AND (COALESCE(lawyer_verified, false) = true OR COALESCE(creator_level, '') = 'lawyer')
           ORDER BY COALESCE(follower_count, 0) DESC, created_at DESC
           LIMIT 200
@@ -3461,7 +3739,7 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     try {
       // 并行查询各项统计
       const [usersResult, agentsResult, ordersResult, pendingAgentsResult, pendingPostsResult] = await Promise.all([
-        query('SELECT COUNT(*) as total FROM profiles'),
+        query(`SELECT COUNT(*) as total FROM profiles WHERE ${REAL_USER_EMAIL_FILTER}`),
         query('SELECT COUNT(*) as total FROM agents'),
         query('SELECT COUNT(*) as total FROM orders'),
         query("SELECT COUNT(*) as total FROM agents WHERE status = 'pending_review'"),

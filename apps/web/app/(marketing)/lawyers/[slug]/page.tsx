@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { GuestGate } from "@/components/common/guest-gate";
 import { ReportCornerButton } from "@/components/common/report-corner-button";
-import { api } from "@/lib/api/client";
+import { api, getSession } from "@/lib/api/client";
 import {
   Award,
   Book,
@@ -25,6 +25,7 @@ import {
   HERO_BG,
   type LawyerDetailView,
   type LawyerEducationItem,
+  type LawyerReviewItem,
 } from "@/lib/lawyer-detail-view";
 
 /** 与「工作背景」列表同一套字号、间距与分隔线；副标题按换行拆成第二、三行 */
@@ -129,27 +130,134 @@ function LawyerMessageCta({ slug }: { slug: string }) {
   );
 }
 
+function LawyerReviewComposer({ slug, onCreated }: { slug: string; onCreated: () => void }) {
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [rating, setRating] = useState(5);
+  const [content, setContent] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const s = await getSession();
+        if (!cancelled) setLoggedIn(Boolean(s));
+      } catch {
+        if (!cancelled) setLoggedIn(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const submit = async () => {
+    const text = content.trim();
+    if (!text) {
+      setErr("请填写评价内容");
+      return;
+    }
+    setSubmitting(true);
+    setErr("");
+    try {
+      await api.lawyers.createReview(slug, { rating, content: text, tags: [] });
+      setContent("");
+      onCreated();
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : "提交失败，请稍后重试");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (!loggedIn) {
+    return (
+      <p className="mb-4 text-xs text-[#9A8B78]">
+        登录后可发表真实评价。
+      </p>
+    );
+  }
+
+  return (
+    <div className="mb-5 rounded-xl border border-[rgba(212,165,116,0.2)] bg-[rgba(255,248,240,0.6)] p-3">
+      <div className="mb-2 flex items-center gap-2">
+        <label className="text-xs text-[#6B5B4D]">评分</label>
+        <select
+          value={rating}
+          onChange={(e) => setRating(Math.max(1, Math.min(5, Number(e.target.value) || 5)))}
+          className="rounded border border-[rgba(212,165,116,0.35)] bg-white px-2 py-1 text-xs text-[#5C4033]"
+        >
+          {[5, 4, 3, 2, 1].map((n) => (
+            <option key={n} value={n}>
+              {n} 星
+            </option>
+          ))}
+        </select>
+      </div>
+      <textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        rows={3}
+        placeholder="写下你的真实评价（2-1000字）"
+        className="w-full rounded-lg border border-[rgba(212,165,116,0.25)] bg-white px-3 py-2 text-sm text-[#5D4E3A] outline-none focus:border-[#D4A574]"
+      />
+      {err ? <p className="mt-1 text-xs text-[#b35a5a]">{err}</p> : null}
+      <div className="mt-2 flex justify-end">
+        <button
+          type="button"
+          onClick={submit}
+          disabled={submitting}
+          className="rounded-lg bg-[#D4A574] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#B8860B] disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {submitting ? "提交中..." : "提交评价"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function LawyerDetailPage() {
   const routeParams = useParams<{ slug?: string | string[] }>();
   const slug = segmentSlug(routeParams?.slug);
 
   const [view, setView] = useState<LawyerDetailView | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reviewsVersion, setReviewsVersion] = useState(0);
 
   useEffect(() => {
     let gen = 0;
     const run = async (myGen: number) => {
       setLoading(true);
       let apiRow: Record<string, unknown> | null = null;
+      let reviewRows: LawyerReviewItem[] | null = null;
+      let reviewTotal: number | null = null;
       try {
         if (slug) {
           apiRow = (await api.lawyers.get(slug)) as Record<string, unknown>;
+          const reviewRes = await api.lawyers.getReviews(slug, { page: 1, limit: 50 });
+          reviewRows = (reviewRes.items || []).map((item, idx) => ({
+            id: String(item.id || `review-${idx}`),
+            author: String(item.reviewer_name || "匿名用户"),
+            rating: Number(item.rating || 5),
+            date: String(item.created_at || new Date().toISOString()).slice(0, 10),
+            body: String(item.content || ""),
+            tags: Array.isArray(item.tags) ? item.tags.map((x) => String(x)) : [],
+            avatarUrl: String(item.reviewer_avatar || "https://i.pravatar.cc/40"),
+          }));
+          reviewTotal = Number(reviewRes.total || reviewRows.length);
         }
       } catch {
-        apiRow = null;
+        // 保底：详情失败才置空；评价失败不影响详情渲染
+        if (!apiRow) apiRow = null;
       }
       if (myGen !== gen) return;
-      setView(buildLawyerDetailView(slug, apiRow));
+      const nextView = buildLawyerDetailView(slug, apiRow);
+      if (reviewRows) {
+        nextView.reviews = reviewRows;
+        nextView.reviewCount = reviewTotal ?? reviewRows.length;
+      }
+      setView(nextView);
       setLoading(false);
     };
     run(gen);
@@ -163,7 +271,7 @@ export default function LawyerDetailPage() {
       gen += 1;
       document.removeEventListener("visibilitychange", onVis);
     };
-  }, [slug]);
+  }, [slug, reviewsVersion]);
 
   if (loading || !view) {
     return (
@@ -381,6 +489,10 @@ export default function LawyerDetailPage() {
                     </button>
                   </div>
                 </div>
+                <LawyerReviewComposer
+                  slug={slug}
+                  onCreated={() => setReviewsVersion((v) => v + 1)}
+                />
 
                 <ul className="divide-y divide-[rgba(212,165,116,0.1)]">
                   {view.reviews.map((rev) => (
@@ -415,6 +527,9 @@ export default function LawyerDetailPage() {
                       </div>
                     </li>
                   ))}
+                  {!view.reviews.length ? (
+                    <li className="py-4 text-sm text-[#9A8B78]">暂无用户评价。</li>
+                  ) : null}
                 </ul>
 
                 <div className="mt-6 text-center">
@@ -473,7 +588,7 @@ export default function LawyerDetailPage() {
                 法律技能库
               </h3>
               <p className="mb-4 text-xs leading-relaxed text-[#9A8B78]">
-                律师作为创作者在平台发布的 Skills 与法律产品（示例数据）
+                律师作为创作者在平台发布的 Skills 与法律产品
               </p>
               <ul className="space-y-3">
                 {view.sidebarSkills.map((sk, i) => (
@@ -497,6 +612,9 @@ export default function LawyerDetailPage() {
                     </Link>
                   </li>
                 ))}
+                {!view.sidebarSkills.length ? (
+                  <li className="text-sm text-[#9A8B78]">暂无已发布的法律技能或产品。</li>
+                ) : null}
               </ul>
             </div>
 

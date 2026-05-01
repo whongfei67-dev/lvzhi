@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { PracticeLawyerBadge } from "@/components/common/practice-lawyer-badge";
 import { ContactInvitationModal } from "@/components/creator/contact-invitation-modal";
 import { CreatorFeedbackPanel } from "@/components/creator/creator-feedback-panel";
+import { FollowToggleButton } from "@/components/creator/follow-toggle-button";
 import { createCompatClient } from "@/lib/supabase/compat-client";
 import { getCreatorById, getLawyerById } from "@/lib/platform-demo-data";
 
@@ -46,6 +47,7 @@ export default async function CreatorDetailPage({
     display_name?: string;
     bio?: string;
     lawyer_verified?: boolean;
+    follower_count?: number;
   };
   type LawyerProfile = {
     law_firm?: string;
@@ -152,6 +154,7 @@ export default async function CreatorDetailPage({
           </div>
 
           <div className="flex flex-wrap gap-3 border-t border-[var(--line)] pt-4">
+            <FollowToggleButton targetUserId={mockCreator.id} />
             {mockCreator.isEmployedCreator && mockCreator.hideRealIdentity && !revealIdentity ? (
               <>
                 <ContactInvitationModal creatorId={mockCreator.id} creatorName={displayName} />
@@ -292,6 +295,13 @@ export default async function CreatorDetailPage({
             <span className="text-xs text-[var(--muted)]">已上架作品</span>
             <p className="font-semibold text-[var(--ink)]">{activeSkills?.length ?? 0} 个</p>
           </div>
+          <div>
+            <span className="text-xs text-[var(--muted)]">关注者</span>
+            <p className="font-semibold text-[var(--ink)]">{Number(profile.follower_count ?? 0)} 人</p>
+          </div>
+        </div>
+        <div className="pt-1">
+          <FollowToggleButton targetUserId={String(profile.id)} />
         </div>
       </div>
 

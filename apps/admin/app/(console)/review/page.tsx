@@ -40,6 +40,30 @@ type BatchReviewResult = {
   failed: Array<{ id: string; reason: string }>;
 };
 
+type LawyerReviewItem = {
+  id: string;
+  lawyer_id: string;
+  lawyer_name: string;
+  reviewer_id: string;
+  reviewer_name: string;
+  rating: number;
+  tags: string[] | null;
+  content: string;
+  is_hidden: boolean;
+  hidden_reason: string | null;
+  hidden_at: string | null;
+  hidden_by_name: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type LawyerReviewResult = {
+  items: LawyerReviewItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
 function formatReviewStatus(status: string): string {
   const map: Record<string, string> = {
     pending: "待审核",
@@ -65,6 +89,9 @@ function formatAuditAction(action: string): string {
     community_take_down: "社区内容下架",
     community_restore: "社区内容恢复",
     community_delete: "社区内容删除",
+    lawyer_review_hide: "律师评价隐藏",
+    lawyer_review_restore: "律师评价恢复",
+    lawyer_review_delete: "律师评价删除",
   };
   return map[action] || action;
 }
@@ -83,6 +110,13 @@ export default function ReviewConsolePage() {
   const [batchResult, setBatchResult] = useState<BatchReviewResult | null>(null);
   const [activeAudit, setActiveAudit] = useState<AuditItem | null>(null);
   const [onlyActionable, setOnlyActionable] = useState(true);
+  const [lawyerReviewStatus, setLawyerReviewStatus] = useState<"all" | "visible" | "hidden">("visible");
+  const [lawyerReviewKeyword, setLawyerReviewKeyword] = useState("");
+  const [lawyerReviewLoading, setLawyerReviewLoading] = useState(false);
+  const [lawyerReviewError, setLawyerReviewError] = useState<string | null>(null);
+  const [lawyerReviewRows, setLawyerReviewRows] = useState<LawyerReviewItem[]>([]);
+  const [lawyerReviewReasonById, setLawyerReviewReasonById] = useState<Record<string, string>>({});
+  const [lawyerReviewAuditRows, setLawyerReviewAuditRows] = useState<AuditItem[]>([]);
 
   async function loadData() {
     setLoading(true);
@@ -114,9 +148,40 @@ export default function ReviewConsolePage() {
     }
   }
 
+  async function loadLawyerReviews() {
+    setLawyerReviewLoading(true);
+    setLawyerReviewError(null);
+    try {
+      const search = new URLSearchParams({
+        page: "1",
+        pageSize: "30",
+        status: lawyerReviewStatus,
+      });
+      const keyword = lawyerReviewKeyword.trim();
+      if (keyword) search.set("q", keyword);
+      const result = await apiRequest<LawyerReviewResult>(`/api/admin/lawyer-reviews?${search.toString()}`);
+      setLawyerReviewRows(result.items || []);
+
+      const audit = await apiRequest<{ items: AuditItem[] }>(
+        "/api/admin/actions?target_type=lawyer_review&limit=15&include_snapshots=1"
+      );
+      setLawyerReviewAuditRows(audit.items || []);
+    } catch (err) {
+      setLawyerReviewError(err instanceof AdminApiError ? err.message : "加载律师评价审核数据失败");
+      setLawyerReviewRows([]);
+      setLawyerReviewAuditRows([]);
+    } finally {
+      setLawyerReviewLoading(false);
+    }
+  }
+
   useEffect(() => {
     void loadData();
   }, [status, riskLevel]);
+
+  useEffect(() => {
+    void loadLawyerReviews();
+  }, [lawyerReviewStatus]);
 
   async function moderate(postId: string, action: "approve" | "take_down" | "restore" | "delete") {
     const reason = (reasonByPost[postId] || "").trim();
@@ -165,6 +230,25 @@ export default function ReviewConsolePage() {
       setBatchReason("");
     } catch (err) {
       setError(err instanceof AdminApiError ? err.message : "批量处置失败");
+    }
+  }
+
+  async function moderateLawyerReview(reviewId: string, action: "hide" | "restore" | "delete") {
+    const reason = (lawyerReviewReasonById[reviewId] || "").trim();
+    if ((action === "hide" || action === "delete") && !reason) {
+      setLawyerReviewError("隐藏或删除评价时，处置理由必填");
+      return;
+    }
+    setLawyerReviewError(null);
+    try {
+      await apiRequest(`/api/admin/lawyer-reviews/${encodeURIComponent(reviewId)}/moderate`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action, reason }),
+      });
+      await loadLawyerReviews();
+    } catch (err) {
+      setLawyerReviewError(err instanceof AdminApiError ? err.message : "律师评价处置失败");
     }
   }
 
@@ -392,6 +476,110 @@ export default function ReviewConsolePage() {
       </section>
 
       <section className="admin-card">
+        <h2 style={{ marginTop: 0, marginBottom: 12, fontSize: 18 }}>律师评价审核台</h2>
+        <div style={{ display: "flex", gap: 8, marginBottom: 12, alignItems: "center", flexWrap: "wrap" }}>
+          <select
+            className="admin-select"
+            value={lawyerReviewStatus}
+            onChange={(e) => setLawyerReviewStatus(e.target.value as "all" | "visible" | "hidden")}
+            style={{ maxWidth: 180 }}
+          >
+            <option value="visible">仅显示中评价</option>
+            <option value="hidden">仅已隐藏评价</option>
+            <option value="all">全部评价</option>
+          </select>
+          <input
+            className="admin-input"
+            placeholder="搜索评价内容/律师/评价人"
+            value={lawyerReviewKeyword}
+            onChange={(e) => setLawyerReviewKeyword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                void loadLawyerReviews();
+              }
+            }}
+            style={{ maxWidth: 360 }}
+          />
+          <button className="admin-btn" onClick={() => void loadLawyerReviews()}>
+            查询
+          </button>
+        </div>
+        {lawyerReviewError ? <div style={{ color: "#b63f2e", marginBottom: 10 }}>{lawyerReviewError}</div> : null}
+        {lawyerReviewLoading ? <div>加载中...</div> : null}
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>律师</th>
+              <th>评价人</th>
+              <th>评分</th>
+              <th>评价内容</th>
+              <th>状态</th>
+              <th>处置</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lawyerReviewRows.map((row) => (
+              <tr key={row.id}>
+                <td>
+                  <div>{row.lawyer_name}</div>
+                  <div style={{ fontSize: 12, color: "#7c6a56" }}>{row.lawyer_id}</div>
+                </td>
+                <td>
+                  <div>{row.reviewer_name}</div>
+                  <div style={{ fontSize: 12, color: "#7c6a56" }}>{row.reviewer_id}</div>
+                </td>
+                <td>{row.rating} / 5</td>
+                <td style={{ minWidth: 260 }}>
+                  <div style={{ whiteSpace: "pre-wrap" }}>{row.content}</div>
+                  {row.tags?.length ? (
+                    <div style={{ marginTop: 6, fontSize: 12, color: "#7c6a56" }}>
+                      标签：{row.tags.join("、")}
+                    </div>
+                  ) : null}
+                </td>
+                <td>
+                  {row.is_hidden ? "已隐藏" : "显示中"}
+                  {row.is_hidden && row.hidden_reason ? (
+                    <div style={{ marginTop: 4, fontSize: 12, color: "#7c6a56" }}>
+                      原因：{row.hidden_reason}
+                    </div>
+                  ) : null}
+                </td>
+                <td style={{ minWidth: 260 }}>
+                  <div className="admin-grid" style={{ gap: 6 }}>
+                    <input
+                      className="admin-input"
+                      placeholder="处置理由（隐藏/删除必填）"
+                      value={lawyerReviewReasonById[row.id] || ""}
+                      onChange={(e) => setLawyerReviewReasonById((prev) => ({ ...prev, [row.id]: e.target.value }))}
+                    />
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                      <button className="admin-btn" onClick={() => void moderateLawyerReview(row.id, "hide")} disabled={row.is_hidden}>
+                        隐藏
+                      </button>
+                      <button className="admin-btn" onClick={() => void moderateLawyerReview(row.id, "restore")} disabled={!row.is_hidden}>
+                        恢复
+                      </button>
+                      <button className="admin-btn" onClick={() => void moderateLawyerReview(row.id, "delete")}>
+                        删除
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {!lawyerReviewRows.length && !lawyerReviewLoading ? (
+              <tr>
+                <td colSpan={6} style={{ color: "#7c6a56" }}>
+                  暂无律师评价数据
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </section>
+
+      <section className="admin-card">
         <h3 style={{ marginTop: 0, marginBottom: 10 }}>最近审核动作</h3>
         <table className="admin-table">
           <thead>
@@ -423,6 +611,44 @@ export default function ReviewConsolePage() {
               <tr>
                 <td colSpan={6} style={{ color: "#7c6a56" }}>
                   暂无审计记录
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </section>
+      <section className="admin-card">
+        <h3 style={{ marginTop: 0, marginBottom: 10 }}>律师评价最近审核动作</h3>
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>操作人</th>
+              <th>动作</th>
+              <th>目标</th>
+              <th>理由</th>
+              <th>详情</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lawyerReviewAuditRows.map((row) => (
+              <tr key={row.id}>
+                <td>{new Date(row.created_at).toLocaleString()}</td>
+                <td>{row.actor_name || "—"}</td>
+                <td>{formatAuditAction(row.action_type)}</td>
+                <td>{row.target_id}</td>
+                <td>{row.reason || "—"}</td>
+                <td>
+                  <button className="admin-btn" onClick={() => setActiveAudit(row)}>
+                    查看
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {!lawyerReviewAuditRows.length ? (
+              <tr>
+                <td colSpan={6} style={{ color: "#7c6a56" }}>
+                  暂无律师评价审计记录
                 </td>
               </tr>
             ) : null}

@@ -40,16 +40,17 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     }
 
     const { email, password, display_name, role: registerRole } = validation.data
+    const normalizedEmail = email.trim().toLowerCase()
 
     try {
       // 检查邮箱是否已存在
       const existing = await query<{ id: string }>(
         'SELECT id FROM profiles WHERE email = $1',
-        [email]
+        [normalizedEmail]
       )
 
       if (existing.rows.length > 0) {
-        return errors.conflict(reply, 'Email already registered')
+        return errors.conflict(reply, '该邮箱已注册，请直接登录或找回密码')
       }
 
       // 哈希密码并创建用户
@@ -67,7 +68,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
           `INSERT INTO profiles (email, password_hash, display_name, role, verified)
            VALUES ($1, $2, $3, $4, false)
            RETURNING id, email, role, display_name, created_at`,
-          [email, hashedPassword, display_name, registerRole]
+          [normalizedEmail, hashedPassword, display_name, registerRole]
         )
 
         const user = userResult.rows[0]
@@ -144,6 +145,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     }
 
     const { email, password } = validation.data
+    const normalizedEmail = email.trim().toLowerCase()
     const ip = request.ip
     const userAgent = request.headers['user-agent'] || ''
 
@@ -162,7 +164,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         `SELECT id, email, password_hash, role, display_name, verified,
                 failed_attempts, locked_until
          FROM profiles WHERE email = $1`,
-        [email]
+        [normalizedEmail]
       )
 
       if (userResult.rows.length === 0) {
@@ -773,6 +775,8 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         avatar_url?: string
         bio?: string
         verified: boolean
+        creator_level?: string | null
+        lawyer_verified?: boolean
         balance: number
         created_at: string
       }
@@ -781,7 +785,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       try {
         result = await query<MeRow>(
           `SELECT p.id, p.email, p.phone, p.role, p.display_name,
-                p.avatar_url, p.bio, p.verified, b.balance, p.created_at
+                p.avatar_url, p.bio, p.verified, p.creator_level, p.lawyer_verified, b.balance, p.created_at
          FROM profiles p
          LEFT JOIN user_balances b ON b.user_id = p.id
          WHERE p.id = $1`,
@@ -791,7 +795,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         // 兼容未执行完整迁移（如 user_balances / phone / verified 列缺失）时的会话探活
         request.log.warn({ err: fullErr }, '[auth/me] full profile query failed, fallback to minimal')
         result = await query<MeRow>(
-          `SELECT p.id, p.email, p.role, p.display_name, p.avatar_url, p.bio, p.created_at
+          `SELECT p.id, p.email, p.role, p.display_name, p.avatar_url, p.bio, p.creator_level, p.lawyer_verified, p.created_at
            FROM profiles p
            WHERE p.id = $1`,
           [userId]
@@ -901,8 +905,9 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
   // ============================================
   app.post('/api/auth/forgot-password', async (request, reply) => {
     const { email } = request.body as { email?: string }
+    const normalizedEmail = (email || '').trim().toLowerCase()
 
-    if (!email) {
+    if (!normalizedEmail) {
       return errors.badRequest(reply, 'Email is required')
     }
 
@@ -910,7 +915,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       // 检查用户是否存在
       const user = await query<{ id: string }>(
         'SELECT id FROM profiles WHERE email = $1',
-        [email]
+        [normalizedEmail]
       )
 
       if (user.rows.length === 0) {
@@ -926,12 +931,12 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
          VALUES ($1, $2, NOW() + INTERVAL '1 hour')
          ON CONFLICT (email) DO UPDATE
          SET code = $2, expires_at = NOW() + INTERVAL '1 hour', used = false`,
-        [email, code]
+        [normalizedEmail, code]
       )
 
       // TODO: 发送重置邮件
       // 开发模式只记录请求，不暴露重置码
-      console.log(`[DEV] Password reset requested for ${email}`)
+      console.log(`[DEV] Password reset requested for ${normalizedEmail}`)
 
       return success(reply, null, 'If the email exists, a reset link will be sent')
 
@@ -951,6 +956,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
     }
 
     const { email, code, new_password } = validation.data
+    const normalizedEmail = email.trim().toLowerCase()
 
     try {
       // 验证重置码
@@ -958,7 +964,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
         `SELECT id, expires_at, used FROM password_reset_codes
          WHERE email = $1 AND code = $2
          ORDER BY created_at DESC LIMIT 1`,
-        [email, code]
+        [normalizedEmail, code]
       )
 
       if (codeResult.rows.length === 0) {
@@ -979,7 +985,7 @@ export const authRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       const hashedPassword = hashPassword(new_password)
       await query(
         'UPDATE profiles SET password_hash = $1, updated_at = NOW() WHERE email = $2',
-        [hashedPassword, email]
+        [hashedPassword, normalizedEmail]
       )
 
       // 标记码已使用
