@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { api } from '@/lib/api/client'
 import { Search, MapPin, Scale, Star, Building2 } from 'lucide-react'
 import { PracticeLawyerBadge } from '@/components/common/practice-lawyer-badge'
+import { FollowToggleButton } from '@/components/creator/follow-toggle-button'
 import { preferTradForKeShiLu } from '@/lib/keshilu-text'
 import { withPublicMediaProxy } from '@/lib/media-url'
 import {
@@ -362,84 +363,107 @@ export default function LawyersPage() {
                 </p>
               ) : (
                 displayLawyers.map((lawyer) => (
-                <Link
+                <article
                   key={`${activeRanking}-${lawyer.id}-${selectedRegion}-${selectedDomain}`}
-                  href={`/lawyers/${encodeURIComponent(lawyer.id)}`}
                   className="card lawyer-directory-card group flex h-full flex-col p-3 sm:p-4"
                 >
-                  <div className="flex gap-2.5 sm:gap-3">
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#D4A574] to-[#B8860B] text-base font-bold text-white sm:h-12 sm:w-12 sm:rounded-xl sm:text-lg">
-                      {lawyer.avatar ? (
-                        <img src={withPublicMediaProxy(lawyer.avatar)} alt="" className="h-full w-full rounded-lg object-cover sm:rounded-xl" />
-                      ) : (
-                        lawyer.name?.[0] || "律"
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <h3 className="truncate text-sm font-semibold text-[#2C2416] transition-colors group-hover:text-[#D4A574]">
-                          {lawyer.name}
-                        </h3>
-                        {lawyer.lawyer_verified ? (
-                          <PracticeLawyerBadge className="shrink-0 scale-90" />
+                  <Link href={`/lawyers/${encodeURIComponent(lawyer.id)}`} className="flex h-full flex-col">
+                    <div className="flex gap-2.5 sm:gap-3">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#D4A574] to-[#B8860B] text-base font-bold text-white sm:h-12 sm:w-12 sm:rounded-xl sm:text-lg">
+                        {lawyer.avatar ? (
+                          <img src={withPublicMediaProxy(lawyer.avatar)} alt="" className="h-full w-full rounded-lg object-cover sm:rounded-xl" />
                         ) : (
-                          <span className="tag shrink-0 py-0 text-[10px] sm:text-xs">
-                            认证创作者
-                          </span>
+                          lawyer.name?.[0] || "律"
                         )}
                       </div>
-                      <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-[#B8860B] sm:text-xs">
-                        {lawyer.rankTitle ||
-                          (lawyer.lawyer_verified
-                            ? "执业律师"
-                            : "认证创作者")}
-                      </p>
-                      <p className="mt-0.5 line-clamp-1 text-[11px] text-[#5D4E3A] sm:text-xs">
-                        {lawyer.firm || "独立执业"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {(lawyer.city || (lawyer.domains && lawyer.domains.length > 0)) ? (
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {lawyer.city ? (
-                        <span className="inline-flex items-center gap-0.5 rounded-full bg-[rgba(92,64,51,0.06)] px-2 py-0.5 text-[10px] text-[#5D4E3A] ring-1 ring-[rgba(212,165,116,0.28)] sm:text-xs">
-                          <MapPin className="h-2.5 w-2.5 shrink-0 text-[#B8860B]" aria-hidden />
-                          {lawyer.city}
-                        </span>
-                      ) : null}
-                      {(lawyer.domains ?? []).slice(0, 3).map((d) => (
-                        <span
-                          key={d}
-                          className="inline-flex items-center gap-0.5 rounded-full bg-[rgba(212,165,116,0.12)] px-2 py-0.5 text-[10px] text-[#5C4033] ring-1 ring-[rgba(212,165,116,0.25)] sm:text-xs"
-                        >
-                          <Scale className="h-2.5 w-2.5 shrink-0 text-[#B8860B]" aria-hidden />
-                          {d}
-                        </span>
-                      ))}
-                    </div>
-                  ) : null}
-
-                  {lawyer.bio ? (
-                    <p className="mt-2 line-clamp-2 text-[11px] leading-snug text-[#5D4E3A] sm:text-xs">{lawyer.bio}</p>
-                  ) : null}
-
-                  <div className="mt-auto flex items-center justify-between gap-2 border-t border-[rgba(212,165,116,0.22)] pt-2">
-                    <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] sm:text-xs">
-                      {lawyer.rating != null ? (
-                        <div className="flex items-center gap-0.5 font-medium text-[#D4A574]">
-                          <Star className="h-3.5 w-3.5 shrink-0 fill-current sm:h-4 sm:w-4" />
-                          <span>{lawyer.rating.toFixed(1)}</span>
-                          <span className="font-normal text-[#9A8B78]">({lawyer.review_count || 0})</span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <h3 className="truncate text-sm font-semibold text-[#2C2416] transition-colors group-hover:text-[#D4A574]">
+                            {lawyer.name}
+                          </h3>
+                          {lawyer.lawyer_verified ? (
+                            <PracticeLawyerBadge className="shrink-0 scale-90" />
+                          ) : (
+                            <span className="tag shrink-0 py-0 text-[10px] sm:text-xs">
+                              认证创作者
+                            </span>
+                          )}
                         </div>
-                      ) : null}
-                      {lawyer.follower_count !== undefined ? (
-                        <span className="shrink-0 text-[#9A8B78]">{lawyer.follower_count} 关注</span>
-                      ) : null}
+                        <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-[#B8860B] sm:text-xs">
+                          {lawyer.rankTitle ||
+                            (lawyer.lawyer_verified
+                              ? "执业律师"
+                              : "认证创作者")}
+                        </p>
+                        <p className="mt-0.5 line-clamp-1 text-[11px] text-[#5D4E3A] sm:text-xs">
+                          {lawyer.firm || "独立执业"}
+                        </p>
+                      </div>
                     </div>
-                    <span className="shrink-0 text-[10px] font-medium text-[#D4A574] sm:text-xs">详情</span>
+
+                    {(lawyer.city || (lawyer.domains && lawyer.domains.length > 0)) ? (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {lawyer.city ? (
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-[rgba(92,64,51,0.06)] px-2 py-0.5 text-[10px] text-[#5D4E3A] ring-1 ring-[rgba(212,165,116,0.28)] sm:text-xs">
+                            <MapPin className="h-2.5 w-2.5 shrink-0 text-[#B8860B]" aria-hidden />
+                            {lawyer.city}
+                          </span>
+                        ) : null}
+                        {(lawyer.domains ?? []).slice(0, 3).map((d) => (
+                          <span
+                            key={d}
+                            className="inline-flex items-center gap-0.5 rounded-full bg-[rgba(212,165,116,0.12)] px-2 py-0.5 text-[10px] text-[#5C4033] ring-1 ring-[rgba(212,165,116,0.25)] sm:text-xs"
+                          >
+                            <Scale className="h-2.5 w-2.5 shrink-0 text-[#B8860B]" aria-hidden />
+                            {d}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {lawyer.bio ? (
+                      <p className="mt-2 line-clamp-2 text-[11px] leading-snug text-[#5D4E3A] sm:text-xs">{lawyer.bio}</p>
+                    ) : null}
+
+                    <div className="mt-auto flex items-center justify-between gap-2 border-t border-[rgba(212,165,116,0.22)] pt-2">
+                      <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] sm:text-xs">
+                        {lawyer.rating != null ? (
+                          <div className="flex items-center gap-0.5 font-medium text-[#D4A574]">
+                            <Star className="h-3.5 w-3.5 shrink-0 fill-current sm:h-4 sm:w-4" />
+                            <span>{lawyer.rating.toFixed(1)}</span>
+                            <span className="font-normal text-[#9A8B78]">({lawyer.review_count || 0})</span>
+                          </div>
+                        ) : null}
+                        {lawyer.follower_count !== undefined ? (
+                          <span className="shrink-0 text-[#9A8B78]">{lawyer.follower_count} 关注</span>
+                        ) : null}
+                      </div>
+                      <span className="shrink-0 text-[10px] font-medium text-[#D4A574] sm:text-xs">详情</span>
+                    </div>
+                  </Link>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    <FollowToggleButton
+                      targetUserId={String(lawyer.id || '')}
+                      onChanged={({ followerCount }) => {
+                        if (typeof followerCount !== 'number') return
+                        setLawyers((prev) =>
+                          prev.map((item) =>
+                            String(item.id) === String(lawyer.id)
+                              ? { ...item, follower_count: followerCount }
+                              : item
+                          )
+                        )
+                      }}
+                      className="inline-flex h-8 items-center rounded-lg border border-[rgba(212,165,116,0.35)] px-3 text-[11px] font-semibold text-[#B8860B] transition hover:bg-[rgba(212,165,116,0.08)] disabled:cursor-not-allowed disabled:opacity-60 sm:h-9 sm:text-xs"
+                    />
+                    <Link
+                      href={`/lawyers/${encodeURIComponent(lawyer.id)}`}
+                      className="inline-flex items-center gap-1 rounded-lg border border-[rgba(212,165,116,0.25)] px-2.5 py-1.5 text-[11px] font-medium text-[#5D4E3A] transition-colors hover:border-[#D4A574] hover:text-[#D4A574] sm:text-xs"
+                    >
+                      查看详情
+                    </Link>
                   </div>
-                </Link>
+                </article>
                 ))
               )}
                 </div>
