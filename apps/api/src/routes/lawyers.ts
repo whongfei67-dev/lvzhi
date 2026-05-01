@@ -515,6 +515,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
           p.created_at
         FROM profiles p
         WHERE p.role = 'creator'
+          AND (p.lawyer_verified = true OR p.creator_level = 'lawyer')
           AND COALESCE(p.lawyer_profile_visible, true) = true
           AND (${byId ? 'p.id = $1::uuid' : 'p.display_name = $1'})`,
         [slug]

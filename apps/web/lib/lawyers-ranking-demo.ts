@@ -663,13 +663,13 @@ export function filterInfluenceFirms(
 export function getDisplayLawyers(activeRanking: string, apiLawyers: LawyerListItem[]): LawyerListItem[] {
   if (activeRanking === "influence") return applyDemoLawyerPlaceholders(MOCK_LAWYERS_INFLUENCE)
   if (activeRanking === "newcomer") return applyDemoLawyerPlaceholders(MOCK_LAWYERS_NEWCOMER)
-  if (activeRanking === "comprehensive" && apiLawyers.length > 0) return apiLawyers
-  return applyDemoLawyerPlaceholders(MOCK_LAWYERS_COMPREHENSIVE)
+  if (activeRanking === "comprehensive") return apiLawyers
+  return []
 }
 
 export function isShowingMockLawyers(activeRanking: string, apiLawyers: LawyerListItem[]): boolean {
   if (activeRanking === "influence" || activeRanking === "newcomer") return true
-  return activeRanking === "comprehensive" && apiLawyers.length === 0
+  return false
 }
 
 /** `/lawyers/rankings`：各律师 Tab 独立示例列表 */
