@@ -240,7 +240,29 @@ export default function LawyerDetailPage() {
       let reviewTotal: number | null = null;
       try {
         if (slug) {
-          apiRow = (await api.lawyers.get(slug)) as Record<string, unknown>;
+          try {
+            apiRow = (await api.lawyers.get(slug)) as Record<string, unknown>;
+          } catch {
+            apiRow = null;
+          }
+
+          // Fallback: if lawyer detail lookup misses by UUID, build from creator profile data.
+          if (!apiRow && isUuidSlug(slug)) {
+            try {
+              const profile = (await api.users.getProfile(slug)) as Record<string, unknown>;
+              if (String(profile.role || "").toLowerCase() === "creator") {
+                apiRow = {
+                  ...profile,
+                  name: profile.display_name ?? profile.name,
+                  avatar: profile.avatar_url ?? profile.avatar,
+                  law_firm: profile.law_firm ?? profile.firm,
+                };
+              }
+            } catch {
+              // keep null
+            }
+          }
+
           const reviewRes = await api.lawyers.getReviews(slug, { page: 1, limit: 50 });
           reviewRows = (reviewRes.items || []).map((item, idx) => ({
             id: String(item.id || `review-${idx}`),
