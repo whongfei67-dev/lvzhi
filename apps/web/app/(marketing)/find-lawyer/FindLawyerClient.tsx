@@ -7,6 +7,7 @@ import { api } from '@/lib/api/client'
 import type { User } from '@/lib/api/types'
 import { Search, Trophy, MapPin, Scale, Star, ChevronRight, Users } from 'lucide-react'
 import { PracticeLawyerBadge } from '@/components/common/practice-lawyer-badge'
+import { FollowToggleButton } from '@/components/creator/follow-toggle-button'
 
 const REGIONS = ['全国', '北京', '上海', '广州', '深圳', '杭州', '南京', '成都', '武汉', '西安']
 const DOMAINS = [
@@ -396,33 +397,31 @@ export function FindLawyerClient({ initialRegion = '全国', initialDomain = 'al
           ) : lawyers.length > 0 ? (
             <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {lawyers.map((lawyer) => (
-                <Link
-                  key={lawyer.id}
-                  href={`/lawyers/${encodeURIComponent(lawyer.id)}`}
-                  className="card flex flex-col gap-4 p-6 group"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#D4A574] to-[#B8860B] text-2xl font-bold text-white">
-                      {lawyer.display_name?.[0] || '律'}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-[#2C2416] truncate group-hover:text-[#D4A574] transition-colors">
-                          {lawyer.display_name || lawyer.email}
-                        </h3>
-                        {lawyer.lawyer_verified ? <PracticeLawyerBadge /> : null}
+                <article key={lawyer.id} className="card flex flex-col gap-4 p-6 group">
+                  <Link href={`/lawyers/${encodeURIComponent(lawyer.id)}`} className="flex flex-col gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#D4A574] to-[#B8860B] text-2xl font-bold text-white">
+                        {lawyer.display_name?.[0] || '律'}
                       </div>
-                      <p className="mt-1 text-sm text-[#5D4E3A]">
-                        {region === '全国' ? '全国执业' : region + '执业'}
-                      </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-[#2C2416] truncate group-hover:text-[#D4A574] transition-colors">
+                            {lawyer.display_name || lawyer.email}
+                          </h3>
+                          {lawyer.lawyer_verified ? <PracticeLawyerBadge /> : null}
+                        </div>
+                        <p className="mt-1 text-sm text-[#5D4E3A]">
+                          {region === '全国' ? '全国执业' : region + '执业'}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
-                  {lawyer.bio && (
-                    <p className="line-clamp-2 text-sm text-[#5D4E3A]">
-                      {lawyer.bio}
-                    </p>
-                  )}
+                    {lawyer.bio && (
+                      <p className="line-clamp-2 text-sm text-[#5D4E3A]">
+                        {lawyer.bio}
+                      </p>
+                    )}
+                  </Link>
 
                   <div className="mt-auto flex items-center justify-between pt-2 border-t border-[rgba(212,165,116,0.15)]">
                     <div className="flex items-center gap-3 text-xs text-[#9A8B78]">
@@ -438,7 +437,37 @@ export function FindLawyerClient({ initialRegion = '全国', initialDomain = 'al
                       <span>{lawyer.follower_count || 0} 关注</span>
                     </div>
                   </div>
-                </Link>
+                  <div className="flex items-center justify-between gap-2">
+                    <FollowToggleButton
+                      targetUserId={String(lawyer.id || '')}
+                      onChanged={({ followerCount }) => {
+                        if (typeof followerCount !== 'number') return
+                        setLawyers((prev) =>
+                          prev.map((item) =>
+                            String(item.id) === String(lawyer.id)
+                              ? { ...item, follower_count: followerCount }
+                              : item
+                          )
+                        )
+                        setTopLawyers((prev) =>
+                          prev.map((item) =>
+                            String(item.id) === String(lawyer.id)
+                              ? { ...item, follower_count: followerCount }
+                              : item
+                          )
+                        )
+                      }}
+                      className="inline-flex h-9 items-center rounded-xl border border-[rgba(212,165,116,0.35)] px-3 text-xs font-semibold text-[#B8860B] transition hover:bg-[rgba(212,165,116,0.08)] disabled:cursor-not-allowed disabled:opacity-60"
+                    />
+                    <Link
+                      href={`/lawyers/${encodeURIComponent(lawyer.id)}`}
+                      className="inline-flex items-center gap-1 rounded-xl border border-[rgba(212,165,116,0.25)] px-3 py-2 text-xs font-medium text-[#5D4E3A] transition-colors hover:border-[#D4A574] hover:text-[#D4A574]"
+                    >
+                      查看详情
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </Link>
+                  </div>
+                </article>
               ))}
             </div>
           ) : (

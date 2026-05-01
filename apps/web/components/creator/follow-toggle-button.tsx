@@ -8,13 +8,14 @@ import { ApiError, api, getSession } from "@/lib/api/client";
 type Props = {
   targetUserId: string;
   className?: string;
+  onChanged?: (payload: { isFollowing: boolean; followerCount: number | null }) => void;
 };
 
 function isUuid(v: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.trim());
 }
 
-export function FollowToggleButton({ targetUserId, className }: Props) {
+export function FollowToggleButton({ targetUserId, className, onChanged }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -66,7 +67,10 @@ export function FollowToggleButton({ targetUserId, className }: Props) {
     setBusy(true);
     try {
       const res = await api.users.toggleFollow(targetUserId);
-      setIsFollowing(Boolean(res.is_following));
+      const nextFollowing = Boolean(res.is_following);
+      const nextFollowerCount = typeof res.follower_count === "number" ? res.follower_count : null;
+      setIsFollowing(nextFollowing);
+      onChanged?.({ isFollowing: nextFollowing, followerCount: nextFollowerCount });
     } catch (error) {
       if (error instanceof ApiError && error.statusCode === 401) {
         router.push("/login");

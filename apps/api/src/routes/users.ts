@@ -480,14 +480,17 @@ export async function usersRoutes(fastify: FastifyInstance) {
           [currentUserId, targetUserId]
         )
         await query(
-          'UPDATE profiles SET following_count = following_count - 1 WHERE id = $1',
+          'UPDATE profiles SET following_count = GREATEST(COALESCE(following_count, 0) - 1, 0) WHERE id = $1',
           [currentUserId]
         )
-        await query(
-          'UPDATE profiles SET follower_count = follower_count - 1 WHERE id = $1',
+        const followerResult = await query<{ follower_count: string }>(
+          'UPDATE profiles SET follower_count = GREATEST(COALESCE(follower_count, 0) - 1, 0) WHERE id = $1 RETURNING COALESCE(follower_count, 0)::text AS follower_count',
           [targetUserId]
         )
-        return success(reply, { is_following: false } as Record<string, unknown>)
+        return success(reply, {
+          is_following: false,
+          follower_count: parseInt(followerResult.rows[0]?.follower_count || '0'),
+        } as Record<string, unknown>)
       } else {
         // 添加关注
         await query(
@@ -498,11 +501,14 @@ export async function usersRoutes(fastify: FastifyInstance) {
           'UPDATE profiles SET following_count = following_count + 1 WHERE id = $1',
           [currentUserId]
         )
-        await query(
-          'UPDATE profiles SET follower_count = follower_count + 1 WHERE id = $1',
+        const followerResult = await query<{ follower_count: string }>(
+          'UPDATE profiles SET follower_count = COALESCE(follower_count, 0) + 1 WHERE id = $1 RETURNING COALESCE(follower_count, 0)::text AS follower_count',
           [targetUserId]
         )
-        return success(reply, { is_following: true } as Record<string, unknown>)
+        return success(reply, {
+          is_following: true,
+          follower_count: parseInt(followerResult.rows[0]?.follower_count || '0'),
+        } as Record<string, unknown>)
       }
     } catch (error) {
       console.error('Follow user error:', error)

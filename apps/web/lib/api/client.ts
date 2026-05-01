@@ -321,7 +321,7 @@ export const users = {
   },
 
   async toggleFollow(userId: string) {
-    return request<{ is_following: boolean }>(`/api/users/${userId}/follow`, {
+    return request<{ is_following: boolean; follower_count?: number }>(`/api/users/${userId}/follow`, {
       method: "POST",
     });
   },

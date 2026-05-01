@@ -230,6 +230,20 @@ export default function LawyerDetailPage() {
   const [loading, setLoading] = useState(true);
   const [missingProfile, setMissingProfile] = useState(false);
   const [reviewsVersion, setReviewsVersion] = useState(0);
+  const applyFollowerCount = (count: number) => {
+    const safe = Math.max(0, Number(count || 0));
+    const text = String(safe);
+    setView((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        followersDisplay: text,
+        sidebarStats: prev.sidebarStats.map((item, idx) =>
+          item.label === "关注者" || idx === 0 ? { ...item, value: text } : item
+        ),
+      };
+    });
+  };
 
   useEffect(() => {
     let gen = 0;
@@ -381,10 +395,23 @@ export default function LawyerDetailPage() {
             </div>
 
             <div className="min-w-0 flex-1 text-center lg:text-left">
-              <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
-                <h1 className="font-serif text-2xl font-bold tracking-wide text-[#2C2416] md:text-3xl">
-                  {view.name}
-                </h1>
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center justify-center gap-3 lg:justify-start">
+                  <h1 className="font-serif text-2xl font-bold tracking-wide text-[#2C2416] md:text-3xl">
+                    {view.name}
+                  </h1>
+                </div>
+                {String(view.id || "").trim() ? (
+                  <div className="flex justify-center sm:justify-end">
+                    <FollowToggleButton
+                      targetUserId={String(view.id)}
+                      onChanged={({ followerCount }) => {
+                        if (typeof followerCount === "number") applyFollowerCount(followerCount);
+                      }}
+                      className="inline-flex h-10 items-center rounded-xl border border-[rgba(212,165,116,0.35)] px-4 text-sm font-semibold text-[#B8860B] transition hover:bg-[rgba(212,165,116,0.08)] disabled:cursor-not-allowed disabled:opacity-60"
+                    />
+                  </div>
+                ) : null}
               </div>
 
               <p className="mt-2 flex items-center justify-center gap-2 text-sm text-[#6B5B4D] lg:justify-start">
@@ -702,14 +729,6 @@ export default function LawyerDetailPage() {
                 未登录为半锁定预览；登录后可填写留言并由系统推送给律师。
               </p>
               <LawyerMessageCta slug={slug} />
-              {String(view.id || "").trim() ? (
-                <div className="mt-3">
-                  <FollowToggleButton
-                    targetUserId={String(view.id)}
-                    className="inline-flex h-10 items-center rounded-xl border border-[rgba(212,165,116,0.35)] px-4 text-sm font-semibold text-[#B8860B] transition hover:bg-[rgba(212,165,116,0.08)] disabled:cursor-not-allowed disabled:opacity-60"
-                  />
-                </div>
-              ) : null}
             </div>
 
             <Link
