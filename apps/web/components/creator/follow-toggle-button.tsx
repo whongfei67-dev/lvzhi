@@ -56,7 +56,22 @@ export function FollowToggleButton({ targetUserId, className, onChanged }: Props
     };
   }, [targetUserId]);
 
-  if (isSelf || !isUuid(targetUserId)) return null;
+  if (!isUuid(targetUserId)) return null;
+
+  if (isSelf) {
+    return (
+      <button
+        type="button"
+        disabled
+        className={
+          className ??
+          "inline-flex h-10 items-center rounded-2xl border border-[rgba(154,139,120,0.35)] px-4 text-sm font-semibold text-[#9A8B78] disabled:cursor-not-allowed disabled:opacity-80"
+        }
+      >
+        本人
+      </button>
+    );
+  }
 
   const onToggle = async () => {
     if (busy) return;

@@ -2,6 +2,55 @@
 
 > 适用范围：`apps/api`、`apps/web`、`apps/admin`，生产域名 `www.lvxzhi.com`
 
+## 0. 固定动作（提需求 -> 改代码 -> 推送部署 -> 线上核验）
+
+> 这是每次上线都执行的四步闭环。任何一步未完成，不进入下一步。
+
+### 0.1 提需求（冻结范围）
+
+- [ ] 用 1~3 句话写清楚需求目标（改什么、给谁用、验收标准）
+- [ ] 明确影响范围：`API / Web / Admin / DB / Nginx / OSS`
+- [ ] 明确是否需要数据迁移和回滚预案
+- [ ] 明确上线后如何验证（具体页面、按钮、接口）
+
+### 0.2 改代码（本地完成）
+
+- [ ] 在功能分支或当前分支完成代码修改
+- [ ] 至少执行一次本地检查（typecheck/lint/关键路径手测）
+- [ ] 提交信息写清楚“为什么改”（不是只写“改了什么”）
+- [ ] 推送到远端并确认 `git status` 干净
+
+### 0.3 推送线上部署（ECS 执行）
+
+- [ ] 登录 ECS，进入目录：`cd /opt/lvzhi`
+- [ ] 先拉代码：`git pull`
+- [ ] 再部署：`docker compose up -d --build api web admin`
+- [ ] 最后看状态：`docker compose ps`
+
+### 0.4 线上核验（必须留痕）
+
+- [ ] 核验容器健康：`api/web/admin/nginx/postgres` 均为 `healthy` 或稳定 `Up`
+- [ ] 核验用户路径（页面级）：入口是否可见、点击是否生效、状态是否变化
+- [ ] 核验后台路径（管理级）：数据总览/审核台是否读到最新数据
+- [ ] 核验接口路径（服务级）：核心接口返回码正常（200/302）
+- [ ] 记录结果（截图或文字）到“发布记录模板”
+
+### 0.5 故障分流（固定判定）
+
+- 若报 `502 Bad Gateway` 且刚重启不久：先等 30~60 秒后重查 `docker compose ps`
+- 若报 `no space left on device`：先清理 Docker 空间，再重建容器
+- 若按钮“看不到”：优先排查路由是否一致、登录态是否正确、是否命中“本人隐藏/禁用”逻辑
+
+### 0.6 生产常用命令（固定）
+
+```bash
+cd /opt/lvzhi
+git pull
+docker compose up -d --build api web admin
+docker compose ps
+docker compose logs --tail=120 web admin api nginx
+```
+
 ## 1. 发布节奏与顺序
 
 - 固定顺序：`数据库迁移（如有） -> API -> Web -> Admin`
