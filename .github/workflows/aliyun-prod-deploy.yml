@@ -129,6 +129,7 @@ jobs:
           script: |
             set -euo pipefail
             export APP_DIR="${{ secrets.ECS_APP_DIR || '/opt/lvzhi' }}"
+            export RUN_SHA="${{ github.sha }}"
             if [ -n "${{ secrets.ECS_ENV_FILE }}" ]; then
               export ENV_FILE="${{ secrets.ECS_ENV_FILE }}"
             else
@@ -137,8 +138,7 @@ jobs:
 
             cd "${APP_DIR}"
             git fetch --all --prune
-            git checkout main
-            git pull --ff-only origin main
+            git checkout --detach "${RUN_SHA}"
 
             if [ ! -f "${ENV_FILE}" ]; then
               echo "Missing env file: ${ENV_FILE}"
