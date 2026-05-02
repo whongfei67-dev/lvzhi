@@ -15,6 +15,7 @@ function upstreamApiBase(): string {
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
   },

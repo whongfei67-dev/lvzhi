@@ -1,5 +1,7 @@
 # 律植部署指南
 
+> 当前生产环境以 `ECS + Docker Compose` 为准。文内旧的 PM2 手工流程仅作历史兼容，生产部署请优先使用 `deploy/update-on-ecs.sh` 和 `deploy/update-from-registry.sh`。
+
 ## 环境要求
 
 | 项目 | 要求 |
@@ -306,6 +308,9 @@ pm2 show lvzhi-web
 ```bash
 cd /opt/lvzhi
 
+# 0) 部署前磁盘预检（建议每次更新前执行）
+./deploy/disk-preflight.sh --min-free-gb 8
+
 # 1) 磁盘与 Docker 空间
 df -h
 docker system df
@@ -325,6 +330,9 @@ curl -s "http://127.0.0.1:3001/api/oss/health"
 docker compose --env-file deploy/.env logs --since=10m api | grep -Ei "error|failed|nosuch|accessdenied|signature|forbidden" || true
 docker compose --env-file deploy/.env logs --since=10m web | grep -Ei "error|failed|exception" || true
 docker compose --env-file deploy/.env logs --since=10m nginx | grep -Ei " 4[0-9][0-9] | 5[0-9][0-9] " || true
+
+# 6) 空间不足时（轻量清理）
+./deploy/docker-cleanup.sh
 ```
 
 巡检通过标准：
@@ -340,7 +348,7 @@ docker compose --env-file deploy/.env logs --since=10m nginx | grep -Ei " 4[0-9]
 
 ## 更新部署
 
-### 推荐：GitHub Actions 自动发布（含人工审批）
+### 推荐：GitHub Actions 自动发布（含人工审批，ECS 不本机构建）
 
 仓库已提供工作流：`.github/workflows/aliyun-prod-deploy.yml`
 
@@ -359,6 +367,32 @@ docker compose --env-file deploy/.env logs --since=10m nginx | grep -Ei " 4[0-9]
 ```
 
 > 首次接入请在 GitHub Secrets 配置：`ACR_REGISTRY`、`ACR_USERNAME`、`ACR_PASSWORD`、`ECS_HOST`、`ECS_USER`、`ECS_SSH_KEY`、`ECS_APP_DIR`（可选）和 `ECS_ENV_FILE`（可选）。
+
+### ECS 手工更新（不走镜像 tag 时）
+
+```bash
+cd /opt/lvzhi
+./deploy/update-on-ecs.sh
+```
+
+### 本地调试构建（非生产）
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build web
+```
+
+### 定时清理任务（防止磁盘长期堆积）
+
+```bash
+cd /opt/lvzhi
+./deploy/install-maintenance-cron.sh
+```
+
+SLI 建议：
+
+- 连续 7 次发布无 `no space left on device`
+- 部署后磁盘空闲 >= 25%
+- `/api/health` 始终 200，`/` 与 `/admin/login` 返回 200/302
 
 ```bash
 # 1. 本地重新打包

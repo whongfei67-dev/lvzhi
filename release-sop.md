@@ -23,8 +23,8 @@
 ### 0.3 推送线上部署（ECS 执行）
 
 - [ ] 登录 ECS，进入目录：`cd /opt/lvzhi`
-- [ ] 先拉代码：`git pull`
-- [ ] 再部署：`docker compose up -d --build api web admin`
+- [ ] 先做磁盘预检：`./deploy/disk-preflight.sh --min-free-gb 8`
+- [ ] 再执行更新：`./deploy/update-on-ecs.sh`
 - [ ] 最后看状态：`docker compose ps`
 
 ### 0.4 线上核验（必须留痕）
@@ -45,8 +45,8 @@
 
 ```bash
 cd /opt/lvzhi
-git pull
-docker compose up -d --build api web admin
+./deploy/disk-preflight.sh --min-free-gb 8
+./deploy/update-on-ecs.sh
 docker compose ps
 docker compose logs --tail=120 web admin api nginx
 ```

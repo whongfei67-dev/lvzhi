@@ -63,6 +63,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
 
   await ensureLawyerProfileVisibilityColumns()
   let lawyerReviewsTableEnsured = false
+  let lawyerQueryIndexesEnsured = false
 
   async function ensureLawyerReviewsTable(): Promise<void> {
     if (lawyerReviewsTableEnsured) return
@@ -94,6 +95,29 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
   }
 
   await ensureLawyerReviewsTable()
+
+  async function ensureLawyerQueryIndexes(): Promise<void> {
+    if (lawyerQueryIndexesEnsured) return
+    try {
+      await query(`
+        CREATE INDEX IF NOT EXISTS idx_profiles_lawyer_discovery
+        ON profiles(role, lawyer_verified, creator_level, lawyer_profile_visible, follower_count DESC, created_at DESC)
+      `)
+      await query(`
+        CREATE INDEX IF NOT EXISTS idx_profiles_lawyer_display_name
+        ON profiles(display_name)
+      `)
+      await query(`
+        CREATE INDEX IF NOT EXISTS idx_profiles_lawyer_specialty_gin
+        ON profiles USING GIN (specialty)
+      `)
+    } catch (err) {
+      console.warn('[lawyers] ensureLawyerQueryIndexes failed:', err)
+    }
+    lawyerQueryIndexesEnsured = true
+  }
+
+  await ensureLawyerQueryIndexes()
 
   async function resolveLawyerIdBySlug(slug: string): Promise<string | null> {
     const byId = isLawyerProfileUuid(slug)
@@ -212,6 +236,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
         reply.header('X-Visitor-Limited', 'true')
       }
 
+      reply.header('Cache-Control', 'public, max-age=30, stale-while-revalidate=60')
       return paginated(reply, items, total, pageNum, limitNum)
 
     } catch (err) {
@@ -246,6 +271,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
         LIMIT 6`
       )
 
+      reply.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=120')
       return success(reply, result.rows)
 
     } catch (err) {
@@ -304,6 +330,7 @@ export const lawyersRoute: FastifyPluginAsync = async (app: FastifyInstance) => 
         [...params, limitNum]
       )
 
+      reply.header('Cache-Control', 'public, max-age=30, stale-while-revalidate=60')
       return success(reply, result.rows.map((row, index) => ({
         ...row,
         ranking_position: index + 1,

@@ -231,6 +231,9 @@ export const adminRoute: FastifyPluginAsync = async (app: FastifyInstance) => {
       await query('CREATE INDEX IF NOT EXISTS idx_community_comments_created_author ON community_comments(created_at DESC, author_id)')
       await query('CREATE INDEX IF NOT EXISTS idx_opportunities_status_created_publisher ON opportunities(status, created_at DESC, publisher_id)')
       await query('CREATE INDEX IF NOT EXISTS idx_skills_status_category_created_creator ON skills(status, category, created_at DESC, creator_id)')
+      await query('CREATE INDEX IF NOT EXISTS idx_profiles_follower_created ON profiles(follower_count DESC, created_at DESC)')
+      await query('CREATE INDEX IF NOT EXISTS idx_user_follows_following_created ON user_follows(following_id, created_at DESC)')
+      await query('CREATE INDEX IF NOT EXISTS idx_user_follows_follower_created ON user_follows(follower_id, created_at DESC)')
     } catch (err) {
       console.warn('[admin] ensureDataOverviewIndexes failed:', err)
     }

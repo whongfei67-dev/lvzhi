@@ -15,9 +15,85 @@ permissions:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  AUTO_ROLLBACK_ON_HEALTH_FAIL: ${{ vars.AUTO_ROLLBACK_ON_HEALTH_FAIL || 'false' }}
 
 jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set image tag
+        id: meta
+        run: echo "tag=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: web-runner
+          push: true
+          tags: |
+            ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_WEB_REPO || 'lvzhi_01/lvzhi' }}:${{ steps.meta.outputs.tag }}
+            ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_WEB_REPO || 'lvzhi_01/lvzhi' }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: api-runner
+          push: true
+          tags: |
+            ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_API_REPO || 'lvzhi_01/lvzhi-api' }}:${{ steps.meta.outputs.tag }}
+            ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_API_REPO || 'lvzhi_01/lvzhi-api' }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Admin image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: admin-runner
+          push: true
+          tags: |
+            ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_ADMIN_REPO || 'lvzhi_01/lvzhi-admin' }}:${{ steps.meta.outputs.tag }}
+            ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_ADMIN_REPO || 'lvzhi_01/lvzhi-admin' }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Nginx image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          target: nginx
+          push: true
+          tags: |
+            ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NGINX_REPO || 'lvzhi_01/lvzhi-nginx' }}:${{ steps.meta.outputs.tag }}
+            ${{ secrets.ACR_REGISTRY }}/${{ secrets.ACR_NGINX_REPO || 'lvzhi_01/lvzhi-nginx' }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   deploy-production:
+    needs: [build-and-push]
     if: github.event_name == 'push' || github.event.inputs.run_deploy == 'yes'
     runs-on: ubuntu-latest
     environment: production
@@ -51,15 +127,51 @@ jobs:
               exit 1
             fi
 
+            chmod +x deploy/update-from-registry.sh deploy/rollback-to-previous.sh deploy/disk-preflight.sh || true
+
             # 生产部署固定 80/443，并避免宿主机 nginx 抢占端口
             sed -i 's/^NGINX_HTTP_PORT=.*/NGINX_HTTP_PORT=80/' "${ENV_FILE}"
             sed -i 's/^NGINX_HTTPS_PORT=.*/NGINX_HTTPS_PORT=443/' "${ENV_FILE}"
             systemctl stop nginx || true
             systemctl disable nginx || true
 
-            # ECS 国内网络不稳定时，关闭 buildkit 更稳
-            export DOCKER_BUILDKIT=0
-            export COMPOSE_DOCKER_CLI_BUILD=0
-            docker compose --env-file "${ENV_FILE}" build web admin api nginx
-            docker compose --env-file "${ENV_FILE}" up -d web admin api nginx
+            DEPLOY_TAG="${{ needs.build-and-push.outputs.image_tag }}"
+            "${APP_DIR}/deploy/update-from-registry.sh" "${DEPLOY_TAG}"
+
+            health_check() {
+              local url="$1"
+              local max_retry="${2:-18}"
+              local wait_seconds="${3:-5}"
+              local i=1
+              while [ "$i" -le "$max_retry" ]; do
+                code="$(curl -k -sS -o /dev/null -w "%{http_code}" "$url" || true)"
+                if [ "$code" = "200" ] || [ "$code" = "302" ]; then
+                  echo "[health] ok $url ($code)"
+                  return 0
+                fi
+                echo "[health] retry $i/$max_retry $url ($code)"
+                sleep "$wait_seconds"
+                i=$((i + 1))
+              done
+              echo "[health] failed $url"
+              return 1
+            }
+
+            if ! health_check "https://www.lvxzhi.com/" 18 5 \
+              || ! health_check "https://www.lvxzhi.com/admin/login" 18 5 \
+              || ! health_check "https://www.lvxzhi.com/api/health" 18 5; then
+              if [ "${{ env.AUTO_ROLLBACK_ON_HEALTH_FAIL }}" = "true" ]; then
+                echo "[deploy] health check failed, auto rollback enabled"
+                "${APP_DIR}/deploy/rollback-to-previous.sh"
+                docker compose --env-file "${ENV_FILE}" ps
+                health_check "https://www.lvxzhi.com/" 18 5
+                health_check "https://www.lvxzhi.com/admin/login" 18 5
+                health_check "https://www.lvxzhi.com/api/health" 18 5
+              else
+                echo "[deploy] health check failed, auto rollback disabled"
+                docker compose --env-file "${ENV_FILE}" ps
+                exit 1
+              fi
+            fi
+
             docker compose --env-file "${ENV_FILE}" ps

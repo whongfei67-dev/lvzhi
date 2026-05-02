@@ -5,6 +5,7 @@ import type { JwtPayload } from '../types.js'
 
 /** 工作台 PUT 依赖的列：未跑迁移时自动补齐，避免「创作者/认证申请」等保存 500 */
 let profileWorkbenchColumnsEnsured = false
+let followIndexesEnsured = false
 
 async function ensureProfileWorkbenchColumns(): Promise<void> {
   if (profileWorkbenchColumnsEnsured) return
@@ -43,6 +44,17 @@ async function ensureProfileWorkbenchColumns(): Promise<void> {
   profileWorkbenchColumnsEnsured = true
 }
 
+async function ensureFollowIndexes(): Promise<void> {
+  if (followIndexesEnsured) return
+  try {
+    await query('CREATE INDEX IF NOT EXISTS idx_user_follows_following_created ON user_follows(following_id, created_at DESC)')
+    await query('CREATE INDEX IF NOT EXISTS idx_user_follows_follower_created ON user_follows(follower_id, created_at DESC)')
+  } catch (err) {
+    console.warn('[users] ensureFollowIndexes skipped:', err)
+  }
+  followIndexesEnsured = true
+}
+
 async function requireJwtUser(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   try {
     await request.jwtVerify()
@@ -59,6 +71,7 @@ async function requireJwtUser(request: FastifyRequest, reply: FastifyReply): Pro
 
 // GET /api/users - 搜索用户（律师）
 export async function usersRoutes(fastify: FastifyInstance) {
+  await ensureFollowIndexes()
   // 搜索用户列表
   fastify.get('/api/users', async (request: FastifyRequest, reply: FastifyReply) => {
     const { q, role, page = '1', pageSize = '20' } = request.query as {

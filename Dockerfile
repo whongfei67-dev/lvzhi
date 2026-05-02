@@ -63,20 +63,10 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# 复制 Next.js 构建产物（非 standalone 模式）
-COPY --from=builder /app/apps/web/.next ./.next
-COPY --from=builder /app/apps/web/public ./public
-COPY --from=builder /app/apps/web/package.json ./
-COPY --from=builder /app/pnpm-lock.yaml ./
-
-# 安装 pnpm
-RUN corepack enable && corepack prepare pnpm@10.16.1 --activate
-
-# 设置 npm 镜像源（解决网络问题）
-RUN npm config set registry https://registry.npmmirror.com
-
-# 安装生产依赖
-RUN pnpm install --prod
+# 复制 Next.js standalone 产物（无需运行时 pnpm install）
+COPY --from=builder /app/apps/web/.next/standalone ./
+COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder /app/apps/web/public ./apps/web/public
 
 # 修改文件所有权
 RUN chown -R nextjs:nodejs /app
@@ -88,7 +78,8 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["pnpm", "start"]
+WORKDIR /app/apps/web
+CMD ["node", "server.js"]
 
 
 # ---- 阶段 3: Admin Runtime ----
@@ -101,14 +92,9 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 admin
 
-COPY --from=builder /app/apps/admin/.next ./.next
-COPY --from=builder /app/apps/admin/public ./public
-COPY --from=builder /app/apps/admin/package.json ./
-COPY --from=builder /app/pnpm-lock.yaml ./
-
-RUN corepack enable && corepack prepare pnpm@10.16.1 --activate
-RUN npm config set registry https://registry.npmmirror.com
-RUN pnpm install --prod
+COPY --from=builder /app/apps/admin/.next/standalone ./
+COPY --from=builder /app/apps/admin/.next/static ./apps/admin/.next/static
+COPY --from=builder /app/apps/admin/public ./apps/admin/public
 
 RUN chown -R admin:nodejs /app
 
@@ -119,7 +105,8 @@ EXPOSE 3100
 ENV PORT=3100
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["pnpm", "start", "-p", "3100"]
+WORKDIR /app/apps/admin
+CMD ["node", "server.js"]
 
 
 # ---- 阶段 4: API Runtime ----
