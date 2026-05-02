@@ -53,9 +53,11 @@
 - 在 `production` 环境完成人工审批
 - 在 ECS 执行：`./deploy/update-on-ecs.sh`
 - 在 ECS 验证：`docker compose --env-file deploy/.env ps`
-- 健康检查：`curl https://www.lvxzhi.com/api/health`
+- 健康检查（外部）：`curl -I https://www.lvxzhi.com/`
+- 健康检查（后台入口，允许 301）：`curl -I https://www.lvxzhi.com/admin`
+- 健康检查（ECS 内部 API）：`curl http://127.0.0.1:3001/health`
 - 首页检查：`curl -I https://www.lvxzhi.com`
-- 后台检查：`curl -I https://www.lvxzhi.com/admin/login`
+- 后台检查：`curl -I https://www.lvxzhi.com/admin`
 
 ## E. 回滚演练（必须）
 
@@ -84,7 +86,7 @@
 
 - 部署稳定性：连续 7 次发布无 `no space left on device`
 - 磁盘水位：部署后根分区空闲 `>= 25%` 且 `>= FREE_GB_MIN`
-- 核心可用性：`/` 与 `/admin/login` 返回 `200/302`，`/api/health` 返回 `200`
+- 核心可用性：`/` 返回 `200/302`，`/admin` 返回 `200/301/302`，`127.0.0.1:3001/health` 返回 `200`
 - 响应指标：关键 API（如 `/api/lawyers`、`/api/admin/data-overview`）P95 下降 20%+
 
 ---

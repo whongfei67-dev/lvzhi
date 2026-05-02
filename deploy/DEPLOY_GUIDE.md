@@ -320,7 +320,7 @@ docker compose --env-file deploy/.env ps
 
 # 3) 核心服务健康检查
 curl -sS -o /dev/null -w "web %{http_code}\n" https://www.lvxzhi.com/
-curl -sS -o /dev/null -w "admin %{http_code}\n" https://www.lvxzhi.com/admin/login
+curl -sS -o /dev/null -w "admin %{http_code}\n" https://www.lvxzhi.com/admin
 curl -sS -o /dev/null -w "api-health %{http_code}\n" http://127.0.0.1:3001/health
 
 # 4) OSS 配置生效检查（应看到 bucket=mamba01）
@@ -339,7 +339,7 @@ docker compose --env-file deploy/.env logs --since=10m nginx | grep -Ei " 4[0-9]
 
 - `docker compose ps` 中 `web/api/admin/nginx` 均为 `Up`（`web/api/admin` 建议为 `healthy`）
 - `web` 返回 `200`
-- `admin/login` 返回 `200` 或 `302`
+- `admin` 返回 `200`、`301` 或 `302`
 - `api-health` 返回 `200`
 - `/api/oss/health` 显示 `bucket` 为 `mamba01`
 - 最近 10 分钟无持续错误日志
@@ -392,7 +392,7 @@ SLI 建议：
 
 - 连续 7 次发布无 `no space left on device`
 - 部署后磁盘空闲 >= 25%
-- `/api/health` 始终 200，`/` 与 `/admin/login` 返回 200/302
+- `http://127.0.0.1:3001/health` 始终 200，`/` 返回 200/302，`/admin` 返回 200/301/302
 
 ```bash
 # 1. 本地重新打包
