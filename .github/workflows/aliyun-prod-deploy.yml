@@ -38,7 +38,11 @@ jobs:
         id: images
         run: |
           set -euo pipefail
-          registry="$(grep -E '^\s*image:\s*' docker-compose.yml | head -n1 | sed -E 's#^\s*image:\s*([^/]+)/.*#\1#')"
+          registry="$(
+            grep -E '^\s*image:\s*.+/lvzhi_01/lvzhi([:-]|$)' docker-compose.yml \
+            | head -n1 \
+            | sed -E 's#^\s*image:\s*([^/]+)/.*#\1#'
+          )"
           if [ -z "$registry" ]; then
             registry="${{ secrets.ACR_REGISTRY }}"
             registry="${registry#http://}"
