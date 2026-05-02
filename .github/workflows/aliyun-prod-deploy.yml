@@ -221,14 +221,14 @@ jobs:
 
             if ! health_check "https://www.lvxzhi.com/" 18 5 "200,302" \
               || ! health_check "https://www.lvxzhi.com/admin" 18 5 "200,301,302" \
-              || ! health_check "https://www.lvxzhi.com/api/health" 18 5 "200"; then
+              || ! health_check "http://127.0.0.1:3001/health" 18 5 "200"; then
               if [ "${{ env.AUTO_ROLLBACK_ON_HEALTH_FAIL }}" = "true" ]; then
                 echo "[deploy] health check failed, auto rollback enabled"
                 "${APP_DIR}/deploy/rollback-to-previous.sh"
                 docker compose --env-file "${ENV_FILE}" ps
                 health_check "https://www.lvxzhi.com/" 18 5 "200,302"
                 health_check "https://www.lvxzhi.com/admin" 18 5 "200,301,302"
-                health_check "https://www.lvxzhi.com/api/health" 18 5 "200"
+                health_check "http://127.0.0.1:3001/health" 18 5 "200"
               else
                 echo "[deploy] health check failed, auto rollback disabled"
                 docker compose --env-file "${ENV_FILE}" ps
