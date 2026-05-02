@@ -203,10 +203,11 @@ jobs:
               local url="$1"
               local max_retry="${2:-18}"
               local wait_seconds="${3:-5}"
+              local ok_codes="${4:-200,302}"
               local i=1
               while [ "$i" -le "$max_retry" ]; do
                 code="$(curl -k -sS -o /dev/null -w "%{http_code}" "$url" || true)"
-                if [ "$code" = "200" ] || [ "$code" = "302" ]; then
+                if [[ ",${ok_codes}," == *",${code},"* ]]; then
                   echo "[health] ok $url ($code)"
                   return 0
                 fi
@@ -218,16 +219,16 @@ jobs:
               return 1
             }
 
-            if ! health_check "https://www.lvxzhi.com/" 18 5 \
-              || ! health_check "https://www.lvxzhi.com/admin" 18 5 \
-              || ! health_check "https://www.lvxzhi.com/api/health" 18 5; then
+            if ! health_check "https://www.lvxzhi.com/" 18 5 "200,302" \
+              || ! health_check "https://www.lvxzhi.com/admin" 18 5 "200,301,302" \
+              || ! health_check "https://www.lvxzhi.com/api/health" 18 5 "200"; then
               if [ "${{ env.AUTO_ROLLBACK_ON_HEALTH_FAIL }}" = "true" ]; then
                 echo "[deploy] health check failed, auto rollback enabled"
                 "${APP_DIR}/deploy/rollback-to-previous.sh"
                 docker compose --env-file "${ENV_FILE}" ps
-                health_check "https://www.lvxzhi.com/" 18 5
-                health_check "https://www.lvxzhi.com/admin" 18 5
-                health_check "https://www.lvxzhi.com/api/health" 18 5
+                health_check "https://www.lvxzhi.com/" 18 5 "200,302"
+                health_check "https://www.lvxzhi.com/admin" 18 5 "200,301,302"
+                health_check "https://www.lvxzhi.com/api/health" 18 5 "200"
               else
                 echo "[deploy] health check failed, auto rollback disabled"
                 docker compose --env-file "${ENV_FILE}" ps
