@@ -138,6 +138,9 @@ jobs:
 
             cd "${APP_DIR}"
             git fetch --all --prune
+            # 清理部署脚本可能产生的本地变更，避免 checkout 被阻塞
+            git restore deploy/disk-preflight.sh deploy/docker-cleanup.sh deploy/install-maintenance-cron.sh deploy/update-on-ecs.sh 2>/dev/null || true
+            git clean -fd deploy/.history 2>/dev/null || true
             git checkout --detach "${RUN_SHA}"
 
             if [ ! -f "${ENV_FILE}" ]; then
