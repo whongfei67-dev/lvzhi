@@ -38,11 +38,15 @@ jobs:
         id: images
         run: |
           set -euo pipefail
-          registry="${{ secrets.ACR_REGISTRY }}"
-          registry="${registry#http://}"
-          registry="${registry#https://}"
-          registry="${registry%%/*}"
-          registry="${registry%/}"
+          registry="$(grep -E '^\s*image:\s*' docker-compose.yml | head -n1 | sed -E 's#^\s*image:\s*([^/]+)/.*#\1#')"
+          if [ -z "$registry" ]; then
+            registry="${{ secrets.ACR_REGISTRY }}"
+            registry="${registry#http://}"
+            registry="${registry#https://}"
+            registry="${registry%%/*}"
+            registry="${registry%/}"
+          fi
+          echo "registry_host=${registry}" >> "$GITHUB_OUTPUT"
           echo "web_image=${registry}/lvzhi_01/lvzhi" >> "$GITHUB_OUTPUT"
           echo "api_image=${registry}/lvzhi_01/lvzhi-api" >> "$GITHUB_OUTPUT"
           echo "admin_image=${registry}/lvzhi_01/lvzhi-admin" >> "$GITHUB_OUTPUT"
@@ -54,7 +58,7 @@ jobs:
       - name: Login to ACR
         uses: docker/login-action@v3
         with:
-          registry: ${{ secrets.ACR_REGISTRY }}
+          registry: ${{ steps.images.outputs.registry_host }}
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
