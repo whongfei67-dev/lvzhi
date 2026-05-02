@@ -5,6 +5,7 @@ APP_DIR="${APP_DIR:-/opt/lvzhi}"
 ENV_FILE="${ENV_FILE:-$APP_DIR/deploy/.env}"
 TAG="${1:-}"
 FREE_GB_MIN="${FREE_GB_MIN:-8}"
+AUTO_CLEANUP_ON_PREFLIGHT_FAIL="${AUTO_CLEANUP_ON_PREFLIGHT_FAIL:-true}"
 
 if [[ -z "$TAG" ]]; then
   echo "Usage: $0 <image-tag>"
@@ -47,8 +48,17 @@ else
   echo "IMAGE_TAG=$TAG" >> "$ENV_FILE"
 fi
 
-if [[ -x "$APP_DIR/deploy/disk-preflight.sh" ]]; then
-  "$APP_DIR/deploy/disk-preflight.sh" --min-free-gb "$FREE_GB_MIN" --quiet
+if [[ -f "$APP_DIR/deploy/disk-preflight.sh" ]]; then
+  if ! bash "$APP_DIR/deploy/disk-preflight.sh" --min-free-gb "$FREE_GB_MIN" --quiet; then
+    if [[ "$AUTO_CLEANUP_ON_PREFLIGHT_FAIL" == "true" ]] && [[ -f "$APP_DIR/deploy/docker-cleanup.sh" ]]; then
+      echo "[deploy] preflight failed, running one automatic cleanup pass..."
+      bash "$APP_DIR/deploy/docker-cleanup.sh" --aggressive --vacuum-logs || true
+      bash "$APP_DIR/deploy/disk-preflight.sh" --min-free-gb "$FREE_GB_MIN" --quiet
+    else
+      echo "[deploy] preflight failed and auto-cleanup disabled or script missing."
+      exit 2
+    fi
+  fi
 fi
 
 docker compose --env-file "$ENV_FILE" pull web api admin nginx
