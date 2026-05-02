@@ -59,56 +59,88 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and push Web image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          target: web-runner
-          push: true
-          tags: |
-            ${{ steps.images.outputs.web_image }}:${{ steps.meta.outputs.tag }}
-            ${{ steps.images.outputs.web_image }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 1 2 3; do
+            echo "[retry] web build/push attempt ${i}/3"
+            if docker buildx build \
+              --file ./Dockerfile \
+              --target web-runner \
+              --tag "${{ steps.images.outputs.web_image }}:${{ steps.meta.outputs.tag }}" \
+              --tag "${{ steps.images.outputs.web_image }}:latest" \
+              --cache-from type=gha \
+              --cache-to type=gha,mode=max \
+              --push .; then
+              exit 0
+            fi
+            sleep $((i * 10))
+          done
+          echo "[retry] web build/push failed after 3 attempts"
+          exit 1
 
       - name: Build and push API image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          target: api-runner
-          push: true
-          tags: |
-            ${{ steps.images.outputs.api_image }}:${{ steps.meta.outputs.tag }}
-            ${{ steps.images.outputs.api_image }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 1 2 3; do
+            echo "[retry] api build/push attempt ${i}/3"
+            if docker buildx build \
+              --file ./Dockerfile \
+              --target api-runner \
+              --tag "${{ steps.images.outputs.api_image }}:${{ steps.meta.outputs.tag }}" \
+              --tag "${{ steps.images.outputs.api_image }}:latest" \
+              --cache-from type=gha \
+              --cache-to type=gha,mode=max \
+              --push .; then
+              exit 0
+            fi
+            sleep $((i * 10))
+          done
+          echo "[retry] api build/push failed after 3 attempts"
+          exit 1
 
       - name: Build and push Admin image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          target: admin-runner
-          push: true
-          tags: |
-            ${{ steps.images.outputs.admin_image }}:${{ steps.meta.outputs.tag }}
-            ${{ steps.images.outputs.admin_image }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 1 2 3; do
+            echo "[retry] admin build/push attempt ${i}/3"
+            if docker buildx build \
+              --file ./Dockerfile \
+              --target admin-runner \
+              --tag "${{ steps.images.outputs.admin_image }}:${{ steps.meta.outputs.tag }}" \
+              --tag "${{ steps.images.outputs.admin_image }}:latest" \
+              --cache-from type=gha \
+              --cache-to type=gha,mode=max \
+              --push .; then
+              exit 0
+            fi
+            sleep $((i * 10))
+          done
+          echo "[retry] admin build/push failed after 3 attempts"
+          exit 1
 
       - name: Build and push Nginx image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: ./Dockerfile
-          target: nginx
-          push: true
-          tags: |
-            ${{ steps.images.outputs.nginx_image }}:${{ steps.meta.outputs.tag }}
-            ${{ steps.images.outputs.nginx_image }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in 1 2 3; do
+            echo "[retry] nginx build/push attempt ${i}/3"
+            if docker buildx build \
+              --file ./Dockerfile \
+              --target nginx \
+              --tag "${{ steps.images.outputs.nginx_image }}:${{ steps.meta.outputs.tag }}" \
+              --tag "${{ steps.images.outputs.nginx_image }}:latest" \
+              --cache-from type=gha \
+              --cache-to type=gha,mode=max \
+              --push .; then
+              exit 0
+            fi
+            sleep $((i * 10))
+          done
+          echo "[retry] nginx build/push failed after 3 attempts"
+          exit 1
 
   deploy-production:
     needs: [build-and-push]
