@@ -61,7 +61,21 @@ if [[ -f "$APP_DIR/deploy/disk-preflight.sh" ]]; then
   fi
 fi
 
-docker compose --env-file "$ENV_FILE" pull web api admin nginx
+pull_ok=false
+for i in 1 2 3 4 5 6 7 8; do
+  if docker compose --env-file "$ENV_FILE" pull web api admin nginx; then
+    pull_ok=true
+    break
+  fi
+  echo "[deploy] pull attempt ${i}/8 failed, retrying..."
+  sleep $((i * 5))
+done
+
+if [[ "$pull_ok" != true ]]; then
+  echo "[deploy] pull failed after retries"
+  exit 18
+fi
+
 docker compose --env-file "$ENV_FILE" up -d web api admin nginx
 docker compose --env-file "$ENV_FILE" ps
 
