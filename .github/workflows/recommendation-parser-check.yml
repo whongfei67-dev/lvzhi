@@ -28,6 +28,11 @@ jobs:
         with:
           version: 10.16.1
 
+      - name: Ensure pnpm in PATH
+        run: |
+          npm i -g pnpm@10.16.1
+          pnpm -v
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
