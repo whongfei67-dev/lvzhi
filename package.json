@@ -25,6 +25,7 @@
     "test:db:consistency": "tsx scripts/db-consistency-check.ts",
     "test:db:benchmark": "tsx scripts/db-benchmark.ts",
     "test:flows": "tsx scripts/test-flows.ts",
+    "test:recommendation:parser": "tsx scripts/test-recommendation-parser.ts",
     "test:admin": "tsx scripts/test-admin.ts",
     "test:rbac": "tsx scripts/test-rbac-admin.ts",
     "test:security:verify": "tsx scripts/test-security-verify.ts",

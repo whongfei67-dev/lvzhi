@@ -51,6 +51,10 @@ const ROUTE_GROUPS: { title: string; items: { href: string; label: string }[] }[
   {
     title: "营销与公区（蓝图一级）",
     items: [
+      { href: "/project-test/recommendation-demo", label: "需求推荐 + 沙盘验收页（新）" },
+      { href: "/project-test/recommendation-parser", label: "推荐解析测试页（新）" },
+      { href: "/project-test/recommendation-random", label: "推荐随机测试页（新）" },
+      { href: "/project-test/cause-hit-rate", label: "案由命中率测试页（新）" },
       { href: "/", label: "首页" },
       { href: "/inspiration", label: "灵感广场" },
       { href: "/community", label: "社区" },

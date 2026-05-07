@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>律植搜索推荐方案（确认稿）</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #131a2c;
+        --card-2: #18223a;
+        --line: #2a3a63;
+        --text: #dfe7ff;
+        --muted: #9fb2e0;
+        --accent: #4fd1ff;
+        --ok: #7df4c7;
+        --warn: #ffd287;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        background: radial-gradient(circle at top right, #15254c 0%, var(--bg) 42%);
+        color: var(--text);
+        line-height: 1.55;
+      }
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px 20px 60px;
+      }
+      .hero {
+        border: 1px solid var(--line);
+        background: linear-gradient(130deg, #111a33, #0e1630);
+        border-radius: 16px;
+        padding: 20px 22px;
+        margin-bottom: 18px;
+      }
+      h1 { margin: 0 0 10px; font-size: 26px; }
+      h2 {
+        font-size: 18px;
+        margin: 0 0 12px;
+        color: var(--accent);
+      }
+      .muted { color: var(--muted); }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 14px;
+      }
+      .card {
+        border: 1px solid var(--line);
+        background: linear-gradient(135deg, var(--card), var(--card-2));
+        border-radius: 14px;
+        padding: 14px 14px 12px;
+      }
+      .span-12 { grid-column: span 12; }
+      .span-8 { grid-column: span 8; }
+      .span-6 { grid-column: span 6; }
+      .span-4 { grid-column: span 4; }
+      .span-3 { grid-column: span 3; }
+      ul { margin: 8px 0 0 18px; padding: 0; }
+      li { margin: 4px 0; }
+      .tag {
+        display: inline-block;
+        border: 1px solid #35528d;
+        color: #b8d6ff;
+        font-size: 12px;
+        border-radius: 999px;
+        padding: 3px 9px;
+        margin: 4px 6px 0 0;
+      }
+      .flow {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+        align-items: stretch;
+      }
+      .node {
+        border: 1px solid #3a568f;
+        border-radius: 12px;
+        background: #12203e;
+        padding: 10px;
+        min-height: 90px;
+      }
+      .node h4 {
+        margin: 0 0 6px;
+        color: #8ed9ff;
+        font-size: 13px;
+      }
+      .node p {
+        margin: 0;
+        font-size: 12px;
+        color: #cfe0ff;
+      }
+      .arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--warn);
+        font-weight: 700;
+      }
+      .ok { color: var(--ok); }
+      .warn { color: var(--warn); }
+      .small { font-size: 12px; }
+      .callout {
+        border-left: 3px solid var(--accent);
+        padding-left: 10px;
+        margin-top: 8px;
+      }
+      @media (max-width: 980px) {
+        .span-8, .span-6, .span-4, .span-3 { grid-column: span 12; }
+        .flow { grid-template-columns: 1fr; }
+        .arrow { transform: rotate(90deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="hero">
+        <h1>律植首页需求推荐：方案梳理（按你反馈修正版）</h1>
+        <p class="muted">
+          目标：搜索框作为核心分发入口，用户输入需求后，系统拆解关键词并在首页不同模块调用匹配内容。<br />
+          重点：不把“推荐逻辑文案”硬写在页面显性位置，而是通过模块内容重排与调用结果体现智能分发。
+        </p>
+      </section>
+
+      <div class="grid">
+        <section class="card span-12">
+          <h2>一、你的新要求（本次增量）</h2>
+          <ul>
+            <li>为提高拆解准确率：<span class="ok">按案件类型增加固定追问树</span>（例如劳动先问“劳动者/用人单位”再分支提问）。</li>
+            <li>搜索框做成<span class="ok">两行大输入框</span>，问题在框内逐步引导，不额外弹窗。</li>
+            <li>每轮问答后，问题与答案<span class="warn">不保留在输入框</span>，仅在后端/状态层做关键词留存。</li>
+            <li>连续问 <span class="ok">3 个问题</span>，结合首次需求拆解词，形成总计 <span class="ok">5-6 个关键词</span>。</li>
+            <li>精选技能模块逻辑：从全部技能中召回并展示<span class="ok">匹配度最高</span>的结果。</li>
+            <li>统一调用规则：点击“生成推荐”后，基于留存的全部关键词统一召回。</li>
+            <li>各模块展示数量固定：<span class="ok">Top N = 3</span>。</li>
+            <li>问题解决型路由不变：<span class="ok">社区帖子 → 技能 → 律师</span>。</li>
+            <li>合作连接型要拆独立路由：<span class="ok">技能 → 合作机会 → 律师</span>，不走社区入口。</li>
+            <li>律师库补充规则：在“其他候选律师”阶段，优先选择<span class="ok">地域 + 领域</span>双匹配。</li>
+          </ul>
+        </section>
+
+        <section class="card span-6">
+          <h2>二、结构原则（保持不变）</h2>
+          <ul>
+            <li>首页主结构不动，搜索框变大并提高视觉权重。</li>
+            <li>搜索框支持两行：无输入态“第一行演示问题 + 第二行空白输入区”。</li>
+            <li>输入后第一行切换为当前问题，第二行填写答案。</li>
+            <li>按钮、卡片全部复用现有 UI 体系，不新增突兀样式。</li>
+            <li>推荐逻辑不靠大文案堆叠，以“模块内容被替换和重排”体现。</li>
+            <li>保留两行小字说明，删除示例输入标签和“下一步行动”卡片。</li>
+            <li>首页不展示诉讼沙盘入口（保持独立工具边界）。</li>
+          </ul>
+        </section>
+
+        <section class="card span-6">
+          <h2>三、固定追问树（关键词增强）</h2>
+          <p class="small muted">以劳动争议为例（第一版）</p>
+          <ul>
+            <li>Q1：你是劳动者还是用人单位？</li>
+            <li>Q2（劳动者分支）：是否有书面解除通知？是否签离职协议？</li>
+            <li>Q2（用人单位分支）：是否有绩效制度？是否有考核与改进记录？</li>
+            <li>Q3：当前证据有哪些？主要诉求是什么？</li>
+            <li>每问一轮后：当前问答写入“关键词留存池”，输入框自动跳到下一个问题。</li>
+            <li>输出：角色关键词 + 程序关键词 + 证据关键词 + 诉求关键词（用于召回排序）。</li>
+          </ul>
+          <div class="callout small muted">
+            结论：自然语言输入 + 三轮结构化追问结果合并后再算匹配度，提升召回精度。
+          </div>
+        </section>
+
+        <section class="card span-12">
+          <h2>四、完整推荐链路（新）</h2>
+          <div class="flow">
+            <div class="node">
+              <h4>Step 1 输入需求</h4>
+              <p>用户输入自由文本。</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="node">
+              <h4>Step 2 类型识别</h4>
+              <p>识别为劳动/合同/知产等案件或合作连接诉求。</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="node">
+              <h4>Step 3 固定追问</h4>
+              <p>在搜索框内连续问 3 题，答案逐题留存。</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="node">
+              <h4>Step 4 关键词融合</h4>
+              <p>首次拆解 2-3 词 + 追问词，合成 5-6 个关键词包。</p>
+            </div>
+            <div class="arrow">→</div>
+            <div class="node">
+              <h4>Step 5 双路分发</h4>
+              <p>点击生成推荐后，统一按关键词包召回；各模块取 Top N=3。</p>
+            </div>
+          </div>
+          <div class="callout small muted">
+            首页仍不跳转：点击生成推荐后，直接刷新首页四模块内容与排序。
+          </div>
+        </section>
+
+        <section class="card span-6">
+          <h2>五、双路优先级（核心改版）</h2>
+          <p class="small muted">A. 找律师路子（问题解决）</p>
+          <ul>
+            <li>排序：<span class="ok">社区帖子 → 技能 → 律师</span></li>
+            <li>目标：先理解问题，再用工具，再找律师复核。</li>
+          </ul>
+          <p class="small muted" style="margin-top:10px;">B. 找合作路子（资源连接）</p>
+          <ul>
+            <li>排序：<span class="ok">技能 → 合作机会 → 律师</span></li>
+            <li>说明：该路子<span class="warn">不走社区帖子入口</span>。</li>
+          </ul>
+        </section>
+
+        <section class="card span-6">
+          <h2>六、律师召回规则（修正版）</h2>
+          <ul>
+            <li>模块说明小字：根据你的需求推荐可能匹配的律师。</li>
+            <li>候选优先级：
+              <ul>
+                <li>① 匹配关键词的技能作者（且为认证律师）</li>
+                <li>② 匹配关键词的帖子发布者（且为认证律师）</li>
+                <li>③ 其他律师库候选（<span class="ok">地域 + 领域</span>优先）</li>
+              </ul>
+            </li>
+            <li>过滤：非认证律师全部跳过，继续取下一个候选。</li>
+            <li>卡片结构不变，仅增加推荐原因与匹配标签。</li>
+          </ul>
+        </section>
+
+        <section class="card span-12">
+          <h2>七、模块调用逻辑（按匹配度）</h2>
+          <ul>
+            <li>技能模块：从全量技能池按关键词匹配分排序，取 Top N=3。</li>
+            <li>帖子模块：仅在“找律师路子”参与召回，从社区帖子池按匹配度排序后取 Top N=3（即匹配度最高的帖子）。</li>
+            <li>合作模块：仅在“找合作路子”高权重参与召回，从合作机会池取 Top N=3。</li>
+            <li>律师模块：按“作者优先 + 认证过滤 + 地域领域兜底”取 Top N=3。</li>
+          </ul>
+        </section>
+
+        <section class="card span-12">
+          <h2>八、搜索框交互状态机（你指定的方式）</h2>
+          <ul>
+            <li><strong>状态 A（初始）</strong>：两行大搜索框；第一行显示演示问题，第二行空白待输入。</li>
+            <li><strong>状态 B（第 1 问）</strong>：第一行显示当前问题，第二行输入答案；提交后不回显历史问答。</li>
+            <li><strong>状态 C（第 2/3 问）</strong>：自动跳题，重复相同模式，持续写入关键词留存池。</li>
+            <li><strong>状态 D（可生成）</strong>：关键词达到 5-6 个后，点击“生成推荐”统一调用首页模块内容。</li>
+            <li><strong>状态 E（清除）</strong>：清空关键词池与推荐状态，恢复默认首页排序。</li>
+          </ul>
+        </section>
+
+        <section class="card span-12">
+          <h2>九、子页面联动排序（保持同一路由）</h2>
+          <ul>
+            <li>进入子页后，使用相同关键词包与相同路由优先级做置顶。</li>
+            <li>找律师路子：社区相关优先，其次技能，再律师。</li>
+            <li>找合作路子：技能优先，其次合作，再律师。</li>
+            <li>保留“清除推荐”后恢复各子页默认排序。</li>
+          </ul>
+        </section>
+
+        <section class="card span-12">
+          <h2>十、实施清单（确认后落地）</h2>
+          <ul>
+            <li>新增“搜索框内三问引导”与关键词留存状态机（先做劳动争议）。</li>
+            <li>改推荐引擎为“双路子分发策略”。</li>
+            <li>改律师候选器：加地域 + 领域优先兜底。</li>
+            <li>首页与子页同步按新优先级重排。</li>
+            <li>统一模块 Top N=3 并固定推荐原因展示位。</li>
+          </ul>
+          <p class="small muted">
+            你确认这版后，我按此逻辑改代码，并优先更新测试页让你先验收再推送。
+          </p>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>
+

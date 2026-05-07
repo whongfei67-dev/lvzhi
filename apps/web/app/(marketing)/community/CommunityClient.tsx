@@ -25,6 +25,13 @@ import {
 } from "@/components/common/guest-gate";
 import { postPublishedYmdInShanghai, todayYmdInShanghai } from "@/lib/community-post-time";
 import { COMMUNITY_HOT_TAGS, COMMUNITY_QUICK_LINKS } from "@/lib/community-sidebar-links";
+import {
+  clearRecommendationProfile,
+  loadRecommendationProfile,
+  type RecommendationProfile,
+} from "@/lib/recommendation/recommendation-engine";
+import { DemandRecommendationBar } from "@/components/recommendation/demand-recommendation-bar";
+import { SubpageRecommendationStrip } from "@/components/recommendation/subpage-recommendation-strip";
 
 /**
  * 社区首页 — 对齐《律植项目蓝图 v6.4》§5、§17.3（子页面口号 §1.0）
@@ -115,6 +122,7 @@ export function CommunityClient({ initialSearchParams = {} }: CommunityClientPro
   const [publishKind, setPublishKind] = useState<"post" | "question">("post");
   const [queryInput, setQueryInput] = useState(initialSearchParams.q ?? "");
   const [publishDateFilter, setPublishDateFilter] = useState(initialSearchParams.date ?? "");
+  const [recommendationProfile, setRecommendationProfile] = useState<RecommendationProfile | null>(null);
   const listScrollRef = useRef<HTMLDivElement | null>(null);
 
   const scrollListBy = useCallback((distance: number) => {
@@ -123,6 +131,10 @@ export function CommunityClient({ initialSearchParams = {} }: CommunityClientPro
 
   useEffect(() => {
     getSession().then(setSession).catch(() => setSession(null));
+  }, []);
+
+  useEffect(() => {
+    setRecommendationProfile(loadRecommendationProfile());
   }, []);
 
   useEffect(() => {
@@ -262,6 +274,24 @@ export function CommunityClient({ initialSearchParams = {} }: CommunityClientPro
           </div>
         </div>
       </section>
+
+      {recommendationProfile ? (
+        <section className="mx-auto max-w-6xl px-6 py-4 lg:px-8">
+          <DemandRecommendationBar
+            profile={recommendationProfile}
+            compact
+            onClear={() => {
+              clearRecommendationProfile();
+              setRecommendationProfile(null);
+            }}
+          />
+        </section>
+      ) : null}
+
+      <SubpageRecommendationStrip
+        title="已根据你的需求置顶相关社区经验帖"
+        items={recommendationProfile?.modules.posts ?? []}
+      />
 
       <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">
         <p className="mb-2 text-xs font-medium uppercase tracking-wide text-[#9AA59D]">话题</p>

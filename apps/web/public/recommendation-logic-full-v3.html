@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>律植推荐逻辑完整版 v3</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; padding: 24px; color: #111827; background: #f8fafc; }
+    h1 { margin: 0 0 10px; font-size: 24px; }
+    h2 { margin: 22px 0 8px; font-size: 18px; }
+    p, li { line-height: 1.6; }
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; background: #f3f4f6; padding: 2px 6px; border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e5e7eb; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px 10px; vertical-align: top; text-align: left; }
+    th { background: #f9fafb; }
+  </style>
+</head>
+<body>
+  <h1>律植推荐逻辑完整版 v3</h1>
+  <p>本版合并：<strong>一级/二级/三级案由筛选召回策略</strong> + <strong>E→D→C→B→A 案由级联识别</strong> + <strong>最终推荐配额</strong>。</p>
+
+  <h2>1) 输入识别（E→D→C→B→A）</h2>
+  <div class="card">
+    <ul>
+      <li><strong>E层（最小关键词下限）</strong>：先用最少可归因关键词做初筛（如“申请支付令”只出现“支付令”）。</li>
+      <li><strong>D层（碎片噪声）</strong>：关键词可分散、不连续，再次筛掉低重合候选。</li>
+      <li><strong>C层（口语噪声）</strong>：保留主语/目标但信息不完整，继续收敛。</li>
+      <li><strong>B层（中等完整）</strong>：二级+三级语义对齐，候选进一步缩小。</li>
+      <li><strong>A层（完整表达）</strong>：一级+二级+三级全量语义打分，最终确认最匹配三级案由。</li>
+    </ul>
+    <p>若未达到案由证据阈值，则不强行落到民事三级案由，回退到通用领域识别（合同/劳动/数据/知识产权等）。</p>
+  </div>
+
+  <h2>2) 召回策略（先精准，后降级兜底）</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>模块</th>
+        <th>目标配额</th>
+        <th>优先级链路</th>
+        <th>说明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>帖子</td>
+        <td>3</td>
+        <td>L3精确匹配 → L2同类匹配 → L1同域匹配 → 全局兜底</td>
+        <td>先满足“对应三级案由”召回，不足时按二级/一级补齐至3。</td>
+      </tr>
+      <tr>
+        <td>技能/模板/经验</td>
+        <td>3</td>
+        <td>L3精确匹配 → L2同类匹配 → L1同域匹配 → 全局兜底</td>
+        <td>高精度优先，默认按三级案由优先召回。</td>
+      </tr>
+      <tr>
+        <td>律师</td>
+        <td>1</td>
+        <td>L3精确匹配 → L2同类匹配 → L1同域匹配 → 全局兜底</td>
+        <td>同时保留“作者优先 + 同城/近城优先”排序规则。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>3) 当前数量（代码实时统计）</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>类别</th>
+        <th>当前数量</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>一级案由（L1）</td><td>12</td></tr>
+      <tr><td>二级案由（L2）</td><td>59</td></tr>
+      <tr><td>三级案由（L3）</td><td>514</td></tr>
+      <tr><td>民事案由节点总数（L1~L4）</td><td>2084</td></tr>
+      <tr><td>帖子样本数（当前mock）</td><td>6</td></tr>
+      <tr><td>技能样本数（当前mock）</td><td>8</td></tr>
+      <tr><td>律师样本数（当前mock）</td><td>7</td></tr>
+      <tr><td>合作机会样本数（当前mock）</td><td>4</td></tr>
+    </tbody>
+  </table>
+
+  <h2>4) 当前输出配额校验</h2>
+  <div class="card">
+    <p>实测样例（支付令噪声输入 / 学生求职 / 合规采购）均稳定输出：</p>
+    <p><span class="mono">posts = 3</span>，<span class="mono">skills = 3</span>，<span class="mono">lawyers = 1</span></p>
+  </div>
+</body>
+</html>

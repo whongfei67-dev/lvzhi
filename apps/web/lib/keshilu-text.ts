@@ -1,9 +1,11 @@
+import { Converter } from "opencc-js";
+
 /**
- * 刻石录颜体 / 营销书法栈（`--font-marketing-brush`）对部分简体字缺字形。
- * 规则：源码仍写简体；展示前将「已知缺字」替换为繁体，以保证整句同一套字体。
- * 未收录的字形由 CSS 中 `Noto Serif TC` / `Source Han Serif TC` 等回退补全。
+ * 全站文字策略（2026-05）：
+ * - 非思源宋体、非楷体：默认展示繁体
+ * - 楷体：展示简体
  *
- * 发现新缺字时：用 fonttools 查 cmap 后在此表补充即可。
+ * 该文件提供统一转换函数，并保留书法字体的个别字形偏好覆盖。
  */
 const KESHILU_MISSING_SIMPL_TO_TRAD: Record<string, string> = {
   让: "讓",
@@ -109,6 +111,18 @@ const KESHILU_MISSING_SIMPL_TO_TRAD: Record<string, string> = {
   论: "論",
 };
 
+const SIMPLIFIED_TO_TRADITIONAL = Converter({ from: "cn", to: "tw" });
+const TRADITIONAL_TO_SIMPLIFIED = Converter({ from: "tw", to: "cn" });
+
 export function preferTradForKeShiLu(text: string): string {
-  return Array.from(text, (ch) => KESHILU_MISSING_SIMPL_TO_TRAD[ch] ?? ch).join("");
+  const baseTraditional = SIMPLIFIED_TO_TRADITIONAL(text);
+  return Array.from(baseTraditional, (ch) => KESHILU_MISSING_SIMPL_TO_TRAD[ch] ?? ch).join("");
+}
+
+export function preferSimplForKaiTi(text: string): string {
+  return TRADITIONAL_TO_SIMPLIFIED(text);
+}
+
+export function preferSimplForSourceHanSerif(text: string): string {
+  return TRADITIONAL_TO_SIMPLIFIED(text);
 }
