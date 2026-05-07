@@ -333,6 +333,9 @@ export function HomePage({ session = null }: { session?: Session | null }) {
   const beginQuestionFlow = () => {
     const source = answerInput.trim();
     if (!source) return;
+    // 新一轮开始前强制清空上一轮缓存，避免出现跨轮次展示残留
+    clearRecommendationProfile();
+    setProfile(null);
     const nextQuestions = buildQuestionFlow(source);
     const primary = source
       .replace(/[，。！？、,.!?]/g, " ")
@@ -345,7 +348,6 @@ export function HomePage({ session = null }: { session?: Session | null }) {
     setQuestionIndex(0);
     setAnswers(primary ? [primary] : []);
     setAnswerInput("");
-    setProfile(null);
   };
 
   const pushAnswerAndNext = () => {
