@@ -1676,6 +1676,11 @@ const SEMANTIC_TOKEN_LEXICON = [
   "领导",
   "聚众",
   "妨害",
+  "偷越",
+  "边境",
+  "国边境",
+  "国境",
+  "越境",
   "司法",
   "金融",
   "职务",
@@ -1690,6 +1695,7 @@ const CRIMINAL_ACTION_PREFIXES = [
   "抢劫",
   "抢夺",
   "诈骗",
+  "偷越",
   "贩卖",
   "运输",
   "制造",
@@ -1923,6 +1929,12 @@ const ALL_CAUSE_ALIAS_ENTRIES: CauseAliasMappingEntry[] = [
   { alias: "爆炸", label: "爆炸罪", scope: "criminal" as const },
   { alias: "伪证", label: "伪证罪", scope: "criminal" as const },
   { alias: "无线电通讯管理", label: "扰乱无线电通讯管理秩序罪", scope: "criminal" as const },
+  { alias: "偷越国边境", label: "偷越国（边）境罪", scope: "criminal" as const },
+  { alias: "偷越边境", label: "偷越国（边）境罪", scope: "criminal" as const },
+  { alias: "国边境", label: "偷越国（边）境罪", scope: "criminal" as const },
+  { alias: "越境", label: "偷越国（边）境罪", scope: "criminal" as const },
+  { alias: "国（边）境", label: "偷越国（边）境罪", scope: "criminal" as const },
+  { alias: "边境管理", label: "妨害国（边）境管理罪", scope: "criminal" as const },
   { alias: "非法使用武装部队专用标志", label: "伪造、盗窃、买卖、非法提供、非法使用武装部队专用标志罪", scope: "criminal" as const },
   { alias: "武装部队专用标志", label: "伪造、盗窃、买卖、非法提供、非法使用武装部队专用标志罪", scope: "criminal" as const },
   { alias: "医疗损害", label: "医疗损害责任纠纷", scope: "civil" as const },
@@ -2030,6 +2042,10 @@ const CRIMINAL_CAUSE_SIGNAL_KEYWORDS = [
   "恐怖主义",
   "传染病",
   "失职",
+  "偷越",
+  "边境",
+  "国边境",
+  "越境",
 ] as const;
 
 function inferCauseScope(text: string): "civil" | "criminal" | "both" {
@@ -3538,7 +3554,8 @@ export function buildRecommendationProfile(input: string, answers: string[] = []
     servicePreference: parsedDemand.lawyerServicePreference,
     targetCount: Math.max(lawyerTargetCount, TOP_N),
   });
-  const rankedLawyersScoped = noCauseHit ? applyScopeFallbackFilter(rankedLawyers, fallbackScope) : rankedLawyers;
+  const lawyerScope = noCauseHit ? fallbackScope : parsedDemand.causeScope;
+  const rankedLawyersScoped = applyScopeFallbackFilter(rankedLawyers, lawyerScope);
   const lawyerTop = pickRowsByMatchedDepth(
     rankedLawyersScoped,
     causeTarget,
