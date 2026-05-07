@@ -16,6 +16,13 @@ import {
   GuestMarketingUnlockViewportCta,
   guestUnlockCardSurfaceClassName,
 } from '@/components/common/guest-gate'
+import {
+  clearRecommendationProfile,
+  loadRecommendationProfile,
+  type RecommendationProfile,
+} from '@/lib/recommendation/recommendation-engine'
+import { DemandRecommendationBar } from '@/components/recommendation/demand-recommendation-bar'
+import { SubpageRecommendationStrip } from '@/components/recommendation/subpage-recommendation-strip'
 
 /**
  * 合作机会首页 — 对齐《律植项目蓝图 v6.4》§6、§17.4（子页面口号 §1.0）
@@ -371,10 +378,15 @@ export default function OpportunitiesPage() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [session, setSession] = useState<Session | null>(null)
+  const [recommendationProfile, setRecommendationProfile] = useState<RecommendationProfile | null>(null)
   const listScrollRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     getSession().then(setSession).catch(() => setSession(null))
+  }, [])
+
+  useEffect(() => {
+    setRecommendationProfile(loadRecommendationProfile())
   }, [])
 
   useEffect(() => {
@@ -502,6 +514,24 @@ export default function OpportunitiesPage() {
           </div>
         </div>
       </section>
+
+      {recommendationProfile ? (
+        <section className="mx-auto max-w-6xl px-6 py-4 lg:px-8">
+          <DemandRecommendationBar
+            profile={recommendationProfile}
+            compact
+            onClear={() => {
+              clearRecommendationProfile()
+              setRecommendationProfile(null)
+            }}
+          />
+        </section>
+      ) : null}
+
+      <SubpageRecommendationStrip
+        title="已根据你的需求置顶相关合作机会"
+        items={recommendationProfile?.modules.opportunities ?? []}
+      />
 
       {/* 筛选区域 */}
       <section className="mx-auto max-w-6xl px-6 py-6 lg:px-8">

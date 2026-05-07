@@ -1,5 +1,9 @@
+import { Converter } from "opencc-js";
+
 /**
- * 书法字体缺简体字形时，优先替换为对应繁体，避免出现回退字体导致风格不一致。
+ * 全站文字策略（2026-05）：
+ * - 非思源宋体、非楷体：默认展示繁体
+ * - 楷体：展示简体
  */
 const KESHILU_MISSING_SIMPL_TO_TRAD: Record<string, string> = {
   让: "讓",
@@ -30,6 +34,18 @@ const KESHILU_MISSING_SIMPL_TO_TRAD: Record<string, string> = {
   课: "課",
 };
 
+const SIMPLIFIED_TO_TRADITIONAL = Converter({ from: "cn", to: "tw" });
+const TRADITIONAL_TO_SIMPLIFIED = Converter({ from: "tw", to: "cn" });
+
 export function preferTradForKeShiLu(text: string): string {
-  return Array.from(text, (ch) => KESHILU_MISSING_SIMPL_TO_TRAD[ch] ?? ch).join("");
+  const baseTraditional = SIMPLIFIED_TO_TRADITIONAL(text);
+  return Array.from(baseTraditional, (ch) => KESHILU_MISSING_SIMPL_TO_TRAD[ch] ?? ch).join("");
+}
+
+export function preferSimplForKaiTi(text: string): string {
+  return TRADITIONAL_TO_SIMPLIFIED(text);
+}
+
+export function preferSimplForSourceHanSerif(text: string): string {
+  return TRADITIONAL_TO_SIMPLIFIED(text);
 }

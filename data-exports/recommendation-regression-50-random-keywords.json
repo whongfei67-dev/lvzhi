@@ -1,0 +1,904 @@
+{
+  "generatedAt": "2026-05-06T02:41:26.198Z",
+  "seed": 20260506,
+  "stable": true,
+  "metrics": {
+    "sampleSize": 50,
+    "hitRate": 0.88,
+    "aliasRate": 0.74,
+    "stageRate": 0.14,
+    "avgInjectedKeywords": 5.86
+  },
+  "rows": [
+    {
+      "id": "C-01",
+      "bucket": "criminal",
+      "baseInput": "判几年",
+      "injectedKeywords": [
+        "帮信"
+      ],
+      "finalInput": "判几年，帮信",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "帮助信息网络犯罪活动罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-02",
+      "bucket": "criminal",
+      "baseInput": "量刑标准",
+      "injectedKeywords": [
+        "取保候审",
+        "刑事拘留",
+        "诽谤"
+      ],
+      "finalInput": "量刑标准，取保候审，刑事拘留，诽谤",
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "scope": "criminal"
+    },
+    {
+      "id": "C-03",
+      "bucket": "criminal",
+      "baseInput": "会不会进去",
+      "injectedKeywords": [],
+      "finalInput": "会不会进去",
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "scope": "criminal"
+    },
+    {
+      "id": "C-04",
+      "bucket": "criminal",
+      "baseInput": "缓刑几率大吗",
+      "injectedKeywords": [],
+      "finalInput": "缓刑几率大吗",
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "scope": "criminal"
+    },
+    {
+      "id": "C-05",
+      "bucket": "criminal",
+      "baseInput": "无罪辩护",
+      "injectedKeywords": [
+        "刑事拘留",
+        "盗窃",
+        "审查起诉",
+        "偷越国边境",
+        "取保候审",
+        "帮信",
+        "诈骗",
+        "诽谤",
+        "认罪认罚"
+      ],
+      "finalInput": "无罪辩护，刑事拘留，盗窃，审查起诉，偷越国边境，取保候审，帮信，诈骗，诽谤，认罪认罚",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-06",
+      "bucket": "criminal",
+      "baseInput": "申请取保",
+      "injectedKeywords": [
+        "刑事拘留",
+        "认罪认罚",
+        "盗窃"
+      ],
+      "finalInput": "申请取保，刑事拘留，认罪认罚，盗窃",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "盗窃罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-07",
+      "bucket": "criminal",
+      "baseInput": "刑事拘留多久",
+      "injectedKeywords": [
+        "诽谤",
+        "审查起诉",
+        "诈骗",
+        "偷越国边境",
+        "认罪认罚",
+        "刑事拘留",
+        "危险驾驶",
+        "帮信",
+        "取保候审"
+      ],
+      "finalInput": "刑事拘留多久，诽谤，审查起诉，诈骗，偷越国边境，认罪认罚，刑事拘留，危险驾驶，帮信，取保候审",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-08",
+      "bucket": "criminal",
+      "baseInput": "能不能放人",
+      "injectedKeywords": [
+        "认罪认罚",
+        "诽谤"
+      ],
+      "finalInput": "能不能放人，认罪认罚，诽谤",
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "scope": "criminal"
+    },
+    {
+      "id": "C-09",
+      "bucket": "criminal",
+      "baseInput": "算不算犯罪",
+      "injectedKeywords": [
+        "帮信",
+        "诽谤",
+        "偷越国边境",
+        "诈骗",
+        "取保候审"
+      ],
+      "finalInput": "算不算犯罪，帮信，诽谤，偷越国边境，诈骗，取保候审",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-10",
+      "bucket": "criminal",
+      "baseInput": "案底能不能消",
+      "injectedKeywords": [
+        "审查起诉",
+        "危险驾驶",
+        "诈骗",
+        "认罪认罚",
+        "诽谤",
+        "刑事拘留"
+      ],
+      "finalInput": "案底能不能消，审查起诉，危险驾驶，诈骗，认罪认罚，诽谤，刑事拘留",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "诈骗罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-11",
+      "bucket": "criminal",
+      "baseInput": "是否构成诈骗",
+      "injectedKeywords": [
+        "取保候审",
+        "偷越国边境",
+        "审查起诉",
+        "刑事拘留",
+        "诈骗",
+        "危险驾驶",
+        "认罪认罚",
+        "诽谤",
+        "盗窃"
+      ],
+      "finalInput": "是否构成诈骗，取保候审，偷越国边境，审查起诉，刑事拘留，诈骗，危险驾驶，认罪认罚，诽谤，盗窃",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-12",
+      "bucket": "criminal",
+      "baseInput": "是否构成寻衅滋事",
+      "injectedKeywords": [
+        "危险驾驶",
+        "取保候审",
+        "刑事拘留"
+      ],
+      "finalInput": "是否构成寻衅滋事，危险驾驶，取保候审，刑事拘留",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "寻衅滋事罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-13",
+      "bucket": "criminal",
+      "baseInput": "做笔录要注意什么",
+      "injectedKeywords": [
+        "诈骗",
+        "帮信",
+        "偷越国边境",
+        "取保候审",
+        "认罪认罚",
+        "刑事拘留",
+        "盗窃",
+        "审查起诉",
+        "危险驾驶"
+      ],
+      "finalInput": "做笔录要注意什么，诈骗，帮信，偷越国边境，取保候审，认罪认罚，刑事拘留，盗窃，审查起诉，危险驾驶",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-14",
+      "bucket": "criminal",
+      "baseInput": "开庭怎么辩护",
+      "injectedKeywords": [
+        "偷越国边境",
+        "认罪认罚",
+        "盗窃"
+      ],
+      "finalInput": "开庭怎么辩护，偷越国边境，认罪认罚，盗窃",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-15",
+      "bucket": "criminal",
+      "baseInput": "立功怎么认定",
+      "injectedKeywords": [
+        "认罪认罚"
+      ],
+      "finalInput": "立功怎么认定，认罪认罚",
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "scope": "criminal"
+    },
+    {
+      "id": "C-16",
+      "bucket": "criminal",
+      "baseInput": "网上追逃",
+      "injectedKeywords": [
+        "取保候审",
+        "认罪认罚",
+        "偷越国边境",
+        "危险驾驶",
+        "审查起诉",
+        "诽谤",
+        "刑事拘留",
+        "帮信"
+      ],
+      "finalInput": "网上追逃，取保候审，认罪认罚，偷越国边境，危险驾驶，审查起诉，诽谤，刑事拘留，帮信",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-17",
+      "bucket": "criminal",
+      "baseInput": "能不能私了撤刑案",
+      "injectedKeywords": [
+        "危险驾驶"
+      ],
+      "finalInput": "能不能私了撤刑案，危险驾驶",
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "危险驾驶罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-18",
+      "bucket": "criminal",
+      "baseInput": "刑事拘留",
+      "injectedKeywords": [
+        "诽谤",
+        "盗窃",
+        "审查起诉",
+        "危险驾驶",
+        "偷越国边境",
+        "刑事拘留"
+      ],
+      "finalInput": "刑事拘留，诽谤，盗窃，审查起诉，危险驾驶，偷越国边境，刑事拘留",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-19",
+      "bucket": "criminal",
+      "baseInput": "刑拘",
+      "injectedKeywords": [
+        "偷越国边境",
+        "刑事拘留",
+        "危险驾驶",
+        "帮信",
+        "取保候审",
+        "审查起诉",
+        "盗窃",
+        "诽谤"
+      ],
+      "finalInput": "刑拘，偷越国边境，刑事拘留，危险驾驶，帮信，取保候审，审查起诉，盗窃，诽谤",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "C-20",
+      "bucket": "criminal",
+      "baseInput": "取保侯审",
+      "injectedKeywords": [
+        "盗窃",
+        "危险驾驶"
+      ],
+      "finalInput": "取保侯审，盗窃，危险驾驶",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "盗窃罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "M-01",
+      "bucket": "civil",
+      "baseInput": "想打官司",
+      "injectedKeywords": [
+        "申请强制执行",
+        "抚养费",
+        "买卖合同纠纷",
+        "侵权责任纠纷",
+        "交通事故赔偿",
+        "民间借贷纠纷",
+        "名誉权纠纷",
+        "机动车交通事故责任纠纷",
+        "劳动合同纠纷",
+        "财产分割"
+      ],
+      "finalInput": "想打官司，申请强制执行，抚养费，买卖合同纠纷，侵权责任纠纷，交通事故赔偿，民间借贷纠纷，名誉权纠纷，机动车交通事故责任纠纷，劳动合同纠纷，财产分割",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-02",
+      "bucket": "civil",
+      "baseInput": "能不能起诉对方",
+      "injectedKeywords": [
+        "劳动合同纠纷",
+        "机动车交通事故责任纠纷",
+        "侵权责任纠纷",
+        "抚养费",
+        "交通事故赔偿",
+        "申请强制执行",
+        "财产分割",
+        "名誉权纠纷"
+      ],
+      "finalInput": "能不能起诉对方，劳动合同纠纷，机动车交通事故责任纠纷，侵权责任纠纷，抚养费，交通事故赔偿，申请强制执行，财产分割，名誉权纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-03",
+      "bucket": "civil",
+      "baseInput": "起诉状怎么写",
+      "injectedKeywords": [],
+      "finalInput": "起诉状怎么写",
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "scope": "civil"
+    },
+    {
+      "id": "M-04",
+      "bucket": "civil",
+      "baseInput": "起诉需要什么材料",
+      "injectedKeywords": [
+        "机动车交通事故责任纠纷",
+        "交通事故赔偿"
+      ],
+      "finalInput": "起诉需要什么材料，机动车交通事故责任纠纷，交通事故赔偿",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-05",
+      "bucket": "civil",
+      "baseInput": "把钱要回来",
+      "injectedKeywords": [
+        "名誉权纠纷",
+        "抚养费",
+        "机动车交通事故责任纠纷",
+        "侵权责任纠纷"
+      ],
+      "finalInput": "把钱要回来，名誉权纠纷，抚养费，机动车交通事故责任纠纷，侵权责任纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-06",
+      "bucket": "civil",
+      "baseInput": "借钱不还",
+      "injectedKeywords": [
+        "抚养费",
+        "民间借贷纠纷",
+        "劳动合同纠纷",
+        "申请强制执行",
+        "财产分割",
+        "侵权责任纠纷",
+        "机动车交通事故责任纠纷",
+        "买卖合同纠纷",
+        "名誉权纠纷",
+        "交通事故赔偿"
+      ],
+      "finalInput": "借钱不还，抚养费，民间借贷纠纷，劳动合同纠纷，申请强制执行，财产分割，侵权责任纠纷，机动车交通事故责任纠纷，买卖合同纠纷，名誉权纠纷，交通事故赔偿",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-07",
+      "bucket": "civil",
+      "baseInput": "工程款不给",
+      "injectedKeywords": [
+        "买卖合同纠纷",
+        "抚养费",
+        "申请强制执行",
+        "民间借贷纠纷"
+      ],
+      "finalInput": "工程款不给，买卖合同纠纷，抚养费，申请强制执行，民间借贷纠纷",
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "申请执行前财产保全",
+      "scope": "civil"
+    },
+    {
+      "id": "M-08",
+      "bucket": "civil",
+      "baseInput": "彩礼能不能退",
+      "injectedKeywords": [
+        "劳动合同纠纷",
+        "民间借贷纠纷",
+        "交通事故赔偿",
+        "买卖合同纠纷"
+      ],
+      "finalInput": "彩礼能不能退，劳动合同纠纷，民间借贷纠纷，交通事故赔偿，买卖合同纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-09",
+      "bucket": "civil",
+      "baseInput": "怎么追债",
+      "injectedKeywords": [
+        "侵权责任纠纷",
+        "申请强制执行",
+        "财产分割",
+        "交通事故赔偿",
+        "机动车交通事故责任纠纷",
+        "抚养费"
+      ],
+      "finalInput": "怎么追债，侵权责任纠纷，申请强制执行，财产分割，交通事故赔偿，机动车交通事故责任纠纷，抚养费",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-10",
+      "bucket": "civil",
+      "baseInput": "租房纠纷",
+      "injectedKeywords": [
+        "机动车交通事故责任纠纷",
+        "买卖合同纠纷",
+        "抚养费",
+        "交通事故赔偿",
+        "名誉权纠纷",
+        "侵权责任纠纷",
+        "申请强制执行",
+        "财产分割",
+        "劳动合同纠纷",
+        "民间借贷纠纷"
+      ],
+      "finalInput": "租房纠纷，机动车交通事故责任纠纷，买卖合同纠纷，抚养费，交通事故赔偿，名誉权纠纷，侵权责任纠纷，申请强制执行，财产分割，劳动合同纠纷，民间借贷纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-11",
+      "bucket": "civil",
+      "baseInput": "婚姻离婚",
+      "injectedKeywords": [
+        "抚养费",
+        "申请强制执行"
+      ],
+      "finalInput": "婚姻离婚，抚养费，申请强制执行",
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "申请执行前财产保全",
+      "scope": "civil"
+    },
+    {
+      "id": "M-12",
+      "bucket": "civil",
+      "baseInput": "抚养费",
+      "injectedKeywords": [
+        "民间借贷纠纷",
+        "机动车交通事故责任纠纷",
+        "劳动合同纠纷",
+        "抚养费",
+        "买卖合同纠纷"
+      ],
+      "finalInput": "抚养费，民间借贷纠纷，机动车交通事故责任纠纷，劳动合同纠纷，抚养费，买卖合同纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-13",
+      "bucket": "civil",
+      "baseInput": "交通事故赔偿",
+      "injectedKeywords": [
+        "交通事故赔偿",
+        "侵权责任纠纷",
+        "名誉权纠纷",
+        "财产分割",
+        "抚养费",
+        "买卖合同纠纷",
+        "机动车交通事故责任纠纷"
+      ],
+      "finalInput": "交通事故赔偿，交通事故赔偿，侵权责任纠纷，名誉权纠纷，财产分割，抚养费，买卖合同纠纷，机动车交通事故责任纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-14",
+      "bucket": "civil",
+      "baseInput": "侵权赔偿",
+      "injectedKeywords": [
+        "买卖合同纠纷",
+        "交通事故赔偿",
+        "侵权责任纠纷",
+        "劳动合同纠纷",
+        "机动车交通事故责任纠纷",
+        "名誉权纠纷",
+        "民间借贷纠纷"
+      ],
+      "finalInput": "侵权赔偿，买卖合同纠纷，交通事故赔偿，侵权责任纠纷，劳动合同纠纷，机动车交通事故责任纠纷，名誉权纠纷，民间借贷纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-15",
+      "bucket": "civil",
+      "baseInput": "劳动仲裁",
+      "injectedKeywords": [
+        "侵权责任纠纷",
+        "买卖合同纠纷"
+      ],
+      "finalInput": "劳动仲裁，侵权责任纠纷，买卖合同纠纷",
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "买卖合同纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-16",
+      "bucket": "civil",
+      "baseInput": "怎么索赔",
+      "injectedKeywords": [
+        "财产分割",
+        "名誉权纠纷",
+        "劳动合同纠纷",
+        "申请强制执行",
+        "民间借贷纠纷",
+        "侵权责任纠纷"
+      ],
+      "finalInput": "怎么索赔，财产分割，名誉权纠纷，劳动合同纠纷，申请强制执行，民间借贷纠纷，侵权责任纠纷",
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "申请执行前财产保全",
+      "scope": "civil"
+    },
+    {
+      "id": "M-17",
+      "bucket": "civil",
+      "baseInput": "解除合同",
+      "injectedKeywords": [
+        "交通事故赔偿",
+        "财产分割",
+        "机动车交通事故责任纠纷",
+        "劳动合同纠纷",
+        "民间借贷纠纷",
+        "侵权责任纠纷",
+        "申请强制执行"
+      ],
+      "finalInput": "解除合同，交通事故赔偿，财产分割，机动车交通事故责任纠纷，劳动合同纠纷，民间借贷纠纷，侵权责任纠纷，申请强制执行",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-18",
+      "bucket": "civil",
+      "baseInput": "退房退款",
+      "injectedKeywords": [
+        "劳动合同纠纷",
+        "抚养费"
+      ],
+      "finalInput": "退房退款，劳动合同纠纷，抚养费",
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "劳动合同纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-19",
+      "bucket": "civil",
+      "baseInput": "申请强制执行",
+      "injectedKeywords": [
+        "财产分割",
+        "买卖合同纠纷",
+        "交通事故赔偿"
+      ],
+      "finalInput": "申请强制执行，财产分割，买卖合同纠纷，交通事故赔偿",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "M-20",
+      "bucket": "civil",
+      "baseInput": "能不能胜诉",
+      "injectedKeywords": [
+        "交通事故赔偿",
+        "抚养费",
+        "机动车交通事故责任纠纷",
+        "侵权责任纠纷",
+        "买卖合同纠纷",
+        "名誉权纠纷",
+        "申请强制执行",
+        "劳动合同纠纷",
+        "民间借贷纠纷",
+        "财产分割"
+      ],
+      "finalInput": "能不能胜诉，交通事故赔偿，抚养费，机动车交通事故责任纠纷，侵权责任纠纷，买卖合同纠纷，名誉权纠纷，申请强制执行，劳动合同纠纷，民间借贷纠纷，财产分割",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "X-01",
+      "bucket": "mixed",
+      "baseInput": "大概刑期，算不算违法",
+      "injectedKeywords": [
+        "帮信",
+        "刑事拘留",
+        "财产分割",
+        "抚养费",
+        "侵权责任纠纷",
+        "名誉权纠纷",
+        "申请强制执行",
+        "诽谤",
+        "盗窃",
+        "劳动合同纠纷",
+        "诈骗"
+      ],
+      "finalInput": "大概刑期，算不算违法，帮信，刑事拘留，财产分割，抚养费，侵权责任纠纷，名誉权纠纷，申请强制执行，诽谤，盗窃，劳动合同纠纷，诈骗",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "诈骗罪",
+      "scope": "civil"
+    },
+    {
+      "id": "X-02",
+      "bucket": "mixed",
+      "baseInput": "起诉需要什么材料，有没有责任",
+      "injectedKeywords": [
+        "刑事拘留",
+        "劳动合同纠纷",
+        "偷越国边境",
+        "审查起诉",
+        "申请强制执行",
+        "名誉权纠纷"
+      ],
+      "finalInput": "起诉需要什么材料，有没有责任，刑事拘留，劳动合同纠纷，偷越国边境，审查起诉，申请强制执行，名誉权纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "civil"
+    },
+    {
+      "id": "X-03",
+      "bucket": "mixed",
+      "baseInput": "无罪辩护，我有没有过错",
+      "injectedKeywords": [
+        "交通事故赔偿",
+        "偷越国边境"
+      ],
+      "finalInput": "无罪辩护，我有没有过错，交通事故赔偿，偷越国边境",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "X-04",
+      "bucket": "mixed",
+      "baseInput": "怎么追债，对方要不要负责",
+      "injectedKeywords": [
+        "民间借贷纠纷",
+        "诈骗",
+        "刑事拘留",
+        "诽谤",
+        "买卖合同纠纷",
+        "劳动合同纠纷",
+        "盗窃",
+        "抚养费",
+        "名誉权纠纷",
+        "侵权责任纠纷"
+      ],
+      "finalInput": "怎么追债，对方要不要负责，民间借贷纠纷，诈骗，刑事拘留，诽谤，买卖合同纠纷，劳动合同纠纷，盗窃，抚养费，名誉权纠纷，侵权责任纠纷",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "诈骗罪",
+      "scope": "civil"
+    },
+    {
+      "id": "X-05",
+      "bucket": "mixed",
+      "baseInput": "什么时候能取保，这种情况怎么处理",
+      "injectedKeywords": [
+        "财产分割",
+        "抚养费"
+      ],
+      "finalInput": "什么时候能取保，这种情况怎么处理，财产分割，抚养费",
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "变更抚养关系纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "X-06",
+      "bucket": "mixed",
+      "baseInput": "侵权赔偿，我该怎么办",
+      "injectedKeywords": [
+        "刑事拘留",
+        "机动车交通事故责任纠纷",
+        "劳动合同纠纷",
+        "侵权责任纠纷",
+        "抚养费",
+        "交通事故赔偿",
+        "民间借贷纠纷",
+        "取保候审",
+        "买卖合同纠纷",
+        "财产分割",
+        "诈骗",
+        "帮信",
+        "申请强制执行",
+        "名誉权纠纷",
+        "认罪认罚",
+        "审查起诉",
+        "偷越国边境",
+        "盗窃",
+        "诽谤",
+        "危险驾驶"
+      ],
+      "finalInput": "侵权赔偿，我该怎么办，刑事拘留，机动车交通事故责任纠纷，劳动合同纠纷，侵权责任纠纷，抚养费，交通事故赔偿，民间借贷纠纷，取保候审，买卖合同纠纷，财产分割，诈骗，帮信，申请强制执行，名誉权纠纷，认罪认罚，审查起诉，偷越国边境，盗窃，诽谤，危险驾驶",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    },
+    {
+      "id": "X-07",
+      "bucket": "mixed",
+      "baseInput": "是否构成醉驾，可以维权吗",
+      "injectedKeywords": [
+        "侵权责任纠纷",
+        "审查起诉"
+      ],
+      "finalInput": "是否构成醉驾，可以维权吗，侵权责任纠纷，审查起诉",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "危险驾驶罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "X-08",
+      "bucket": "mixed",
+      "baseInput": "申请强制执行，能不能追责",
+      "injectedKeywords": [
+        "民间借贷纠纷",
+        "买卖合同纠纷",
+        "诈骗",
+        "偷越国边境",
+        "申请强制执行",
+        "盗窃",
+        "财产分割"
+      ],
+      "finalInput": "申请强制执行，能不能追责，民间借贷纠纷，买卖合同纠纷，诈骗，偷越国边境，申请强制执行，盗窃，财产分割",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "civil"
+    },
+    {
+      "id": "X-09",
+      "bucket": "mixed",
+      "baseInput": "立功怎么认定，算不算违法",
+      "injectedKeywords": [
+        "诽谤",
+        "危险驾驶",
+        "劳动合同纠纷",
+        "交通事故赔偿",
+        "民间借贷纠纷",
+        "申请强制执行",
+        "财产分割",
+        "刑事拘留",
+        "取保候审",
+        "侵权责任纠纷",
+        "诈骗",
+        "名誉权纠纷",
+        "审查起诉",
+        "买卖合同纠纷",
+        "抚养费",
+        "机动车交通事故责任纠纷",
+        "偷越国边境",
+        "认罪认罚",
+        "盗窃",
+        "帮信"
+      ],
+      "finalInput": "立功怎么认定，算不算违法，诽谤，危险驾驶，劳动合同纠纷，交通事故赔偿，民间借贷纠纷，申请强制执行，财产分割，刑事拘留，取保候审，侵权责任纠纷，诈骗，名誉权纠纷，审查起诉，买卖合同纠纷，抚养费，机动车交通事故责任纠纷，偷越国边境，认罪认罚，盗窃，帮信",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "偷越国（边）境罪",
+      "scope": "criminal"
+    },
+    {
+      "id": "X-10",
+      "bucket": "mixed",
+      "baseInput": "去法院立案，有没有责任",
+      "injectedKeywords": [
+        "诈骗",
+        "买卖合同纠纷",
+        "交通事故赔偿",
+        "民间借贷纠纷",
+        "财产分割",
+        "刑事拘留",
+        "审查起诉",
+        "申请强制执行",
+        "侵权责任纠纷",
+        "名誉权纠纷",
+        "机动车交通事故责任纠纷",
+        "危险驾驶",
+        "帮信",
+        "抚养费",
+        "诽谤",
+        "取保候审"
+      ],
+      "finalInput": "去法院立案，有没有责任，诈骗，买卖合同纠纷，交通事故赔偿，民间借贷纠纷，财产分割，刑事拘留，审查起诉，申请强制执行，侵权责任纠纷，名誉权纠纷，机动车交通事故责任纠纷，危险驾驶，帮信，抚养费，诽谤，取保候审",
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "scope": "civil"
+    }
+  ]
+}

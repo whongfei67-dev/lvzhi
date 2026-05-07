@@ -1,0 +1,1931 @@
+{
+  "generatedAt": "2026-05-06T02:16:14.949Z",
+  "stable": true,
+  "roundCount": 3,
+  "signatures": [
+    140549257,
+    140549257,
+    140549257
+  ],
+  "metrics": {
+    "sampleSize": 50,
+    "causeHitRate": 0.22,
+    "aliasSelectionRate": 0.08,
+    "stageSelectionRate": 0.14,
+    "l1TokenHitRate": 0,
+    "l2TokenHitRate": 0.08,
+    "l3TokenHitRate": 0.16,
+    "skillsRelevantRate": 0.092,
+    "postsRelevantRate": 0.092,
+    "lawyersRelevantRate": 0.068
+  },
+  "cases": [
+    {
+      "id": "C-01",
+      "bucket": "criminal",
+      "input": "判几年",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-02",
+      "bucket": "criminal",
+      "input": "量刑标准",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-03",
+      "bucket": "criminal",
+      "input": "会不会进去",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-04",
+      "bucket": "criminal",
+      "input": "缓刑几率大吗",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-05",
+      "bucket": "criminal",
+      "input": "无罪辩护",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-06",
+      "bucket": "criminal",
+      "input": "申请取保",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-07",
+      "bucket": "criminal",
+      "input": "刑事拘留多久",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-08",
+      "bucket": "criminal",
+      "input": "能不能放人",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-09",
+      "bucket": "criminal",
+      "input": "算不算犯罪",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-10",
+      "bucket": "criminal",
+      "input": "案底能不能消",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-11",
+      "bucket": "criminal",
+      "input": "是否构成诈骗",
+      "scope": "criminal",
+      "selectedBy": "alias",
+      "causeLabel": "诈骗罪",
+      "causePath": [
+        "刑事案由",
+        "侵犯财产罪",
+        "诈骗罪"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 1
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-701",
+          "skill-test-3138",
+          "skill-test-128",
+          "skill-test-271",
+          "skill-test-558"
+        ],
+        "posts": [
+          "post-test-401",
+          "post-test-2838",
+          "post-test-258",
+          "post-test-688",
+          "post-test-831"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-3138",
+          "lawyer-test-288",
+          "skill-author-skill-test-696",
+          "skill-author-skill-test-1126",
+          "skill-author-skill-test-1556"
+        ]
+      }
+    },
+    {
+      "id": "C-12",
+      "bucket": "criminal",
+      "input": "是否构成寻衅滋事",
+      "scope": "criminal",
+      "selectedBy": "alias",
+      "causeLabel": "寻衅滋事罪",
+      "causePath": [
+        "刑事案由",
+        "妨害社会管理秩序罪",
+        "扰乱公共秩序罪",
+        "寻衅滋事罪"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-2424",
+          "skill-test-4861",
+          "skill-test-129",
+          "skill-test-130",
+          "skill-test-131"
+        ],
+        "posts": [
+          "post-test-2124",
+          "post-test-4561",
+          "post-test-115",
+          "post-test-116",
+          "post-test-117"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-2424",
+          "skill-author-skill-test-130",
+          "skill-author-skill-test-131",
+          "skill-author-skill-test-415",
+          "skill-author-skill-test-702"
+        ]
+      }
+    },
+    {
+      "id": "C-13",
+      "bucket": "criminal",
+      "input": "做笔录要注意什么",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-14",
+      "bucket": "criminal",
+      "input": "开庭怎么辩护",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-15",
+      "bucket": "criminal",
+      "input": "立功怎么认定",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-16",
+      "bucket": "criminal",
+      "input": "网上追逃",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-17",
+      "bucket": "criminal",
+      "input": "能不能私了撤刑案",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-18",
+      "bucket": "criminal",
+      "input": "刑事拘留",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-19",
+      "bucket": "criminal",
+      "input": "刑拘",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "C-20",
+      "bucket": "criminal",
+      "input": "取保侯审",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "M-01",
+      "bucket": "civil",
+      "input": "想打官司",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-02",
+      "bucket": "civil",
+      "input": "能不能起诉对方",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-03",
+      "bucket": "civil",
+      "input": "起诉状怎么写",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-04",
+      "bucket": "civil",
+      "input": "起诉需要什么材料",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-05",
+      "bucket": "civil",
+      "input": "把钱要回来",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-contract-1",
+          "skill-author-skill-contract-2",
+          "skill-author-skill-contract-3",
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1"
+        ]
+      }
+    },
+    {
+      "id": "M-06",
+      "bucket": "civil",
+      "input": "借钱不还",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-07",
+      "bucket": "civil",
+      "input": "工程款不给",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-08",
+      "bucket": "civil",
+      "input": "彩礼能不能退",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-09",
+      "bucket": "civil",
+      "input": "怎么追债",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-contract-1",
+          "skill-author-skill-contract-2",
+          "skill-author-skill-contract-3",
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1"
+        ]
+      }
+    },
+    {
+      "id": "M-10",
+      "bucket": "civil",
+      "input": "租房纠纷",
+      "scope": "civil",
+      "selectedBy": "stage",
+      "causeLabel": "企业名称（商号）转让合同纠纷",
+      "causePath": [
+        "民事案由",
+        "知识产权与竞争纠纷",
+        "知识产权合同纠纷",
+        "企业名称（商号）合同纠纷",
+        "企业名称（商号）转让合同纠纷"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 1
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-1169",
+          "skill-test-1800",
+          "skill-test-3606",
+          "skill-test-4237",
+          "skill-test-019"
+        ],
+        "posts": [
+          "post-test-869",
+          "post-test-1500",
+          "post-test-3306",
+          "post-test-3937",
+          "post-test-294"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-1800",
+          "skill-author-skill-test-3606",
+          "skill-author-skill-test-019",
+          "lawyer-test-039",
+          "lawyer-test-324"
+        ]
+      }
+    },
+    {
+      "id": "M-11",
+      "bucket": "civil",
+      "input": "婚姻离婚",
+      "scope": "civil",
+      "selectedBy": "stage",
+      "causeLabel": "离婚纠纷",
+      "causePath": [
+        "民事案由",
+        "婚姻家庭、继承纠纷",
+        "婚姻家庭纠纷",
+        "离婚纠纷"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 1
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-201",
+          "skill-test-574",
+          "skill-test-2638",
+          "skill-test-3011",
+          "skill-test-144"
+        ],
+        "posts": [
+          "post-test-274",
+          "post-test-2338",
+          "post-test-2711",
+          "post-test-4775",
+          "post-test-1478"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-574",
+          "skill-author-skill-test-3011",
+          "skill-author-skill-test-144",
+          "skill-author-skill-test-1778",
+          "skill-author-skill-test-2151"
+        ]
+      }
+    },
+    {
+      "id": "M-12",
+      "bucket": "civil",
+      "input": "抚养费",
+      "scope": "civil",
+      "selectedBy": "stage",
+      "causeLabel": "变更抚养关系纠纷",
+      "causePath": [
+        "民事案由",
+        "婚姻家庭、继承纠纷",
+        "婚姻家庭纠纷",
+        "抚养纠纷",
+        "变更抚养关系纠纷"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 1
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-1492",
+          "skill-test-1865",
+          "skill-test-1922",
+          "skill-test-2295",
+          "skill-test-3929"
+        ],
+        "posts": [
+          "post-test-1192",
+          "post-test-1565",
+          "post-test-1622",
+          "post-test-1995",
+          "post-test-3629"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-1492",
+          "skill-author-skill-test-1922",
+          "skill-author-skill-test-2295",
+          "skill-author-skill-test-4302",
+          "skill-author-skill-test-288"
+        ]
+      }
+    },
+    {
+      "id": "M-13",
+      "bucket": "civil",
+      "input": "交通事故赔偿",
+      "scope": "civil",
+      "selectedBy": "alias",
+      "causeLabel": "机动车交通事故责任纠纷",
+      "causePath": [
+        "民事案由",
+        "侵权责任纠纷",
+        "侵权责任纠纷",
+        "机动车交通事故责任纠纷"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-boost-traffic-2",
+          "skill-boost-traffic-1",
+          "skill-test-249",
+          "skill-test-679",
+          "skill-test-1768"
+        ],
+        "posts": [
+          "post-boost-traffic-2",
+          "post-boost-traffic-1",
+          "post-test-379",
+          "post-test-1468",
+          "post-test-1898"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-traffic-2",
+          "skill-author-skill-boost-traffic-1",
+          "skill-author-skill-test-679",
+          "skill-author-skill-test-1768",
+          "skill-author-skill-test-2198"
+        ]
+      }
+    },
+    {
+      "id": "M-14",
+      "bucket": "civil",
+      "input": "侵权赔偿",
+      "scope": "civil",
+      "selectedBy": "stage",
+      "causeLabel": "集成电路布图设计专有权创作者署名权纠纷",
+      "causePath": [
+        "民事案由",
+        "知识产权与竞争纠纷",
+        "知识产权权属、侵权纠纷",
+        "集成电路布图设计专有权权属、侵权纠纷",
+        "集成电路布图设计专有权创作者署名权纠纷"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 1,
+        "l3": 1
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-371",
+          "skill-test-2177",
+          "skill-test-2808",
+          "skill-test-4614",
+          "skill-test-170"
+        ],
+        "posts": [
+          "post-test-071",
+          "post-test-1877",
+          "post-test-2508",
+          "post-test-4314",
+          "post-test-300"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-371",
+          "skill-author-skill-test-2808",
+          "skill-author-skill-test-4614",
+          "skill-author-skill-test-170",
+          "skill-author-skill-test-1231"
+        ]
+      }
+    },
+    {
+      "id": "M-15",
+      "bucket": "civil",
+      "input": "劳动仲裁",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-test-032",
+          "skill-test-054",
+          "skill-test-055"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-test-018",
+          "post-test-019",
+          "post-test-042"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-test-032",
+          "skill-author-skill-test-090",
+          "lawyer-test-048",
+          "lawyer-test-049"
+        ]
+      }
+    },
+    {
+      "id": "M-16",
+      "bucket": "civil",
+      "input": "怎么索赔",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-17",
+      "bucket": "civil",
+      "input": "解除合同",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-corp-1",
+          "skill-contract-1",
+          "skill-contract-2",
+          "skill-contract-3",
+          "skill-test-008"
+        ],
+        "posts": [
+          "post-labor-2",
+          "post-contract-1",
+          "post-contract-2",
+          "post-test-001",
+          "post-test-002"
+        ],
+        "lawyers": [
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1",
+          "skill-author-skill-contract-2",
+          "skill-author-skill-contract-3",
+          "skill-author-skill-test-008"
+        ]
+      }
+    },
+    {
+      "id": "M-18",
+      "bucket": "civil",
+      "input": "退房退款",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "M-19",
+      "bucket": "civil",
+      "input": "申请强制执行",
+      "scope": "civil",
+      "selectedBy": "stage",
+      "causeLabel": "申请执行前财产保全",
+      "causePath": [
+        "民事案由",
+        "非讼程序案件案由",
+        "申请保全案件",
+        "申请执行前财产保全"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 1,
+        "l3": 2
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-398",
+          "skill-test-1917",
+          "skill-test-2835",
+          "skill-test-4354",
+          "skill-test-770"
+        ],
+        "posts": [
+          "post-test-098",
+          "post-test-1617",
+          "post-test-2535",
+          "post-test-4054",
+          "post-test-470"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-398",
+          "skill-author-skill-test-2835",
+          "skill-author-skill-test-4354",
+          "skill-author-skill-test-1688",
+          "skill-author-skill-test-3207"
+        ]
+      }
+    },
+    {
+      "id": "M-20",
+      "bucket": "civil",
+      "input": "能不能胜诉",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "X-01",
+      "bucket": "mixed",
+      "input": "大概刑期，算不算违法",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "X-02",
+      "bucket": "mixed",
+      "input": "起诉需要什么材料，有没有责任",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    },
+    {
+      "id": "X-03",
+      "bucket": "mixed",
+      "input": "无罪辩护，我有没有过错",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "X-04",
+      "bucket": "mixed",
+      "input": "怎么追债，对方要不要负责",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-contract-1",
+          "skill-author-skill-contract-2",
+          "skill-author-skill-contract-3",
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1"
+        ]
+      }
+    },
+    {
+      "id": "X-05",
+      "bucket": "mixed",
+      "input": "什么时候能取保，这种情况怎么处理",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "X-06",
+      "bucket": "mixed",
+      "input": "侵权赔偿，我该怎么办",
+      "scope": "civil",
+      "selectedBy": "stage",
+      "causeLabel": "集成电路布图设计专有权创作者署名权纠纷",
+      "causePath": [
+        "民事案由",
+        "知识产权与竞争纠纷",
+        "知识产权权属、侵权纠纷",
+        "集成电路布图设计专有权权属、侵权纠纷",
+        "集成电路布图设计专有权创作者署名权纠纷"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 1,
+        "l3": 1
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-371",
+          "skill-test-2177",
+          "skill-test-2808",
+          "skill-test-4614",
+          "skill-test-170"
+        ],
+        "posts": [
+          "post-test-071",
+          "post-test-1877",
+          "post-test-2508",
+          "post-test-4314",
+          "post-test-300"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-371",
+          "skill-author-skill-test-2808",
+          "skill-author-skill-test-4614",
+          "skill-author-skill-test-170",
+          "skill-author-skill-test-1231"
+        ]
+      }
+    },
+    {
+      "id": "X-07",
+      "bucket": "mixed",
+      "input": "是否构成醉驾，可以维权吗",
+      "scope": "criminal",
+      "selectedBy": "alias",
+      "causeLabel": "危险驾驶罪",
+      "causePath": [
+        "刑事案由",
+        "危害公共安全罪",
+        "危险驾驶罪"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-1838",
+          "skill-test-4275",
+          "skill-test-118",
+          "skill-test-404",
+          "skill-test-834"
+        ],
+        "posts": [
+          "post-test-1538",
+          "post-test-3975",
+          "post-test-104",
+          "post-test-534",
+          "post-test-819"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-1838",
+          "skill-author-skill-test-4275",
+          "skill-author-skill-test-404",
+          "skill-author-skill-test-834",
+          "skill-author-skill-test-1119"
+        ]
+      }
+    },
+    {
+      "id": "X-08",
+      "bucket": "mixed",
+      "input": "申请强制执行，能不能追责",
+      "scope": "civil",
+      "selectedBy": "stage",
+      "causeLabel": "申请执行前财产保全",
+      "causePath": [
+        "民事案由",
+        "非讼程序案件案由",
+        "申请保全案件",
+        "申请执行前财产保全"
+      ],
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 1,
+        "l3": 2
+      },
+      "topIds": {
+        "skills": [
+          "skill-test-398",
+          "skill-test-1917",
+          "skill-test-2835",
+          "skill-test-4354",
+          "skill-test-770"
+        ],
+        "posts": [
+          "post-test-098",
+          "post-test-1617",
+          "post-test-2535",
+          "post-test-4054",
+          "post-test-470"
+        ],
+        "lawyers": [
+          "skill-author-skill-test-398",
+          "skill-author-skill-test-2835",
+          "skill-author-skill-test-4354",
+          "skill-author-skill-test-1688",
+          "skill-author-skill-test-3207"
+        ]
+      }
+    },
+    {
+      "id": "X-09",
+      "bucket": "mixed",
+      "input": "立功怎么认定，算不算违法",
+      "scope": "criminal",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-boost-border-1",
+          "skill-author-skill-boost-border-2",
+          "lawyer-boost-border-1",
+          "lawyer-test-002",
+          "lawyer-test-003"
+        ]
+      }
+    },
+    {
+      "id": "X-10",
+      "bucket": "mixed",
+      "input": "去法院立案，有没有责任",
+      "scope": "civil",
+      "selectedBy": "none",
+      "causeLabel": null,
+      "causePath": null,
+      "levelHitCounts": {
+        "l1": 0,
+        "l2": 0,
+        "l3": 0
+      },
+      "topIds": {
+        "skills": [
+          "skill-labor-1",
+          "skill-labor-2",
+          "skill-data-1",
+          "skill-ip-1",
+          "skill-corp-1"
+        ],
+        "posts": [
+          "post-labor-1",
+          "post-labor-2",
+          "post-job-1",
+          "post-contract-1",
+          "post-debt-1"
+        ],
+        "lawyers": [
+          "skill-author-skill-labor-1",
+          "skill-author-skill-data-1",
+          "skill-author-skill-ip-1",
+          "skill-author-skill-corp-1",
+          "skill-author-skill-contract-1"
+        ]
+      }
+    }
+  ]
+}

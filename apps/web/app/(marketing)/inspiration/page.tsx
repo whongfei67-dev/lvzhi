@@ -14,6 +14,13 @@ import {
 } from '@/lib/inspiration-demo-items'
 import { PRACTICE_TAGS, categoryMatchesPracticeTag } from '@/lib/inspiration-practice-tags'
 import { getSession } from '@/lib/api/client'
+import {
+  clearRecommendationProfile,
+  loadRecommendationProfile,
+  type RecommendationProfile,
+} from '@/lib/recommendation/recommendation-engine'
+import { DemandRecommendationBar } from '@/components/recommendation/demand-recommendation-bar'
+import { SubpageRecommendationStrip } from '@/components/recommendation/subpage-recommendation-strip'
 
 /**
  * 灵感广场 — 对齐《律植项目蓝图 v6.4》§4、§17.2（子页面口号 §1.0）
@@ -157,6 +164,7 @@ export default function InspirationPage() {
   const [sortId, setSortId] = useState<SortId>('default')
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [promotionSkillIds, setPromotionSkillIds] = useState<string[]>([])
+  const [recommendationProfile, setRecommendationProfile] = useState<RecommendationProfile | null>(null)
   const listScrollRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -169,6 +177,10 @@ export default function InspirationPage() {
       }
     }
     checkLoginStatus()
+  }, [])
+
+  useEffect(() => {
+    setRecommendationProfile(loadRecommendationProfile())
   }, [])
 
   useEffect(() => {
@@ -370,6 +382,24 @@ export default function InspirationPage() {
           </div>
         </div>
       </section>
+
+      {recommendationProfile ? (
+        <section className="mx-auto max-w-6xl px-6 py-4 lg:px-8">
+          <DemandRecommendationBar
+            profile={recommendationProfile}
+            compact
+            onClear={() => {
+              clearRecommendationProfile()
+              setRecommendationProfile(null)
+            }}
+          />
+        </section>
+      ) : null}
+
+      <SubpageRecommendationStrip
+        title="已根据你的需求置顶相关技能与工具"
+        items={recommendationProfile?.modules.skills ?? []}
+      />
 
       {featuredItems.length > 0 ? (
         <section

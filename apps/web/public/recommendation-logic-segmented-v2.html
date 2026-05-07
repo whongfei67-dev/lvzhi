@@ -1,0 +1,1099 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>律植推荐算法方案 v2.3（17用户类型）</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #121b33;
+        --line: #2c3f70;
+        --text: #deebff;
+        --muted: #a7bce8;
+        --accent: #58d7ff;
+        --ok: #7ef6c9;
+        --warn: #ffd38f;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+        background: radial-gradient(circle at 90% 0%, #1a2d5e 0%, var(--bg) 40%);
+        color: var(--text);
+        line-height: 1.58;
+      }
+      .wrap { max-width: 1260px; margin: 0 auto; padding: 24px 18px 56px; }
+      .hero, .card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(148deg, #101a35, var(--card));
+      }
+      .hero { padding: 18px 20px; margin-bottom: 14px; }
+      .card { padding: 14px; }
+      h1 { margin: 0 0 8px; font-size: 25px; }
+      h2 { margin: 0 0 10px; font-size: 18px; color: var(--accent); }
+      p { margin: 0 0 6px; }
+      ul { margin: 6px 0 0 18px; padding: 0; }
+      li { margin: 3px 0; }
+      .muted { color: var(--muted); }
+      .ok { color: var(--ok); }
+      .warn { color: var(--warn); }
+      .small { font-size: 12px; }
+      .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+      .span-12 { grid-column: span 12; }
+      .span-8 { grid-column: span 8; }
+      .span-6 { grid-column: span 6; }
+      .span-4 { grid-column: span 4; }
+      .tag {
+        display: inline-block; border: 1px solid #3a5899; border-radius: 999px;
+        padding: 3px 8px; margin: 4px 5px 0 0; font-size: 12px; color: #c9deff;
+      }
+      table { width: 100%; border-collapse: collapse; font-size: 13px; }
+      th, td { border: 1px solid #314a7f; padding: 7px 8px; vertical-align: top; }
+      th { text-align: left; color: #c5e8ff; background: #112247; }
+      .code {
+        border: 1px solid #36558f; border-radius: 10px; background: #101d3b;
+        padding: 10px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 12px; white-space: pre-wrap;
+      }
+      @media (max-width: 980px) {
+        .span-8, .span-6, .span-4 { grid-column: span 12; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="hero">
+        <h1>律植推荐逻辑 v2.3（17 用户类型）</h1>
+        <p class="muted">
+          当前版本在 v2.2 基础上扩展为 17 类用户。<br />
+          保留规则：城市为省会/首府全集；合作连接/采购/案源路由为“合作机会第一、社区第二”；仅“咨询案件结果”限定劳动纠纷/合同纠纷。
+        </p>
+      </section>
+
+      <div class="grid">
+        <section class="card span-12">
+          <h2>1) 用户类型（17 类）</h2>
+          <span class="tag">1 找律师型客户</span>
+          <span class="tag">2 咨询案件结果型客户</span>
+          <span class="tag">3 找法律 AI 工具型客户</span>
+          <span class="tag">4 找律师复核型客户</span>
+          <span class="tag">5 找经验帖/相似案例型客户</span>
+          <span class="tag">6 找模板/文书型客户</span>
+          <span class="tag">7 找合作机会型律师</span>
+          <span class="tag">8 找案源型律师</span>
+          <span class="tag">9 法律 AI 创作者型律师</span>
+          <span class="tag">10 找工作型学生</span>
+          <span class="tag">11 找工作型律师</span>
+          <span class="tag">12 找外包律师/法律服务采购型甲方</span>
+          <span class="tag">13 学习法律 AI 型律师</span>
+          <span class="tag">14 找律所/团队合作型律师</span>
+          <span class="tag">15 找法律 AI 技术合作方</span>
+          <span class="tag">16 认证/曝光型律师创作者</span>
+          <span class="tag">17 投诉/评价/售后型用户</span>
+        </section>
+
+        <section class="card span-8">
+          <h2>2) 路由与模块优先级（适配 17 类）</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>主需求</th>
+                <th>路由</th>
+                <th>模块顺序（高到低）</th>
+                <th>主要覆盖用户类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>找律师与问题解决</td>
+                <td>lawyer_path</td>
+                <td>社区 → 灵感广场 → 发现律师</td>
+                <td>1、4、5</td>
+              </tr>
+              <tr>
+                <td>咨询案件结果（仅劳动/合同）</td>
+                <td>result_path</td>
+                <td>灵感广场 → 社区 → 发现律师</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>工具/模板导向</td>
+                <td>tool_path</td>
+                <td>灵感广场 → 社区 → 发现律师</td>
+                <td>3、6、9、13、15、16</td>
+              </tr>
+              <tr>
+                <td>合作连接/采购/案源</td>
+                <td>cooperation_path</td>
+                <td><strong>合作机会 → 社区 → 灵感广场 → 发现律师</strong></td>
+                <td>7、8、12、14、15</td>
+              </tr>
+              <tr>
+                <td>求职导向</td>
+                <td>job_path</td>
+                <td>合作机会 → 灵感广场 → 社区 → 发现律师</td>
+                <td>10、11</td>
+              </tr>
+              <tr>
+                <td>投诉/评价/售后</td>
+                <td>service_path</td>
+                <td>社区 → 发现律师 → 合作机会</td>
+                <td>17</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small muted" style="margin-top:8px;">
+            模块显隐：召回为 0 条即隐藏模块，不允许仅显示标题。
+          </p>
+        </section>
+
+        <section class="card span-4">
+          <h2>3) 城市集合（省会/首府）</h2>
+          <div class="code">北京、天津、上海、重庆
+石家庄、太原、呼和浩特、沈阳、长春、哈尔滨
+南京、杭州、合肥、福州、南昌、济南、郑州、武汉、长沙、广州、南宁、海口
+成都、贵阳、昆明、拉萨、西安、兰州、西宁、银川、乌鲁木齐
+香港、澳门、台北</div>
+          <p class="small muted">同城优先，其次近城；无法识别时走全国兜底。</p>
+        </section>
+
+        <section class="card span-12">
+          <h2>4) 固定问题设计（17 类 × 4 问）</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>用户类型</th>
+                <th>Q1 目标确认</th>
+                <th>Q2 城市（固定）</th>
+                <th>Q3 方向确认</th>
+                <th>Q4 限制条件</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1 找律师型客户</td>
+                <td>请问您希望律师优先帮您解决什么问题？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您更偏向哪类纠纷或业务方向？</td>
+                <td>请问您更看重时效、费用还是成功率？</td>
+              </tr>
+              <tr>
+                <td>2 咨询案件结果型客户</td>
+                <td>请问您希望先评估赔偿区间还是胜诉风险？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td><strong>请问您的案件属于劳动纠纷还是合同纠纷？</strong></td>
+                <td>请问您目前已有哪些关键证据？</td>
+              </tr>
+              <tr>
+                <td>3 找法律 AI 工具型客户</td>
+                <td>请问您希望工具优先解决哪一类任务？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您偏好合同、劳动、合规、知产还是其他方向？</td>
+                <td>请问您更偏好免费试用、轻量上手还是专业版？</td>
+              </tr>
+              <tr>
+                <td>4 找律师复核型客户</td>
+                <td>请问您希望律师复核哪类材料或结论？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您更需要文书复核、策略复核还是证据复核？</td>
+                <td>请问您期望 24 小时内、3 天内还是一周内完成？</td>
+              </tr>
+              <tr>
+                <td>5 找经验帖/相似案例型客户</td>
+                <td>请问您当前最想参考哪类相似案例？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您更关注处理过程、结果区间还是踩坑点？</td>
+                <td>请问您希望先看律师视角还是当事人视角？</td>
+              </tr>
+              <tr>
+                <td>6 找模板/文书型客户</td>
+                <td>请问您想找哪类模板或文书？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您用于合同、劳动、催款还是其他场景？</td>
+                <td>请问您需要基础模板还是可直接提交版本？</td>
+              </tr>
+              <tr>
+                <td>7 找合作机会型律师</td>
+                <td>请问您现在最希望获得哪类合作机会？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您希望合作的行业或案件方向是什么？</td>
+                <td>请问您偏好长期顾问、专项项目还是分包协作？</td>
+              </tr>
+              <tr>
+                <td>8 找案源型律师</td>
+                <td>请问您当前最希望承接哪类案源？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您希望承接咨询、诉讼/仲裁，还是全流程？</td>
+                <td>请问您更偏好高客单、快周转还是稳定长期？</td>
+              </tr>
+              <tr>
+                <td>9 法律 AI 创作者型律师</td>
+                <td>请问您当前更想做工具创作、分发还是变现？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您计划创作合同、劳动、合规还是知产方向？</td>
+                <td>请问您更需要模板能力、评测数据还是合作渠道？</td>
+              </tr>
+              <tr>
+                <td>10 找工作型学生</td>
+                <td>请问您当前求职目标是实习还是正式岗位？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td><strong>请问您希望进入的方向是什么？</strong></td>
+                <td>请问您更看重学习机会、薪资还是留用概率？</td>
+              </tr>
+              <tr>
+                <td>11 找工作型律师</td>
+                <td>请问您希望加入律所、法务团队还是项目协作？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您的主要执业方向是什么？</td>
+                <td>请问您期望全职、驻场还是项目制合作？</td>
+              </tr>
+              <tr>
+                <td>12 找外包律师/法律服务采购型甲方</td>
+                <td>请问您当前要采购的是哪类法律服务？</td>
+                <td>请问您项目主要落地在哪个城市？</td>
+                <td>请问您需要专项律师、团队外包还是常年顾问？</td>
+                <td>请问您优先考虑响应速度、行业经验还是预算？</td>
+              </tr>
+              <tr>
+                <td>13 学习法律 AI 型律师</td>
+                <td>请问您现在主要想学习哪类法律 AI 能力？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您更希望学提示词、工作流还是产品化方法？</td>
+                <td>请问您偏好课程、案例拆解还是实战共创？</td>
+              </tr>
+              <tr>
+                <td>14 找律所/团队合作型律师</td>
+                <td>请问您当前最希望与哪类律所或团队合作？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您合作偏好诉讼、非诉还是专项顾问？</td>
+                <td>请问您期望分工是联合承办、分包还是驻场？</td>
+              </tr>
+              <tr>
+                <td>15 找法律 AI 技术合作方</td>
+                <td>请问您想找技术方解决什么问题？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您需要模型能力、工程交付还是数据标注支持？</td>
+                <td>请问您偏好 PoC、联合开发还是长期技术合作？</td>
+              </tr>
+              <tr>
+                <td>16 认证/曝光型律师创作者</td>
+                <td>请问您当前核心目标是认证、曝光还是转化？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您希望重点打造哪类内容或工具方向？</td>
+                <td>请问您更需要榜单曝光、案例包装还是运营支持？</td>
+              </tr>
+              <tr>
+                <td>17 投诉/评价/售后型用户</td>
+                <td>请问您当前反馈的是投诉、评价还是售后问题？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问问题发生在工具使用、律师服务还是合作流程？</td>
+                <td>请问您期望退款、修复、复核还是人工回访？</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small muted" style="margin-top:8px;">
+            仅第 2 类在 Q3 强制限定为劳动纠纷/合同纠纷，其余类型不受该限制。
+          </p>
+        </section>
+
+        <section class="card span-6">
+          <h2>5) 标签有效性校验</h2>
+          <ul>
+            <li>先做同义词归一（如“法务外包”→“外包协作”）。</li>
+            <li>若答案无法映射到标签字典，标记为<span class="warn">无效标签</span>。</li>
+            <li>无效标签不参与召回和打分，仅保留原文日志供后续字典扩充。</li>
+            <li>每轮最多新增 1-2 个有效标签，防止标签漂移。</li>
+          </ul>
+          <div class="code">effective_tags = normalize(answer_tokens)
+  .map(mapToTagDictionary)
+  .filter(inAnyModuleTagLibrary)
+  .dedupe()</div>
+        </section>
+
+        <section class="card span-6">
+          <h2>6) 城市优先打分</h2>
+          <ul>
+            <li><span class="ok">同城命中</span>：城市分 100</li>
+            <li><span class="ok">近城命中</span>：按近城顺序递减（40、34、28...）</li>
+            <li><span class="warn">无城市命中</span>：城市分 0，依赖意图与标签</li>
+          </ul>
+          <div class="code">score = intent + case + city + keyword + quality
+city = 100 (same city)
+     = 40 - 6 * nearCityIndex (near city)
+     = 0 (no city hit)</div>
+        </section>
+
+        <section class="card span-12">
+          <h2>7) 四大板块标签库（每板块约 10 个）</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>板块</th>
+                <th>推荐标签（建议入库）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>灵感广场（Skills/智能体）</td>
+                <td>劳动争议、合同审查、合同法、知识产权、企业合规、数据合规、隐私政策、法律AI、企业顾问、仲裁准备</td>
+              </tr>
+              <tr>
+                <td>社区</td>
+                <td>合同审查、劳动争议、案例分享、提问求助、创作经验、法律咨询、证据、仲裁、智能体设计、提示词优化</td>
+              </tr>
+              <tr>
+                <td>合作机会</td>
+                <td>招聘、项目、合作、服务、实习、采购、企业顾问、数据合规、外包协作、案源对接</td>
+              </tr>
+              <tr>
+                <td>发现律师</td>
+                <td>劳动法、劳动争议、合同纠纷、合同法、企业法务、企业合规、知识产权、商事诉讼、仲裁、投融资</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card span-12">
+          <h2>8) 17 类型标签映射示例</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>用户类型分组</th>
+                <th>高优先标签簇（示例）</th>
+                <th>主要命中板块</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1/4/5 找律师/复核/案例</td>
+                <td>城市 + 纠纷方向 + 证据状态 + 时效/预算</td>
+                <td>社区、发现律师、灵感广场</td>
+              </tr>
+              <tr>
+                <td>2 咨询案件结果</td>
+                <td>劳动纠纷/合同纠纷 + 城市 + 证据 + 结果诉求</td>
+                <td>灵感广场、社区、发现律师</td>
+              </tr>
+              <tr>
+                <td>3/6/9 工具/模板/创作者</td>
+                <td>任务类型 + 方向 + 模板粒度 + 工具成熟度</td>
+                <td>灵感广场、社区、发现律师</td>
+              </tr>
+              <tr>
+                <td>13/15 学习AI/技术合作</td>
+                <td>AI能力方向 + 合作方式 + 技术阶段 + 城市</td>
+                <td>灵感广场、合作机会、社区</td>
+              </tr>
+              <tr>
+                <td>7/8/12 合作/案源/采购</td>
+                <td>城市 + 项目类型 + 交付方式 + 预算等级</td>
+                <td>合作机会、社区、灵感广场、发现律师</td>
+              </tr>
+              <tr>
+                <td>14 律所/团队合作</td>
+                <td>城市 + 团队类型 + 协作模式 + 专业方向</td>
+                <td>合作机会、社区、发现律师</td>
+              </tr>
+              <tr>
+                <td>16 认证/曝光律师创作者</td>
+                <td>认证目标 + 曝光诉求 + 内容类型 + 转化目标</td>
+                <td>灵感广场、社区、发现律师</td>
+              </tr>
+              <tr>
+                <td>10/11 求职（学生/律师）</td>
+                <td>城市 + 求职方向 + 职级/年限 + 用工偏好</td>
+                <td>合作机会、灵感广场、社区、发现律师</td>
+              </tr>
+              <tr>
+                <td>17 投诉/评价/售后</td>
+                <td>问题类型 + 涉及板块 + 服务阶段 + 期望处理方式</td>
+                <td>社区、发现律师、合作机会</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card span-12">
+          <h2>9) 结论</h2>
+          <ul>
+            <li>本稿已升级为 17 类用户类型，并保持你要求的路由和问题约束。</li>
+            <li>文档仅为算法与问题设计提案，不涉及现网代码修改。</li>
+            <li>下一步可按本稿落地“问题树配置表 + 标签字典表 + 打分参数表”。</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>律植推荐算法方案 v2.1（用户类型与标签校验）</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #121b33;
+        --line: #2c3f70;
+        --text: #deebff;
+        --muted: #a7bce8;
+        --accent: #58d7ff;
+        --ok: #7ef6c9;
+        --warn: #ffd38f;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+        background: radial-gradient(circle at 90% 0%, #1a2d5e 0%, var(--bg) 40%);
+        color: var(--text);
+        line-height: 1.58;
+      }
+      .wrap {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 24px 18px 56px;
+      }
+      .hero, .card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(148deg, #101a35, var(--card));
+      }
+      .hero { padding: 18px 20px; margin-bottom: 14px; }
+      .card { padding: 14px; }
+      h1 { margin: 0 0 8px; font-size: 25px; }
+      h2 { margin: 0 0 10px; font-size: 18px; color: var(--accent); }
+      h3 { margin: 0 0 8px; font-size: 14px; color: #c4e8ff; }
+      p { margin: 0 0 6px; }
+      ul { margin: 6px 0 0 18px; padding: 0; }
+      li { margin: 3px 0; }
+      .muted { color: var(--muted); }
+      .ok { color: var(--ok); }
+      .warn { color: var(--warn); }
+      .small { font-size: 12px; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 12px;
+      }
+      .span-12 { grid-column: span 12; }
+      .span-8 { grid-column: span 8; }
+      .span-6 { grid-column: span 6; }
+      .span-4 { grid-column: span 4; }
+      .tag {
+        display: inline-block;
+        border: 1px solid #3a5899;
+        border-radius: 999px;
+        padding: 3px 8px;
+        margin: 4px 5px 0 0;
+        font-size: 12px;
+        color: #c9deff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th, td {
+        border: 1px solid #314a7f;
+        padding: 7px 8px;
+        vertical-align: top;
+      }
+      th {
+        text-align: left;
+        color: #c5e8ff;
+        background: #112247;
+      }
+      .code {
+        border: 1px solid #36558f;
+        border-radius: 10px;
+        background: #101d3b;
+        padding: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+      }
+      @media (max-width: 980px) {
+        .span-8, .span-6, .span-4 { grid-column: span 12; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="hero">
+        <h1>律植推荐逻辑 v2.1（按用户类型 × 需求类型）</h1>
+        <p class="muted">
+          本版修正点：<br />
+          1) 城市扩展为省会/首府全集；2) 合作连接/采购/案源路由改为“合作机会第一、社区第二”；<br />
+          3) 问题树按用户特征重写，仅“咨询案件结果”限定劳动纠纷与合同纠纷；<br />
+          4) 增加“标签有效性校验”与四大板块标签库（每板块约 10 个）。
+        </p>
+      </section>
+
+      <div class="grid">
+        <section class="card span-12">
+          <h2>1) 用户类型（7 类）</h2>
+          <span class="tag">A 来找律师的客户</span>
+          <span class="tag">B 来咨询案件结果的客户</span>
+          <span class="tag">C 来找合作机会的律师</span>
+          <span class="tag">D 来找案源的律师</span>
+          <span class="tag">E 来找工作的学生</span>
+          <span class="tag">F 来找工作的律师</span>
+          <span class="tag">G 来找外包律师的公司法务</span>
+        </section>
+
+        <section class="card span-8">
+          <h2>2) 路由与模块优先级（修正版）</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>需求类型</th>
+                <th>推荐路由</th>
+                <th>模块顺序（由高到低）</th>
+                <th>规则说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>找律师（问题解决）</td>
+                <td>lawyer_path</td>
+                <td>社区 → 灵感广场 → 发现律师</td>
+                <td>强调经验先行，再工具，再律师转化</td>
+              </tr>
+              <tr>
+                <td>咨询案件结果</td>
+                <td>result_path</td>
+                <td>灵感广场 → 社区 → 发现律师</td>
+                <td>先方法与测算，再案例经验，再律师复核</td>
+              </tr>
+              <tr>
+                <td>合作连接 / 采购 / 案源</td>
+                <td>cooperation_path</td>
+                <td><strong>合作机会 → 社区 → 灵感广场 → 发现律师</strong></td>
+                <td>按你要求：机会第一、社区第二；其余按匹配补位</td>
+              </tr>
+              <tr>
+                <td>求职（学生/律师）</td>
+                <td>job_path</td>
+                <td>合作机会 → 灵感广场 → 社区 → 发现律师</td>
+                <td>先岗位，再能力，再经验，再人脉</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small muted" style="margin-top:8px;">
+            模块显隐：任一模块召回为 0 条时，直接隐藏该模块，禁止显示“仅标题无内容”。
+          </p>
+        </section>
+
+        <section class="card span-4">
+          <h2>3) 城市集合（省会/首府全集）</h2>
+          <p class="small muted">用于城市识别、同城优先与近城补位。</p>
+          <div class="code">北京、天津、上海、重庆
+石家庄、太原、呼和浩特、沈阳、长春、哈尔滨
+南京、杭州、合肥、福州、南昌、济南、郑州、武汉、长沙、广州、南宁、海口
+成都、贵阳、昆明、拉萨、西安、兰州、西宁、银川、乌鲁木齐
+香港、澳门、台北</div>
+        </section>
+
+        <section class="card span-12">
+          <h2>4) 固定问题设计（按用户类型）</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>用户类型</th>
+                <th>Q1 目标确认</th>
+                <th>Q2 城市（固定）</th>
+                <th>Q3 方向确认</th>
+                <th>Q4 限制条件</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A 找律师客户</td>
+                <td>请问您希望律师优先帮您解决什么问题？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您更偏向劳动、合同，还是其他方向？</td>
+                <td>请问您更关注时效、费用还是成功概率？</td>
+              </tr>
+              <tr>
+                <td>B 咨询案件结果客户</td>
+                <td>请问您希望先评估赔偿区间，还是胜诉风险？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td><strong>请问您的案件属于劳动纠纷还是合同纠纷？</strong></td>
+                <td>请问您当前已有哪些关键证据？</td>
+              </tr>
+              <tr>
+                <td>C 找合作机会律师</td>
+                <td>请问您现在最希望获得哪类合作机会？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您希望合作的行业方向是什么？</td>
+                <td>请问您偏好长期顾问、专项项目还是分包协作？</td>
+              </tr>
+              <tr>
+                <td>D 找案源律师</td>
+                <td>请问您当前最希望承接哪类案源？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您希望承接咨询、仲裁/诉讼，还是全流程？</td>
+                <td>请问您更偏向高客单、快周转，还是稳定长期？</td>
+              </tr>
+              <tr>
+                <td>E 找工作的学生</td>
+                <td>请问您当前求职目标是实习还是正式岗位？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td><strong>请问您希望进入的方向是什么？</strong></td>
+                <td>请问您更看重学习机会、薪资还是留用概率？</td>
+              </tr>
+              <tr>
+                <td>F 找工作的律师</td>
+                <td>请问您希望加入律所、法务团队还是项目协作？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您的主要执业方向是什么？</td>
+                <td>请问您期望全职、驻场还是项目制合作？</td>
+              </tr>
+              <tr>
+                <td>G 公司法务找外包律师</td>
+                <td>请问您要外包的是哪类法律事务？</td>
+                <td>请问您项目主要落地在哪个城市？</td>
+                <td>请问您需要专项律师还是常年顾问支持？</td>
+                <td>请问您优先考虑响应速度、经验还是预算？</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="small muted" style="margin-top:8px;">
+            重点：仅 B 类“咨询案件结果”问题树在 Q3 强制限定“劳动纠纷 / 合同纠纷”。
+          </p>
+        </section>
+
+        <section class="card span-6">
+          <h2>5) 标签有效性校验（新增）</h2>
+          <ul>
+            <li>问题答案先做标准化（同义词、城市别名、常见简称）。</li>
+            <li>若答案映射不到标签库，标记为 <span class="warn">无效标签</span>，不参与打分。</li>
+            <li>每轮追问最多新增 1-2 个有效标签，避免标签污染。</li>
+            <li>标签池上限建议 8 个（核心 5 个 + 扩展 3 个）。</li>
+            <li>打分只使用“有效标签池”。</li>
+          </ul>
+          <div class="code">effective_tags = normalize(answer_tokens)
+  .map(mapToTagDictionary)
+  .filter(inAnyModuleTagLibrary)
+  .dedupe()</div>
+        </section>
+
+        <section class="card span-6">
+          <h2>6) 城市优先打分（统一）</h2>
+          <ul>
+            <li><span class="ok">同城命中</span>：城市分 = 100</li>
+            <li><span class="ok">近城命中</span>：按近城顺序衰减（如 40、34、28...）</li>
+            <li><span class="warn">无城市命中</span>：城市分 = 0，走关键词与质量分</li>
+          </ul>
+          <div class="code">score = intent + case + city + keyword + quality
+city = 100 (same city)
+     = 40 - 6 * nearCityIndex (near city)
+     = 0 (no city hit)</div>
+        </section>
+
+        <section class="card span-12">
+          <h2>7) 四大板块标签库（每板块约 10 个）</h2>
+          <p class="small muted">
+            来源说明：优先取当前详情页/列表页已有标签与示例数据（如推荐引擎、律师详情、社区标签页、机会数据源）。
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>板块</th>
+                <th>推荐标签（建议入库）</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>灵感广场（Skills/智能体）</td>
+                <td>劳动争议、合同审查、合同法、知识产权、企业合规、数据合规、隐私政策、法律AI、企业顾问、仲裁准备</td>
+              </tr>
+              <tr>
+                <td>社区</td>
+                <td>合同审查、劳动争议、案例分享、提问求助、创作经验、法律咨询、证据、仲裁、智能体设计、提示词优化</td>
+              </tr>
+              <tr>
+                <td>合作机会</td>
+                <td>招聘、项目、合作、服务、实习、采购、企业顾问、数据合规、外包协作、案源对接</td>
+              </tr>
+              <tr>
+                <td>发现律师</td>
+                <td>劳动法、劳动争议、合同纠纷、合同法、企业法务、企业合规、知识产权、商事诉讼、仲裁、投融资</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card span-12">
+          <h2>8) 各类型用户的标签映射示例</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>用户类型</th>
+                <th>高优先标签簇（示例）</th>
+                <th>主要命中板块</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A 找律师客户</td>
+                <td>城市 + 纠纷类型 + 预算/时效 + 证据状态</td>
+                <td>社区、发现律师、灵感广场</td>
+              </tr>
+              <tr>
+                <td>B 咨询案件结果客户</td>
+                <td>劳动纠纷/合同纠纷 + 城市 + 证据 + 目标结果</td>
+                <td>灵感广场、社区、发现律师</td>
+              </tr>
+              <tr>
+                <td>C/D 律师找合作/案源</td>
+                <td>城市 + 行业 + 项目类型 + 合作模式</td>
+                <td>合作机会、社区、灵感广场</td>
+              </tr>
+              <tr>
+                <td>E/F 求职用户</td>
+                <td>城市 + 求职方向 + 经验级别 + 入职偏好</td>
+                <td>合作机会、灵感广场、社区</td>
+              </tr>
+              <tr>
+                <td>G 公司法务外包</td>
+                <td>城市 + 外包事务类型 + 响应要求 + 预算范围</td>
+                <td>合作机会、发现律师、社区</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card span-12">
+          <h2>9) 结论（本稿执行边界）</h2>
+          <ul>
+            <li>该文件仅为算法与问题设计提案，不涉及现网代码修改。</li>
+            <li>已满足你提出的四个关键修正：省会全集、合作路由重排、用户特征化问题、有效标签校验。</li>
+            <li>下一步可直接据此拆解为：问题树配置表、标签字典表、模块打分参数表。</li>
+          </ul>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>律植推荐算法方案 v2（用户类型版）</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #131a2c;
+        --line: #2a3a63;
+        --text: #dfe7ff;
+        --muted: #9fb2e0;
+        --accent: #53d2ff;
+        --ok: #7df4c7;
+        --warn: #ffd287;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--text);
+        background: radial-gradient(circle at 90% 0%, #172a59 0%, var(--bg) 42%);
+        line-height: 1.58;
+      }
+      .wrap {
+        max-width: 1220px;
+        margin: 0 auto;
+        padding: 26px 18px 56px;
+      }
+      .hero, .card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(145deg, #101830, var(--card));
+      }
+      .hero {
+        padding: 18px 20px;
+        margin-bottom: 14px;
+      }
+      .card {
+        padding: 14px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 26px;
+      }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 18px;
+        color: var(--accent);
+      }
+      h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        color: #bfe8ff;
+      }
+      p { margin: 0 0 6px; }
+      ul { margin: 6px 0 0 18px; padding: 0; }
+      li { margin: 3px 0; }
+      .muted { color: var(--muted); }
+      .ok { color: var(--ok); }
+      .warn { color: var(--warn); }
+      .small { font-size: 12px; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 12px;
+      }
+      .span-12 { grid-column: span 12; }
+      .span-6 { grid-column: span 6; }
+      .span-4 { grid-column: span 4; }
+      .tag {
+        display: inline-block;
+        border: 1px solid #3b578f;
+        border-radius: 999px;
+        padding: 3px 8px;
+        margin: 4px 5px 0 0;
+        font-size: 12px;
+        color: #c8dcff;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th, td {
+        border: 1px solid #2f4575;
+        padding: 7px 8px;
+        vertical-align: top;
+      }
+      th {
+        background: #132245;
+        color: #bfe4ff;
+        text-align: left;
+      }
+      .code {
+        border: 1px solid #35538c;
+        border-radius: 10px;
+        background: #111d39;
+        padding: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+      }
+      @media (max-width: 980px) {
+        .span-6, .span-4 { grid-column: span 12; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <section class="hero">
+        <h1>律植推荐逻辑 v2（按用户类型与需求类型）</h1>
+        <p class="muted">
+          目标：针对律植核心用户群，形成可执行的推荐算法与固定问题集。<br />
+          范围：案件类型当前仅覆盖 <strong>劳动纠纷</strong> 与 <strong>合同纠纷</strong>；输出模块仅包括
+          <strong>灵感广场、社区、合作机会、发现律师</strong>。
+        </p>
+      </section>
+
+      <div class="grid">
+        <section class="card span-12">
+          <h2>1) 用户类型定义（7 类）</h2>
+          <span class="tag">A 来找律师的客户</span>
+          <span class="tag">B 来咨询案件结果的客户</span>
+          <span class="tag">C 来找合作机会的律师</span>
+          <span class="tag">D 来找案源的律师</span>
+          <span class="tag">E 来找工作的学生</span>
+          <span class="tag">F 来找工作的律师</span>
+          <span class="tag">G 来找外包律师的公司法务</span>
+          <p class="small muted" style="margin-top:8px;">
+            说明：每类用户先走意图识别，再进入对应固定问题树，最终进入模块排序与过滤。
+          </p>
+        </section>
+
+        <section class="card span-6">
+          <h2>2) 通用算法骨架</h2>
+          <ul>
+            <li>Step 1：识别用户类型（A~G）</li>
+            <li>Step 2：识别需求类型（诉讼解决 / 结果预判 / 合作连接 / 求职 / 外包采购）</li>
+            <li>Step 3：固定问题追问（4 问，含城市）</li>
+            <li>Step 4：合成关键词包（主诉求 + 城市 + 案件类型 + 角色 + 时效）</li>
+            <li>Step 5：模块召回与打分</li>
+            <li>Step 6：模块显隐（无内容则不展示该板块）</li>
+          </ul>
+        </section>
+
+        <section class="card span-6">
+          <h2>3) 城市优先规则</h2>
+          <ul>
+            <li><span class="ok">同城优先</span>：目标城市 = 候选城市，城市分最高。</li>
+            <li><span class="ok">近城其次</span>：按近城序列衰减打分。</li>
+            <li><span class="warn">全国兜底</span>：同城/近城不足时，补全国高匹配内容。</li>
+          </ul>
+          <p class="small muted">建议近城序列（示例）：</p>
+          <div class="code">北京: 北京 > 上海 > 杭州 > 广州 > 深圳 > 成都
+上海: 上海 > 杭州 > 北京 > 深圳 > 广州 > 成都
+深圳: 深圳 > 广州 > 上海 > 杭州 > 北京 > 成都
+广州: 广州 > 深圳 > 上海 > 杭州 > 北京 > 成都</div>
+        </section>
+
+        <section class="card span-12">
+          <h2>4) 模块排序路由（按需求类型）</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>需求类型</th>
+                <th>主路由</th>
+                <th>展示模块（按优先级）</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>诉讼解决（劳动/合同）</td>
+                <td>lawyer_path</td>
+                <td>社区 → 灵感广场 → 发现律师</td>
+                <td>先看经验，再看工具，最后连接律师</td>
+              </tr>
+              <tr>
+                <td>案件结果咨询（风险预估）</td>
+                <td>result_path</td>
+                <td>灵感广场 → 社区 → 发现律师</td>
+                <td>优先方法论与测算工具，再看案例讨论</td>
+              </tr>
+              <tr>
+                <td>合作连接 / 采购 / 案源</td>
+                <td>cooperation_path</td>
+                <td>灵感广场 → 合作机会 → 发现律师</td>
+                <td>社区可降权或隐藏，避免分散</td>
+              </tr>
+              <tr>
+                <td>求职（学生/律师）</td>
+                <td>job_path</td>
+                <td>合作机会 → 灵感广场 → 发现律师</td>
+                <td>先岗位机会，再补能力包，再看导师型律师</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card span-12">
+          <h2>5) 各用户类型固定问题（4 问）</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>用户类型</th>
+                <th>Q1 角色/目标</th>
+                <th>Q2 城市（固定）</th>
+                <th>Q3 案件类型/方向</th>
+                <th>Q4 关键限制条件</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>A 来找律师的客户</td>
+                <td>请问您当前最希望律师帮您解决什么问题？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您的案件更接近劳动纠纷还是合同纠纷？</td>
+                <td>请问您最关注时效、预算还是胜算判断？</td>
+              </tr>
+              <tr>
+                <td>B 咨询案件结果的客户</td>
+                <td>请问您更想先评估胜诉概率还是赔偿区间？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您的案件属于劳动纠纷还是合同纠纷？</td>
+                <td>请问您目前已有的核心证据有哪些？</td>
+              </tr>
+              <tr>
+                <td>C 找合作机会的律师</td>
+                <td>请问您现在最希望获得哪类合作机会？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您目前主打劳动纠纷还是合同纠纷方向？</td>
+                <td>请问您偏好长期顾问、专项项目还是分包协作？</td>
+              </tr>
+              <tr>
+                <td>D 找案源的律师</td>
+                <td>请问您现在更缺哪类案源（劳动/合同）？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您优先承接劳动纠纷还是合同纠纷？</td>
+                <td>请问您可承接的案件阶段是咨询、仲裁/诉讼，还是全流程？</td>
+              </tr>
+              <tr>
+                <td>E 找工作的学生</td>
+                <td>请问您当前求职目标是实习还是正式岗位？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您希望进入劳动纠纷方向还是合同纠纷方向？</td>
+                <td>请问您更看重学习机会、薪资还是留用概率？</td>
+              </tr>
+              <tr>
+                <td>F 找工作的律师</td>
+                <td>请问您希望加入律所、法务团队还是独立协作网络？</td>
+                <td>请问您现在位于哪个城市？</td>
+                <td>请问您优势方向是劳动纠纷还是合同纠纷？</td>
+                <td>请问您期望的合作模式是全职、驻场还是项目制？</td>
+              </tr>
+              <tr>
+                <td>G 找外包律师的公司法务</td>
+                <td>请问您当前要外包的是劳动纠纷还是合同纠纷项目？</td>
+                <td>请问您公司项目主要落地在哪个城市？</td>
+                <td>请问您更需要专项律师还是常年顾问支持？</td>
+                <td>请问您优先考虑响应速度、行业经验还是费用控制？</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card span-12">
+          <h2>6) 打分模型（建议）</h2>
+          <div class="code">score(item) =
+  w_intent * intent_match
+  + w_case * case_match
+  + w_city * city_score
+  + w_role * role_match
+  + w_keyword * keyword_overlap
+  + w_quality * quality_score
+
+建议权重:
+- 发现律师: w_city=0.30, w_case=0.25, w_intent=0.20, w_keyword=0.15, w_quality=0.10
+- 合作机会: w_city=0.28, w_intent=0.28, w_case=0.18, w_keyword=0.16, w_quality=0.10
+- 社区帖子: w_case=0.30, w_keyword=0.30, w_intent=0.20, w_city=0.10, w_quality=0.10
+- 灵感广场: w_case=0.28, w_intent=0.24, w_keyword=0.24, w_city=0.14, w_quality=0.10</div>
+        </section>
+
+        <section class="card span-6">
+          <h2>7) 模块显隐规则</h2>
+          <ul>
+            <li>每个模块先召回 TopN=3；若 <strong>0 条</strong>，直接隐藏该模块。</li>
+            <li>禁止出现“有板块标题但无内容卡片”的状态。</li>
+            <li>当仅剩 1~2 个模块时，自动拉伸布局宽度，减少空白。</li>
+          </ul>
+        </section>
+
+        <section class="card span-6">
+          <h2>8) 业务兜底策略</h2>
+          <ul>
+            <li>如果案件类型无法识别，先追问“劳动纠纷 / 合同纠纷”。</li>
+            <li>如果城市无法识别，按全国 + 近城热门策略推荐。</li>
+            <li>如果用户类型不明确，默认走“客户求解型（A）”问题树。</li>
+          </ul>
+        </section>
+
+        <section class="card span-12">
+          <h2>9) 上线顺序建议（仅方案）</h2>
+          <ul>
+            <li>P0：先上线 A/B/C/G 四类（转化直接相关），并覆盖劳动/合同双案件。</li>
+            <li>P1：补全 D/E/F，并新增求职专属机会标签与律师导师标签。</li>
+            <li>P2：加入行为反馈闭环（点击、收藏、咨询提交）自动调权。</li>
+          </ul>
+          <p class="small muted">
+            当前文档为算法提案稿，仅用于确认逻辑与问题设计，不涉及页面代码改动。
+          </p>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

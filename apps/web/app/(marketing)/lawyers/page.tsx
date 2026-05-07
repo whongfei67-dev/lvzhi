@@ -21,6 +21,13 @@ import {
   filterInfluenceFirms,
   getFirmDisplayLawyerCount,
 } from '@/lib/lawyers-ranking-demo'
+import {
+  clearRecommendationProfile,
+  loadRecommendationProfile,
+  type RecommendationProfile,
+} from '@/lib/recommendation/recommendation-engine'
+import { DemandRecommendationBar } from '@/components/recommendation/demand-recommendation-bar'
+import { SubpageRecommendationStrip } from '@/components/recommendation/subpage-recommendation-strip'
 
 /**
  * 律师列表页 v3.0 — UI预演方案
@@ -71,6 +78,7 @@ export default function LawyersPage() {
   const [activeRanking, setActiveRanking] = useState('comprehensive')
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [recommendationProfile, setRecommendationProfile] = useState<RecommendationProfile | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -86,6 +94,10 @@ export default function LawyersPage() {
     return () => {
       cancelled = true
     }
+  }, [])
+
+  useEffect(() => {
+    setRecommendationProfile(loadRecommendationProfile())
   }, [])
 
   useEffect(() => {
@@ -188,6 +200,24 @@ export default function LawyersPage() {
           </div>
         </div>
       </section>
+
+      {recommendationProfile ? (
+        <section className="mx-auto max-w-6xl px-6 py-4 lg:px-8">
+          <DemandRecommendationBar
+            profile={recommendationProfile}
+            compact
+            onClear={() => {
+              clearRecommendationProfile()
+              setRecommendationProfile(null)
+            }}
+          />
+        </section>
+      ) : null}
+
+      <SubpageRecommendationStrip
+        title="已根据你的需求置顶相关律师能力档案"
+        items={recommendationProfile?.modules.lawyers ?? []}
+      />
 
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 筛选区域 */}

@@ -1,0 +1,1063 @@
+{
+  "generatedAt": "2026-05-07T10:10:41.363Z",
+  "summary": {
+    "sampleSize": 10,
+    "hitRate": 0.6,
+    "aliasRate": 0.3,
+    "stageRate": 0.3,
+    "noHitRate": 0.4,
+    "avgInjectedKeywords": 4.2,
+    "budgetSampleSize": 10,
+    "budgetTop1HitRate": 1,
+    "budgetTop5AnyHitRate": 1,
+    "budgetTop5AvgHitRatio": 0.9800000000000001,
+    "first50HitRate": 0.6,
+    "second50HitRate": 0.6
+  },
+  "rows": [
+    {
+      "id": "C-001",
+      "scope": "criminal",
+      "l3": "盗掘古文化遗址、古墓葬罪",
+      "injectedKeywordCount": 6,
+      "injectedKeywords": [
+        "盗掘",
+        "古文化遗址",
+        "古墓葬",
+        "妨害社会管理秩序",
+        "妨害文物管理",
+        "盗掘古文化遗址"
+      ],
+      "input": "我是当事人本人，我描述得不完整，细节还在补。我目前掌握的关键词有：盗掘、古文化遗址、古墓葬、妨害社会管理秩序、妨害文物管理、盗掘古文化遗址。我想先确定先做什么避免被动，先按能判断的线索帮我分流。",
+      "fixedQuestions": [
+        "您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "您更关注哪类法律方向？",
+        "您更在意哪一项，响应时间、预算或是线上咨询？",
+        "您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先判断是否构成犯罪",
+        "成都",
+        "涉嫌罪名判断",
+        "线上咨询",
+        "预算300"
+      ],
+      "pipelineScope": "criminal",
+      "stageSnapshots": [
+        {
+          "stage": "e",
+          "maxScore": 2,
+          "remaining": 12
+        },
+        {
+          "stage": "d",
+          "maxScore": 2,
+          "remaining": 12
+        },
+        {
+          "stage": "c",
+          "maxScore": 5,
+          "remaining": 12
+        },
+        {
+          "stage": "b",
+          "maxScore": 6,
+          "remaining": 12
+        },
+        {
+          "stage": "a",
+          "maxScore": 7,
+          "remaining": 12
+        }
+      ],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": "刑事案件",
+      "routedCity": "成都",
+      "routedBudgetLevel": "low",
+      "routedBudgetPreference": "exact:300",
+      "routedServicePreference": "online_consult",
+      "budgetRuleTarget": "exact=300",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        300,
+        300,
+        800,
+        660,
+        500
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "300✓(同价)",
+        "300✓(同价)",
+        "800✓(±500)",
+        "660✓(±500)",
+        "500✓(±500)"
+      ],
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "盗掘古文化遗址、古墓葬罪",
+      "recallSkills": [
+        "妨害文物管理罪方向速查清单",
+        "扰乱公共秩序罪方向速查清单",
+        "盗掘古文化遗址、古墓葬罪证据梳理器",
+        "盗掘古文化遗址、古墓葬罪办案路线图",
+        "盗掘古人类化石、古脊椎动物化石罪证据梳理器"
+      ],
+      "recallPosts": [
+        "妨害文物管理罪方向：怎么处理更稳？",
+        "扰乱公共秩序罪方向：怎么处理更稳？",
+        "盗掘古文化遗址、古墓葬罪：流程怎么走？",
+        "妨害社会管理秩序罪方向：第一步怎么做？",
+        "盗掘古人类化石、古脊椎动物化石罪：第一步怎么做？"
+      ],
+      "recallLawyers": [
+        "测试作者甲30 · 妨害社会管理秩序罪方向",
+        "测试作者戊70 · 妨害社会管理秩序罪方向",
+        "测试作者己 · 妨害社会管理秩序罪方向（技能作者）",
+        "测试刑事律师01 · 妨害社会管理秩序罪方向",
+        "测试作者己11 · 妨害社会管理秩序罪方向"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者甲30 · 妨害社会管理秩序罪方向 | 所在地：北京｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者戊70 · 妨害社会管理秩序罪方向 | 所在地：杭州｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者己 · 妨害社会管理秩序罪方向（技能作者） | 所在地：武汉｜执业机构：技能作者（认证律师）（参考小时费 ¥800/h）",
+        "测试刑事律师01 · 妨害社会管理秩序罪方向 | 所在地：成都｜执业机构：测试律所C（参考小时费 ¥660/h）",
+        "测试作者己11 · 妨害社会管理秩序罪方向 | 所在地：上海｜执业机构：测试律所B（参考小时费 ¥500/h）"
+      ]
+    },
+    {
+      "id": "C-002",
+      "scope": "civil",
+      "l3": "被撤销死亡宣告人请求返还财产纠纷",
+      "injectedKeywordCount": 2,
+      "injectedKeywords": [
+        "宣告死亡案件有关的",
+        "与宣告失踪"
+      ],
+      "input": "我是家里在处理这事的人，目前只能先说出核心事实。我目前掌握的关键词有：宣告死亡案件有关的、与宣告失踪。我想先知道起诉和证据怎么准备，我先把能确定的词给你。",
+      "fixedQuestions": [
+        "为了更快匹配，您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "为了更快匹配，您更关注哪类法律方向？",
+        "为了更快匹配，您更在意哪一项，响应时间、预算或是线上咨询？",
+        "为了更快匹配，您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先整理证据",
+        "北京",
+        "证据准备",
+        "线上咨询",
+        "预算300"
+      ],
+      "pipelineScope": "civil",
+      "stageSnapshots": [
+        {
+          "stage": "e",
+          "maxScore": 0,
+          "remaining": 0
+        }
+      ],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": null,
+      "routedCity": "北京",
+      "routedBudgetLevel": "low",
+      "routedBudgetPreference": "exact:300",
+      "routedServicePreference": "online_consult",
+      "budgetRuleTarget": "exact=300",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        300,
+        300,
+        300,
+        300,
+        300
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "300✓(同价)",
+        "300✓(同价)",
+        "300✓(同价)",
+        "300✓(同价)",
+        "300✓(同价)"
+      ],
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "recallSkills": [
+        "被撤销死亡宣告人请求返还财产纠纷办案路线图",
+        "失踪人债务支付纠纷办案路线图",
+        "被撤销死亡宣告人请求返还财产纠纷证据梳理器",
+        "失踪人债务支付纠纷证据梳理器",
+        "与宣告失踪、宣告死亡案件有关的纠纷方向速查清单"
+      ],
+      "recallPosts": [
+        "被撤销死亡宣告人请求返还财产纠纷：流程怎么走？",
+        "失踪人债务支付纠纷：流程怎么走？",
+        "被撤销死亡宣告人请求返还财产纠纷：第一步怎么做？",
+        "失踪人债务支付纠纷：第一步怎么做？",
+        "与宣告失踪、宣告死亡案件有关的纠纷方向：怎么处理更稳？"
+      ],
+      "recallLawyers": [
+        "测试作者甲60 · 海事海商纠纷方向",
+        "测试作者甲10 · 合同、准合同纠纷方向",
+        "测试作者甲50 · 特殊诉讼程序案件案由方向",
+        "测试作者甲90 · 合同、准合同纠纷方向",
+        "测试作者甲40 · 非讼程序案件案由方向"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者甲60 · 海事海商纠纷方向 | 所在地：北京｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者甲10 · 合同、准合同纠纷方向 | 所在地：北京｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者甲50 · 特殊诉讼程序案件案由方向 | 所在地：北京｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者甲90 · 合同、准合同纠纷方向 | 所在地：北京｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者甲40 · 非讼程序案件案由方向 | 所在地：北京｜执业机构：测试律所A（参考小时费 ¥300/h）"
+      ]
+    },
+    {
+      "id": "C-003",
+      "scope": "criminal",
+      "l3": "猥亵儿童罪",
+      "injectedKeywordCount": 3,
+      "injectedKeywords": [
+        "民主权利",
+        "猥亵儿童",
+        "儿童"
+      ],
+      "input": "我是家属，最近这件事被反复问话。我目前掌握的关键词有：民主权利、猥亵儿童、儿童。我想知道怎么配合处理更稳妥，先别按完整案由理解。",
+      "fixedQuestions": [
+        "请优先确认：您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "请优先确认：您更关注哪类法律方向？",
+        "请优先确认：您更在意哪一项，响应时间、预算或是线上咨询？",
+        "请优先确认：您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先判断是否构成犯罪",
+        "上海",
+        "侦查阶段应对",
+        "响应时间",
+        "预算1500"
+      ],
+      "pipelineScope": "criminal",
+      "stageSnapshots": [],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": "刑事案件",
+      "routedCity": "上海",
+      "routedBudgetLevel": "medium",
+      "routedBudgetPreference": "exact:1500",
+      "routedServicePreference": "response_time",
+      "budgetRuleTarget": "exact=1500",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 0.8,
+      "lawyerRates": [
+        1400,
+        1400,
+        1250,
+        1100,
+        800
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        false
+      ],
+      "lawyerBudgetMatchTrace": [
+        "1400✓(±500)",
+        "1400✓(±500)",
+        "1250✓(±500)",
+        "1100✓(±500)",
+        "800✗(超出±500)"
+      ],
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "强制猥亵、侮辱罪",
+      "recallSkills": [
+        "侵犯公民人身权利、民主权利罪方向速查清单",
+        "强制猥亵、侮辱罪办案路线图",
+        "猥亵儿童罪办案路线图",
+        "侵犯公民人身权利、民主权利罪方向速查清单",
+        "收买被拐卖的妇女、儿童罪办案路线图"
+      ],
+      "recallPosts": [
+        "侵犯公民人身权利、民主权利罪方向：怎么处理更稳？",
+        "强制猥亵、侮辱罪：流程怎么走？",
+        "猥亵儿童罪：流程怎么走？",
+        "侵犯公民人身权利、民主权利罪方向：怎么处理更稳？",
+        "拐卖妇女、儿童罪：流程怎么走？"
+      ],
+      "recallLawyers": [
+        "测试作者己57 · 破坏社会主义市场经济秩序罪方向",
+        "测试作者己37 · 危害国防利益罪方向",
+        "测试作者戊26 · 侵犯公民人身权利、民主权利罪方向",
+        "测试作者乙25 · 侵犯公民人身权利、民主权利罪方向",
+        "测试作者乙 · 侵犯公民人身权利、民主权利罪方向（技能作者）"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者己57 · 破坏社会主义市场经济秩序罪方向 | 所在地：上海｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者己37 · 危害国防利益罪方向 | 所在地：上海｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者戊26 · 侵犯公民人身权利、民主权利罪方向 | 所在地：杭州｜执业机构：测试律所B（参考小时费 ¥1250/h）",
+        "测试作者乙25 · 侵犯公民人身权利、民主权利罪方向 | 所在地：成都｜执业机构：测试律所A（参考小时费 ¥1100/h）",
+        "测试作者乙 · 侵犯公民人身权利、民主权利罪方向（技能作者） | 所在地：广州｜执业机构：技能作者（认证律师）（参考小时费 ¥800/h）"
+      ]
+    },
+    {
+      "id": "C-004",
+      "scope": "civil",
+      "l3": "申请人格权侵害禁令",
+      "injectedKeywordCount": 1,
+      "injectedKeywords": [
+        "申请人格"
+      ],
+      "input": "我是权利受影响一方，我这边证据和聊天记录都比较零散。我目前掌握的关键词有：申请人格。我想先知道起诉和证据怎么准备，先按能判断的线索帮我分流。",
+      "fixedQuestions": [
+        "为了更快匹配，您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "为了更快匹配，您更关注哪类法律方向？",
+        "为了更快匹配，您更在意哪一项，响应时间、预算或是线上咨询？",
+        "为了更快匹配，您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先做赔偿测算",
+        "广州",
+        "起诉路径",
+        "响应时间",
+        "预算1500"
+      ],
+      "pipelineScope": "civil",
+      "stageSnapshots": [
+        {
+          "stage": "e",
+          "maxScore": 0,
+          "remaining": 0
+        }
+      ],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": null,
+      "routedCity": "广州",
+      "routedBudgetLevel": "medium",
+      "routedBudgetPreference": "exact:1500",
+      "routedServicePreference": "response_time",
+      "budgetRuleTarget": "exact=1500",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        1400,
+        1400,
+        1400,
+        1400,
+        1400
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "1400✓(±500)",
+        "1400✓(±500)",
+        "1400✓(±500)",
+        "1400✓(±500)",
+        "1400✓(±500)"
+      ],
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "recallSkills": [
+        "申请人格权侵害禁令证据梳理器",
+        "申请人格权侵害禁令节点提醒器",
+        "申请人格权侵害禁令办案路线图",
+        "申请人格权侵害禁令证据梳理器",
+        "违法解除赔偿测算器"
+      ],
+      "recallPosts": [
+        "非讼程序案件案由方向：风险点有哪些？",
+        "申请人格权侵害禁令：流程怎么走？",
+        "申请人格权侵害禁令：第一步怎么做？",
+        "申请人格权侵害禁令案件方向：怎么处理更稳？",
+        "公司口头辞退，如何留证才稳妥？"
+      ],
+      "recallLawyers": [
+        "测试作者辛57 · 劳动争议、人事争议、新就业形态用工纠纷方向",
+        "测试作者辛97 · 合同、准合同纠纷方向",
+        "测试作者辛47 · 非讼程序案件案由方向",
+        "测试作者辛87 · 物权纠纷方向",
+        "测试作者辛37 · 侵权责任纠纷方向"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者辛57 · 劳动争议、人事争议、新就业形态用工纠纷方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者辛97 · 合同、准合同纠纷方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者辛47 · 非讼程序案件案由方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者辛87 · 物权纠纷方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者辛37 · 侵权责任纠纷方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）"
+      ]
+    },
+    {
+      "id": "C-005",
+      "scope": "criminal",
+      "l3": "窝藏、转移、隐瞒毒 品、毒赃罪",
+      "injectedKeywordCount": 12,
+      "injectedKeywords": [
+        "品毒赃",
+        "贩卖",
+        "窝藏",
+        "制造毒 品",
+        "隐瞒毒",
+        "窝藏转移隐瞒毒",
+        "转移",
+        "隐瞒毒 品",
+        "制造毒",
+        "妨害社会管理秩序",
+        "运输",
+        "毒赃"
+      ],
+      "input": "我是家属，我描述得不完整，细节还在补。我目前掌握的关键词有：品毒赃、贩卖、窝藏、制造毒 品、隐瞒毒、窝藏转移隐瞒毒、转移、隐瞒毒 品、制造毒、妨害社会管理秩序、运输、毒赃。我想先判断风险和下一步程序，细节我可以后面再补。",
+      "fixedQuestions": [
+        "请优先确认：您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "请优先确认：您更关注哪类法律方向？",
+        "请优先确认：您更在意哪一项，响应时间、预算或是线上咨询？",
+        "请优先确认：您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先确认程序节点",
+        "成都",
+        "取保方向",
+        "预算",
+        "预算3000"
+      ],
+      "pipelineScope": "criminal",
+      "stageSnapshots": [],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": "刑事案件",
+      "routedCity": "成都",
+      "routedBudgetLevel": "high",
+      "routedBudgetPreference": "exact:3000",
+      "routedServicePreference": "budget",
+      "budgetRuleTarget": "exact=3000",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "3000✓(同价)",
+        "3000✓(同价)",
+        "3000✓(同价)",
+        "3000✓(同价)",
+        "3000✓(同价)"
+      ],
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "窝藏、转移、隐瞒毒 品、毒赃罪",
+      "recallSkills": [
+        "走私、贩卖、运输、制造毒 品罪方向速查清单",
+        "扰乱公共秩序罪方向速查清单",
+        "窝藏、转移、隐瞒毒 品、毒赃罪办案路线图",
+        "走私、贩卖、运输、制造毒 品罪方向速查清单",
+        "妨害社会管理秩序罪方向速查清单"
+      ],
+      "recallPosts": [
+        "走私、贩卖、运输、制造毒 品罪方向：怎么处理更稳？",
+        "扰乱公共秩序罪方向：怎么处理更稳？",
+        "窝藏、转移、隐瞒毒 品、毒赃罪：证据怎么补？",
+        "走私、贩卖、运输、制造毒 品罪方向：怎么处理更稳？",
+        "走私、贩卖、运输、制造毒 品罪：流程怎么走？"
+      ],
+      "recallLawyers": [
+        "测试作者乙69 · 妨害社会管理秩序罪方向",
+        "测试作者乙39 · 合同、准合同纠纷方向",
+        "测试作者乙79 · 非讼程序案件案由方向",
+        "测试作者乙29 · 海事海商纠纷方向",
+        "测试作者乙19 · 知识产权与竞争纠纷方向"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者乙69 · 妨害社会管理秩序罪方向 | 所在地：成都｜执业机构：测试律所E（参考小时费 ¥3000/h）",
+        "测试作者乙39 · 合同、准合同纠纷方向 | 所在地：成都｜执业机构：测试律所E（参考小时费 ¥3000/h）",
+        "测试作者乙79 · 非讼程序案件案由方向 | 所在地：成都｜执业机构：测试律所E（参考小时费 ¥3000/h）",
+        "测试作者乙29 · 海事海商纠纷方向 | 所在地：成都｜执业机构：测试律所E（参考小时费 ¥3000/h）",
+        "测试作者乙19 · 知识产权与竞争纠纷方向 | 所在地：成都｜执业机构：测试律所E（参考小时费 ¥3000/h）"
+      ]
+    },
+    {
+      "id": "C-006",
+      "scope": "civil",
+      "l3": "因恶意提起知识产权诉讼损害责任纠纷",
+      "injectedKeywordCount": 5,
+      "injectedKeywords": [
+        "侵权",
+        "因恶意提起知识产",
+        "因恶意提起知识产权诉讼损害责任",
+        "知识产权与竞争",
+        "知识产权权属"
+      ],
+      "input": "我是权利受影响一方，目前只能先说出核心事实。我目前掌握的关键词有：侵权、因恶意提起知识产、因恶意提起知识产权诉讼损害责任、知识产权与竞争、知识产权权属。我想先知道起诉和证据怎么准备，先按能判断的线索帮我分流。",
+      "fixedQuestions": [
+        "您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "您更关注哪类法律方向？",
+        "您更在意哪一项，响应时间、预算或是线上咨询？",
+        "您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先判断责任边界",
+        "广州",
+        "起诉路径",
+        "线上咨询",
+        "预算3000"
+      ],
+      "pipelineScope": "civil",
+      "stageSnapshots": [],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": "知识产权",
+      "routedCity": "广州",
+      "routedBudgetLevel": "high",
+      "routedBudgetPreference": "exact:3000",
+      "routedServicePreference": "online_consult",
+      "budgetRuleTarget": "exact=3000",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        3000,
+        3000,
+        3000,
+        3000,
+        3000
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "3000✓(同价)",
+        "3000✓(同价)",
+        "3000✓(同价)",
+        "3000✓(同价)",
+        "3000✓(同价)"
+      ],
+      "causeHit": true,
+      "selectedBy": "alias",
+      "causeLabel": "因恶意提起知识产权诉讼损害责任纠纷",
+      "recallSkills": [
+        "知识产权权属、侵权纠纷方向速查清单",
+        "知识产权合同纠纷方向速查清单",
+        "因恶意提起知识产权诉讼损害责任纠纷证据梳理器",
+        "因恶意提起知识产权诉讼损害责任纠纷风险自检表",
+        "因恶意提起知识产权诉讼损害责任纠纷办案路线图"
+      ],
+      "recallPosts": [
+        "知识产权权属、侵权纠纷方向：怎么处理更稳？",
+        "知识产权合同纠纷方向：怎么处理更稳？",
+        "因恶意提起知识产权诉讼损害责任纠纷：证据怎么补？",
+        "因恶意提起知识产权诉讼损害责任纠纷：流程怎么走？",
+        "因恶意提起知识产权诉讼损害责任纠纷：风险点有哪些？"
+      ],
+      "recallLawyers": [
+        "测试作者辛49 · 知识产权与竞争纠纷方向",
+        "测试作者辛69 · 知识产权与竞争纠纷方向",
+        "测试作者己69 · 知识产权与竞争纠纷方向",
+        "测试作者乙19 · 知识产权与竞争纠纷方向",
+        "测试作者丁19 · 知识产权与竞争纠纷方向"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者辛49 · 知识产权与竞争纠纷方向 | 所在地：广州｜执业机构：测试律所E（参考小时费 ¥3000/h）",
+        "测试作者辛69 · 知识产权与竞争纠纷方向 | 所在地：广州｜执业机构：测试律所E（参考小时费 ¥3000/h）",
+        "测试作者己69 · 知识产权与竞争纠纷方向 | 所在地：上海｜执业机构：测试律所E（参考小时费 ¥3000/h）",
+        "测试作者乙19 · 知识产权与竞争纠纷方向 | 所在地：成都｜执业机构：测试律所E（参考小时费 ¥3000/h）",
+        "测试作者丁19 · 知识产权与竞争纠纷方向 | 所在地：武汉｜执业机构：测试律所E（参考小时费 ¥3000/h）"
+      ]
+    },
+    {
+      "id": "C-007",
+      "scope": "criminal",
+      "l3": "组织出卖人体器官罪",
+      "injectedKeywordCount": 2,
+      "injectedKeywords": [
+        "组织出卖人体器官",
+        "民主权利"
+      ],
+      "input": "我是案件相关人，我描述得不完整，细节还在补。我目前掌握的关键词有：组织出卖人体器官、民主权利。我想知道怎么配合处理更稳妥，细节我可以后面再补。",
+      "fixedQuestions": [
+        "您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "您更关注哪类法律方向？",
+        "您更在意哪一项，响应时间、预算或是线上咨询？",
+        "您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先确认程序节点",
+        "深圳",
+        "刑事案件",
+        "响应时间",
+        "预算1500"
+      ],
+      "pipelineScope": "criminal",
+      "stageSnapshots": [
+        {
+          "stage": "e",
+          "maxScore": 1,
+          "remaining": 22
+        },
+        {
+          "stage": "d",
+          "maxScore": 1,
+          "remaining": 22
+        },
+        {
+          "stage": "c",
+          "maxScore": 2,
+          "remaining": 22
+        },
+        {
+          "stage": "b",
+          "maxScore": 3,
+          "remaining": 22
+        },
+        {
+          "stage": "a",
+          "maxScore": 3,
+          "remaining": 22
+        }
+      ],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": "刑事案件",
+      "routedCity": "深圳",
+      "routedBudgetLevel": "medium",
+      "routedBudgetPreference": "exact:1500",
+      "routedServicePreference": "response_time",
+      "budgetRuleTarget": "exact=1500",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        1250,
+        1250,
+        1400,
+        1400,
+        1400
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "1250✓(±500)",
+        "1250✓(±500)",
+        "1400✓(±500)",
+        "1400✓(±500)",
+        "1400✓(±500)"
+      ],
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "recallSkills": [
+        "组织出卖人体器官罪证据梳理器",
+        "组织出卖人体器官罪办案路线图",
+        "侵犯公民人身权利、民主权利罪方向速查清单",
+        "侵犯公民人身权利、民主权利罪方向速查清单",
+        "组织未成年人进行违反治安管理活动罪风险自检表"
+      ],
+      "recallPosts": [
+        "组织出卖人体器官罪：第一步怎么做？",
+        "组织出卖人体器官罪：流程怎么走？",
+        "侵犯公民人身权利、民主权利罪方向：怎么处理更稳？",
+        "侵犯公民人身权利、民主权利罪方向：怎么处理更稳？",
+        "组织未成年人进行违反治安管理活动罪：证据怎么补？"
+      ],
+      "recallLawyers": [
+        "测试作者丙56 · 破坏社会主义市场经济秩序罪方向",
+        "测试作者丙36 · 危害国防利益罪方向",
+        "测试作者辛17 · 妨害社会管理秩序罪方向",
+        "测试作者辛27 · 侵犯财产罪方向",
+        "测试作者己57 · 破坏社会主义市场经济秩序罪方向"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者丙56 · 破坏社会主义市场经济秩序罪方向 | 所在地：深圳｜执业机构：测试律所B（参考小时费 ¥1250/h）",
+        "测试作者丙36 · 危害国防利益罪方向 | 所在地：深圳｜执业机构：测试律所B（参考小时费 ¥1250/h）",
+        "测试作者辛17 · 妨害社会管理秩序罪方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者辛27 · 侵犯财产罪方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者己57 · 破坏社会主义市场经济秩序罪方向 | 所在地：上海｜执业机构：测试律所C（参考小时费 ¥1400/h）"
+      ]
+    },
+    {
+      "id": "C-008",
+      "scope": "civil",
+      "l3": "收养关系纠纷",
+      "injectedKeywordCount": 3,
+      "injectedKeywords": [
+        "继承",
+        "婚姻家庭",
+        "收养关系"
+      ],
+      "input": "我是这起纠纷的相关方，我这边证据和聊天记录都比较零散。我目前掌握的关键词有：继承、婚姻家庭、收养关系。我想先知道起诉和证据怎么准备，细节我可以后面再补。",
+      "fixedQuestions": [
+        "为了更快匹配，您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "为了更快匹配，您更关注哪类法律方向？",
+        "为了更快匹配，您更在意哪一项，响应时间、预算或是线上咨询？",
+        "为了更快匹配，您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先做赔偿测算",
+        "广州",
+        "责任认定",
+        "响应时间",
+        "预算300"
+      ],
+      "pipelineScope": "civil",
+      "stageSnapshots": [
+        {
+          "stage": "e",
+          "maxScore": 1,
+          "remaining": 2
+        },
+        {
+          "stage": "d",
+          "maxScore": 1,
+          "remaining": 2
+        },
+        {
+          "stage": "c",
+          "maxScore": 2,
+          "remaining": 2
+        },
+        {
+          "stage": "b",
+          "maxScore": 2,
+          "remaining": 2
+        },
+        {
+          "stage": "a",
+          "maxScore": 2,
+          "remaining": 2
+        }
+      ],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": null,
+      "routedCity": "广州",
+      "routedBudgetLevel": "low",
+      "routedBudgetPreference": "exact:300",
+      "routedServicePreference": "response_time",
+      "budgetRuleTarget": "exact=300",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        500,
+        500,
+        300,
+        800,
+        800
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "500✓(±500)",
+        "500✓(±500)",
+        "300✓(同价)",
+        "800✓(±500)",
+        "800✓(±500)"
+      ],
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "婚姻家庭纠纷",
+      "recallSkills": [
+        "婚姻家庭、继承纠纷方向速查清单",
+        "继承纠纷方向速查清单",
+        "解除收养关系纠纷办案路线图",
+        "解除收养关系纠纷证据梳理器",
+        "确认收养关系纠纷办案路线图"
+      ],
+      "recallPosts": [
+        "婚姻家庭、继承纠纷方向：风险点有哪些？",
+        "继承纠纷方向：怎么处理更稳？",
+        "解除收养关系纠纷：第一步怎么做？",
+        "确认收养关系纠纷：流程怎么走？",
+        "婚姻家庭、继承纠纷方向：第一步怎么做？"
+      ],
+      "recallLawyers": [
+        "测试作者辛41 · 合同、准合同纠纷方向",
+        "测试作者辛81 · 非讼程序案件案由方向",
+        "测试作者丙80 · 婚姻家庭、继承纠纷方向",
+        "测试作者丙 · 婚姻家庭、继承纠纷方向（技能作者）",
+        "测试作者甲 · 婚姻家庭、继承纠纷方向（帖子作者）"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者辛41 · 合同、准合同纠纷方向 | 所在地：广州｜执业机构：测试律所B（参考小时费 ¥500/h）",
+        "测试作者辛81 · 非讼程序案件案由方向 | 所在地：广州｜执业机构：测试律所B（参考小时费 ¥500/h）",
+        "测试作者丙80 · 婚姻家庭、继承纠纷方向 | 所在地：深圳｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者丙 · 婚姻家庭、继承纠纷方向（技能作者） | 所在地：南京｜执业机构：技能作者（认证律师）（参考小时费 ¥800/h）",
+        "测试作者甲 · 婚姻家庭、继承纠纷方向（帖子作者） | 所在地：武汉｜执业机构：帖子作者（认证律师）（参考小时费 ¥800/h）"
+      ]
+    },
+    {
+      "id": "C-009",
+      "scope": "criminal",
+      "l3": "非法持有毒 品罪",
+      "injectedKeywordCount": 5,
+      "injectedKeywords": [
+        "非法",
+        "制造毒",
+        "非法持有毒",
+        "非法持有毒 品",
+        "贩卖"
+      ],
+      "input": "我是当事人本人，很多经过记不清，只能先给关键词。我目前掌握的关键词有：非法、制造毒、非法持有毒、非法持有毒 品、贩卖。我想知道怎么配合处理更稳妥，我先把能确定的词给你。",
+      "fixedQuestions": [
+        "请优先确认：您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "请优先确认：您更关注哪类法律方向？",
+        "请优先确认：您更在意哪一项，响应时间、预算或是线上咨询？",
+        "请优先确认：您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先看风险",
+        "深圳",
+        "涉嫌罪名判断",
+        "线上咨询",
+        "预算1500"
+      ],
+      "pipelineScope": "criminal",
+      "stageSnapshots": [
+        {
+          "stage": "e",
+          "maxScore": 2,
+          "remaining": 57
+        },
+        {
+          "stage": "d",
+          "maxScore": 2,
+          "remaining": 57
+        },
+        {
+          "stage": "c",
+          "maxScore": 3,
+          "remaining": 57
+        },
+        {
+          "stage": "b",
+          "maxScore": 6,
+          "remaining": 57
+        },
+        {
+          "stage": "a",
+          "maxScore": 6,
+          "remaining": 57
+        }
+      ],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": "刑事案件",
+      "routedCity": "深圳",
+      "routedBudgetLevel": "medium",
+      "routedBudgetPreference": "exact:1500",
+      "routedServicePreference": "online_consult",
+      "budgetRuleTarget": "exact=1500",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        1250,
+        1250,
+        1400,
+        1400,
+        1400
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "1250✓(±500)",
+        "1250✓(±500)",
+        "1400✓(±500)",
+        "1400✓(±500)",
+        "1400✓(±500)"
+      ],
+      "causeHit": false,
+      "selectedBy": "none",
+      "causeLabel": null,
+      "recallSkills": [
+        "非法持有毒 品罪办案路线图",
+        "妨害社会管理秩序罪方向速查清单",
+        "走私、贩卖、运输、制造毒 品罪方向速查清单",
+        "走私、贩卖、运输、制造毒 品罪方向速查清单",
+        "走私、贩卖、运输、制造毒 品罪方向速查清单"
+      ],
+      "recallPosts": [
+        "非法持有毒 品罪：流程怎么走？",
+        "走私、贩卖、运输、制造毒 品罪方向：怎么处理更稳？",
+        "走私、贩卖、运输、制造毒 品罪方向：怎么处理更稳？",
+        "走私、贩卖、运输、制造毒 品罪方向：怎么处理更稳？",
+        "走私、贩卖、运输、制造毒 品罪方向：怎么处理更稳？"
+      ],
+      "recallLawyers": [
+        "测试作者丙56 · 破坏社会主义市场经济秩序罪方向",
+        "测试作者丙36 · 危害国防利益罪方向",
+        "测试作者辛17 · 妨害社会管理秩序罪方向",
+        "测试作者辛27 · 侵犯财产罪方向",
+        "测试作者己57 · 破坏社会主义市场经济秩序罪方向"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者丙56 · 破坏社会主义市场经济秩序罪方向 | 所在地：深圳｜执业机构：测试律所B（参考小时费 ¥1250/h）",
+        "测试作者丙36 · 危害国防利益罪方向 | 所在地：深圳｜执业机构：测试律所B（参考小时费 ¥1250/h）",
+        "测试作者辛17 · 妨害社会管理秩序罪方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者辛27 · 侵犯财产罪方向 | 所在地：广州｜执业机构：测试律所C（参考小时费 ¥1400/h）",
+        "测试作者己57 · 破坏社会主义市场经济秩序罪方向 | 所在地：上海｜执业机构：测试律所C（参考小时费 ¥1400/h）"
+      ]
+    },
+    {
+      "id": "C-010",
+      "scope": "civil",
+      "l3": "信用证欺诈纠纷",
+      "injectedKeywordCount": 3,
+      "injectedKeywords": [
+        "证券",
+        "保险",
+        "与公司"
+      ],
+      "input": "我是当事人本人，我这边证据和聊天记录都比较零散。我目前掌握的关键词有：证券、保险、与公司。我想先知道起诉和证据怎么准备，先别按完整案由理解。",
+      "fixedQuestions": [
+        "为了更快匹配，您当前更希望达成哪类法律服务目标？",
+        "请问您现在位于哪个城市？",
+        "为了更快匹配，您更关注哪类法律方向？",
+        "为了更快匹配，您更在意哪一项，响应时间、预算或是线上咨询？",
+        "为了更快匹配，您的咨询预算是多少？（会用于匹配律师小时费）"
+      ],
+      "randomReplies": [
+        "先整理证据",
+        "广州",
+        "责任认定",
+        "预算",
+        "预算300"
+      ],
+      "pipelineScope": "civil",
+      "stageSnapshots": [
+        {
+          "stage": "e",
+          "maxScore": 1,
+          "remaining": 1
+        }
+      ],
+      "routedUserType": "find_lawyer_client",
+      "routedDemandMode": "seek_help",
+      "routedLegalDomain": "证券纠纷",
+      "routedCity": "广州",
+      "routedBudgetLevel": "low",
+      "routedBudgetPreference": "exact:300",
+      "routedServicePreference": "budget",
+      "budgetRuleTarget": "exact=300",
+      "budgetTop1Hit": true,
+      "budgetTop5AnyHit": true,
+      "budgetTop5HitRatio": 1,
+      "lawyerRates": [
+        300,
+        300,
+        300,
+        300,
+        300
+      ],
+      "lawyerBudgetMatchFlags": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "lawyerBudgetMatchTrace": [
+        "300✓(同价)",
+        "300✓(同价)",
+        "300✓(同价)",
+        "300✓(同价)",
+        "300✓(同价)"
+      ],
+      "causeHit": true,
+      "selectedBy": "stage",
+      "causeLabel": "证券权利确认纠纷",
+      "recallSkills": [
+        "证券纠纷方向速查清单",
+        "与公司、证券、保险、票据等有关的民事纠纷方向速查清单",
+        "再保险合同纠纷风险自检表",
+        "证券权利确认纠纷风险自检表",
+        "公司债券交易纠纷证据梳理器"
+      ],
+      "recallPosts": [
+        "证券纠纷方向：怎么处理更稳？",
+        "与公司、证券、保险、票据等有关的民事纠纷方向：怎么处理更稳？",
+        "进出口信用保险合同纠纷：第一步怎么做？",
+        "证券权利确认纠纷：证据怎么补？",
+        "证券权利确认纠纷：风险点有哪些？"
+      ],
+      "recallLawyers": [
+        "测试作者丙40 · 与公司、证券、保险、票据等有关的民事纠纷方向",
+        "测试作者丙30 · 与公司、证券、保险、票据等有关的民事纠纷方向",
+        "测试作者丙50 · 知识产权与竞争纠纷方向",
+        "测试作者丙90 · 物权纠纷方向",
+        "测试作者丙80 · 婚姻家庭、继承纠纷方向"
+      ],
+      "recallLawyersWithRate": [
+        "测试作者丙40 · 与公司、证券、保险、票据等有关的民事纠纷方向 | 所在地：深圳｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者丙30 · 与公司、证券、保险、票据等有关的民事纠纷方向 | 所在地：深圳｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者丙50 · 知识产权与竞争纠纷方向 | 所在地：深圳｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者丙90 · 物权纠纷方向 | 所在地：深圳｜执业机构：测试律所A（参考小时费 ¥300/h）",
+        "测试作者丙80 · 婚姻家庭、继承纠纷方向 | 所在地：深圳｜执业机构：测试律所A（参考小时费 ¥300/h）"
+      ]
+    }
+  ]
+}
