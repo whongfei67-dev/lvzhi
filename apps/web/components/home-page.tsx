@@ -274,7 +274,7 @@ export function HomePage({ session = null }: { session?: Session | null }) {
     if (!inRecommendationState || !profile) {
       return FEATURED_ITEMS.map((item) => ({ ...item, href: "/inspiration" }));
     }
-    return profile.modules.skills.slice(0, 3).map((item) => ({
+    return profile.modules.skills.slice(0, 5).map((item) => ({
       name: item.title,
       creator: item.subtitle,
       desc: "关键词匹配",
@@ -302,7 +302,7 @@ export function HomePage({ session = null }: { session?: Session | null }) {
     if (!inRecommendationState || !profile) {
       return LAWYERS.map((item) => ({ ...item, href: "/lawyers" }));
     }
-    return profile.modules.lawyers.slice(0, 3).map((item) => ({
+    return profile.modules.lawyers.slice(0, 5).map((item) => ({
       name: item.title.split(" · ")[0] || item.title,
       title: item.subtitle,
       region: item.tags[0] || "全国",
@@ -316,13 +316,13 @@ export function HomePage({ session = null }: { session?: Session | null }) {
 
   const communityCards = useMemo(() => {
     if (!inRecommendationState || !profile) return COMMUNITY_RECOMMEND_DEFAULT;
-    return profile.modules.posts.slice(0, 3);
+    return profile.modules.posts.slice(0, 5);
   }, [inRecommendationState, profile]);
 
   const opportunityCards = useMemo(() => {
     if (!inRecommendationState || !profile) return OPPORTUNITY_RECOMMEND_DEFAULT;
     if (profile.path !== "cooperation_path") return [];
-    return profile.modules.opportunities.slice(0, 3);
+    return profile.modules.opportunities.slice(0, 5);
   }, [inRecommendationState, profile]);
 
   const showFeaturedSection = featuredCards.length > 0;
@@ -746,6 +746,7 @@ export function HomePage({ session = null }: { session?: Session | null }) {
                     <p className="mt-0.5 text-xs text-[#5D4E3A]">
                       {toTrad(lawyer.region)} · {toTrad("执业")} {lawyer.years} {toTrad("年")}
                     </p>
+                    <p className="mt-0.5 text-[11px] text-[#8A6C4D]">{toTrad(lawyer.title)}</p>
                     <div className="mt-1 flex flex-wrap gap-1">
                       {lawyer.specialties.map((s) => (
                         <span key={s} className="tag text-xs">
