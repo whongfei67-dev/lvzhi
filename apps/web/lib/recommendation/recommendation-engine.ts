@@ -2518,7 +2518,7 @@ export const PARSE_USER_DEMAND_SMOKE_SAMPLES: ParseUserDemandSmokeSample[] = [
     input: "我是律师，最近想稳定获客和找案源线索，人在广州",
     expected: {
       userType: "lawyer_leads",
-      demandMode: "creator",
+      demandMode: "collaboration",
       city: "广州",
     },
   },
@@ -2527,7 +2527,7 @@ export const PARSE_USER_DEMAND_SMOKE_SAMPLES: ParseUserDemandSmokeSample[] = [
     input: "我是律师，想系统学习法律AI提示词和智能体",
     expected: {
       userType: "legal_ai_learning",
-      demandMode: "creator",
+      demandMode: "seek_help",
     },
   },
   {
@@ -2536,7 +2536,7 @@ export const PARSE_USER_DEMAND_SMOKE_SAMPLES: ParseUserDemandSmokeSample[] = [
     expected: {
       userType: "template_document_client",
       mindset: "low_budget",
-      demandMode: "solve_problem",
+      demandMode: "seek_help",
     },
   },
   {
